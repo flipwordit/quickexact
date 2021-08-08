@@ -1,0 +1,43 @@
+{
+  "name": "Recorder",
+  "short_name": "recorder",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "Record you sessions improve your searches",
+  "author": "Stav team",
+  "__chrome__minimum_chrome_version": "55",
+  "icons": {
+    "16": "images/icon-16.png",
+    "128": "images/icon-128.png"
+  },
+  "background": {
+    "scripts": [
+      "background/background.js"
+    ]
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "unlimitedStorage"
+  ],
+  "browser_action": {
+    "default_title": "Smart",
+    "default_popup": "popup/popup.html"
+  },
+  "web_accessible_resources": [
+    "images/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.stackoverflow.com/*"
+      ],
+      "all_frames": true,
+      "match_about_blank": true,
+      "run_at": "document_end",
+      "js": [
+        "content/content.js"
+      ]
+    }
+  ]
+}
