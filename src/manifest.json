@@ -5,7 +5,6 @@
   "manifest_version": 2,
   "description": "Record you sessions improve your searches",
   "author": "Stav team",
-  "__chrome__minimum_chrome_version": "55",
   "icons": {
     "16": "images/icon-16.png",
     "128": "images/icon-128.png"
