@@ -53,8 +53,8 @@ const config = {
       {
         test: /\.(sa|sc|c)ss$/,
         use: [ 
+          // { loader: 'style-loader'},
           { loader : MiniCssExtractPlugin.loader},
-          { loader: 'style-loader'},
           { loader: 'css-loader' },
           {
             loader: 'sass-loader',
@@ -105,6 +105,8 @@ const config = {
     }),
     new webpack.DefinePlugin({
       global: 'window',
+      __VUE_OPTIONS_API__: 'true',
+      __VUE_PROD_DEVTOOLS__: 'false'
     }),
     new VueLoaderPlugin(),
     new CopyWebpackPlugin([
@@ -150,6 +152,7 @@ if (config.mode === 'production') {
 if (process.env.HMR === 'true') {
   config.plugins = (config.plugins || []).concat([
     new ExtensionReloader({
+      port: 9595,
       manifest: path.join(__dirname, 'src', 'manifest.json'),
     }),
   ])
