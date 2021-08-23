@@ -1,0 +1,60 @@
+{
+  "name": "Quick & Exact",
+  "description": "It helps look up information quickly and exactly",
+  "version": "1.0",
+  "manifest_version": 3,
+  "content_scripts": [
+  {
+		"matches": [
+		  "<all_urls>"
+		],
+		"js": ["jquery-3.6.0.min.js", "content.js"]
+	  }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["storage", "activeTab", "scripting", "tabs", "commands", "history"],
+   "commands": {
+    "open-search": {
+      "suggested_key": {
+        "default": "Ctrl+Q"
+      },
+      "description": "open Q&E search",
+	  "action": {},
+	  "global": true
+    },
+	"usefull-tab": {
+      "suggested_key": {
+        "default": "Alt+T"
+      },
+      "description": "mark active url to usefull",
+	  "action": {},
+    "comment":"TODO: check used short keys https://developer.chrome.com/docs/extensions/reference/commands/#verify-commands-registered"
+  },
+	"trace-search": {
+      "suggested_key": {
+        "default": "Ctrl+B"
+      },
+      "description": "begin or end trace search",
+	  "action": {}
+    }
+  },
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "/images/get_started16.png",
+      "32": "/images/get_started32.png",
+      "48": "/images/get_started48.png",
+      "128": "/images/get_started128.png"
+    }
+  },
+  "icons": {
+    "16": "/images/get_started16.png",
+    "32": "/images/get_started32.png",
+    "48": "/images/get_started48.png",
+    "128": "/images/get_started128.png"
+  },
+  "options_page": "options.html"
+}

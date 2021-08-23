@@ -1,0 +1,30 @@
+{
+  "name": "record-search",
+  "version": "1.0.0",
+  "description": "chrome extension to quick and exact search",
+  "main": "search.js",
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^9.0.3",
+    "nyc": "^15.1.0"
+  },
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flipwordit/quickexact.git"
+  },
+  "keywords": [
+    "search",
+    "tabmanager",
+    "knowledge"
+  ],
+  "author": "Mikhail Tatarkov",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/flipwordit/quickexact/issues"
+  },
+  "homepage": "https://github.com/flipwordit/quickexact#readme"
+}
