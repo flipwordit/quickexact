@@ -4,24 +4,34 @@ const { add } = require('../src/search')
 
 class SmartotekaStub {
 
-  constructor(usefulLinks) {
-    this._usefulLinks = usefulLinks || [];
+  constructor(queryToLinks) {
+    this._queryToLinks = queryToLinks || {};
+    this._currentQuery=null;
   }
 
   isUsefulLink(url) {//TODO: May be it needs fuzzy logic, not boolean, for compare urls.
-    return this._usefulLinks.indexOf(url) >= 0;
+    return this._queryToLinks.indexOf(url) >= 0;
   }
 
   add(query, url) {
-   
+    const links = this._queryToLinks[query];
+    links[url]=1;//Useful
   }
 
   add(url) {
-   //TODO: We need use current query
+   if(!this._currentQuery){
+    throw new Error("You should init current query before use it");
+   }
   }
 
   setCurrentQuery(query){
+    let links = this._queryToLinks[query];
 
+    if(!links){
+      links = this._queryToLinks[query]={};
+    }
+
+    this.currentQuery=query;
   }
 
   addToCurrentQuery(query){

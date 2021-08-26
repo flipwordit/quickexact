@@ -1,24 +1,67 @@
-// Initialize butotn with users's prefered color
-let changeColor = document.getElementById("changeColor");
+let searchQueryInput = document.getElementById('search-query');
 
-chrome.storage.sync.get("color", ({ color }) => {
-  changeColor.style.backgroundColor = color;
+searchQueryInput.focus();
+
+let searchBtn = document.getElementById('search-btn');
+
+$(searchQueryInput).keypress(function (event) {
+  var keycode = (event.keyCode ? event.keyCode : event.which);
+  if (keycode == '13') {
+    search();
+  }
 });
 
-// When the button is clicked, inject setPageBackgroundColor into current page
-changeColor.addEventListener("click", async () => {
-  let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+searchBtn.addEventListener('click', search);
 
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    function: setPageBackgroundColor,
-  });
-});
+function search() {
+  var query = $(searchQueryInput).val();
 
-// The body of this function will be execuetd as a content script inside the
-// current page
-function setPageBackgroundColor() {
-  chrome.storage.sync.get("color", ({ color }) => {
-    document.body.style.backgroundColor = color;
-  });
+  let smartotekaStr = localStorage['Smartoteka'];
+
+  let smartoteka = {};
+
+  if (smartoteka) {
+    smartoteka = JSON.parse(smartotekaStr);
+  }
+  else {
+    console.log("Add smartoteka")
+    smartoteka = localStorage['Smartoteka'] = {};
+  }
+
+  const searchResultDiv = $('#search-result');
+  searchResultDiv.empty();
+
+  let searchResults = smartoteka[query];
+
+  if (!searchResults) {
+    searchResultDiv.text("No results found.")
+  }
+  else {
+    searchResults.forEach(element => {
+      searchResultDiv.append('<li>' + element + '</li>')
+    });
+  }
+
+  //localStorage.setItem('Smartoteka',JSON.stringify({"vs":["Format code Shift + Alt + F<br/>Refactor CTRL + Shift + R<br/> Save All Ctrl+K S"]}))
 }
+
+$(function () {
+  $('#lastQueries').click(function (e) {
+    if (e.target.localName === "li") {
+      $(searchQueryInput).val($(e.target).text());
+
+      search();
+    }
+  })
+})
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    if (request === "clear")
+      sendResponse("Cool clear!");
+
+      const searchResultDiv = $('#search-result');
+      searchResultDiv.empty();
+      $(searchQueryInput).val('');
+  }
+);

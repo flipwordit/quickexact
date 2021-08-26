@@ -11,6 +11,7 @@
 		"js": ["jquery-3.6.0.min.js", "content.js"]
 	  }
   ],
+  
   "background": {
     "service_worker": "background.js"
   },
@@ -28,7 +29,7 @@
       "suggested_key": {
         "default": "Alt+T"
       },
-      "description": "mark active url to usefull",
+      "description": "mark active url to useful",
 	  "action": {},
     "comment":"TODO: check used short keys https://developer.chrome.com/docs/extensions/reference/commands/#verify-commands-registered"
   },

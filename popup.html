@@ -1,10 +1,31 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <link rel="stylesheet" href="button.css">
-  </head>
-  <body>
-    <button id="changeColor"></button>
+
+<head>
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+  <table>
+    <tr>
+      <td width="200px">
+        <input id="search-query" />
+        <button id="search-btn">Search</button>
+        <div id="search-result">
+        </div>
+      </td>
+      <td>
+        Last queries:
+        <div id='lastQueries'>
+          <!--Не знаю насколько нужа восстребована история-->
+          <li>vs</li>
+        </div>
+      </td>
+    </tr>
+  </table>
+   
+    <script src="jquery-3.6.0.min.js"></script>
     <script src="popup.js"></script>
-  </body>
+</body>
+
 </html>
