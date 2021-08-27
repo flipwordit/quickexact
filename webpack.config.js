@@ -5,9 +5,10 @@ const webpack = require('webpack')
 const path = require('path')
 // const argv = require('minimist')(process.argv.slice(2));
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const WebextensionPlugin = require('webpack-webextension-plugin')
 
-const ExtensionReloader = require('webpack-extension-reloader')
+// const ExtensionReloader = require('webpack-extension-reloader')
 const TerserPlugin = require('terser-webpack-plugin')
 const ZipPlugin = require('zip-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
@@ -18,7 +19,7 @@ const config = {
   mode: process.env.NODE_ENV,
   context: path.join(__dirname, 'src'),
   entry: {
-    'background/background': './background/background.js',
+    'background': './background/background.js',
     'popup/popup': './popup/popup.js',
     'content/content': './content/content.js',
   },
@@ -52,9 +53,9 @@ const config = {
       },
       {
         test: /\.(sa|sc|c)ss$/,
-        use: [ 
+        use: [
           // { loader: 'style-loader'},
-          { loader : MiniCssExtractPlugin.loader},
+          { loader: MiniCssExtractPlugin.loader },
           { loader: 'css-loader' },
           {
             loader: 'sass-loader',
@@ -106,7 +107,7 @@ const config = {
     new webpack.DefinePlugin({
       global: 'window',
       __VUE_OPTIONS_API__: 'true',
-      __VUE_PROD_DEVTOOLS__: 'false'
+      __VUE_PROD_DEVTOOLS__: 'false',
     }),
     new VueLoaderPlugin(),
     new CopyWebpackPlugin([
@@ -121,8 +122,8 @@ const config = {
           manifestObj.version = version
 
           if (config.mode === 'development') {
-            manifestObj.content_security_policy = "script-src 'self' 'unsafe-eval'; object-src 'self'"
-            manifestObj.web_accessible_resources.push('html/*')
+            // manifestObj.content_security_policy = {"script-src" : "self"}
+            // manifestObj.web_accessible_resources.push('html/*')
           }
 
           return JSON.stringify(manifestObj, null, 2)
@@ -130,11 +131,11 @@ const config = {
       },
     ]),
     new MiniCssExtractPlugin({
-      filename: '[name].css'
+      filename: '[name].css',
     }),
     // ...( new ZipPlugin({
     //   path: path.join(__dirname, 'dist'),
-    //   filename: `smart_${version}.zip`,
+    //   filename: `Q&E_${version}.zip`,
     // })] : []),
   ],
 }
@@ -149,13 +150,26 @@ if (config.mode === 'production') {
   ])
 }
 
-if (process.env.HMR === 'true') {
-  config.plugins = (config.plugins || []).concat([
-    new ExtensionReloader({
-      port: 9595,
-      manifest: path.join(__dirname, 'src', 'manifest.json'),
-    }),
-  ])
-}
+// if (config.mode === 'development') {
+//   config.plugins = (config.plugins || []).concat([
+//     new WebextensionPlugin({
+//       vendor: 'chrome',
+//     }),
+//   ])
+// }
+
+// if (process.env.HMR === 'true') {
+//   config.plugins = (config.plugins || []).concat([
+//     new ExtensionReloader({
+//       port: 9595,
+//       // manifest: path.join(__dirname, 'src', 'manifest.json'),
+//       enteries: {
+//         contentScript: 'content/content',
+//         // background: 'background',
+//         extensionPage: 'popup/popup',
+//       }
+//     }),
+//   ])
+// }
 
 module.exports = config
