@@ -1,35 +1,58 @@
 {
-  "name": "Recorder",
-  "short_name": "recorder",
-  "version": "0.0.1",
-  "manifest_version": 2,
-  "description": "Record you sessions improve your searches",
+  "name": "Quick & Exact",
+  "description": "It helps look up information quickly and exactly",
+  "version": "1.0",
+  "manifest_version": 3,
   "author": "Stav team",
   "icons": {
     "16": "images/icon-16.png",
     "128": "images/icon-128.png"
   },
   "background": {
-    "scripts": [
-      "background/background.js"
-    ]
+    "service_worker": "background.js"
   },
   "permissions": [
     "storage",
+    "scripting",
     "tabs",
-    "unlimitedStorage"
+    "activeTab",
+    "unlimitedStorage",
+    "commands",
+    "history"
   ],
-  "browser_action": {
+  "commands": {
+    "open-search": {
+      "suggested_key": {
+        "default": "Ctrl+Q"
+      },
+      "description": "open Q&E search",
+      "action": {},
+      "global": true
+    },
+    "usefull-tab": {
+      "suggested_key": {
+        "default": "Alt+T"
+      },
+      "description": "mark active url to usefull",
+      "action": {},
+      "comment": "TODO: check used short keys https://developer.chrome.com/docs/extensions/reference/commands/#verify-commands-registered"
+    },
+    "trace-search": {
+      "suggested_key": {
+        "default": "Ctrl+B"
+      },
+      "description": "begin or end trace search",
+      "action": {}
+    }
+  },
+  "action": {
     "default_title": "Smart",
     "default_popup": "popup/popup.html"
   },
-  "web_accessible_resources": [
-    "images/*"
-  ],
   "content_scripts": [
     {
       "matches": [
-        "https://*.stackoverflow.com/*"
+        "https://google.com/*"
       ],
       "all_frames": true,
       "match_about_blank": true,
