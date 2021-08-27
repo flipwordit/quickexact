@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { NButton } from 'naive-ui'
+import { NButton } from 'naive-ui'
 
-  export default {
-    components: {
-      NButton
-    }
-  }
+export default {
+  components: {
+    NButton,
+  },
+}
 </script>
