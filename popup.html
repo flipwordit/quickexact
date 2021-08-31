@@ -23,9 +23,26 @@
       </td>
     </tr>
   </table>
-   
-    <script src="jquery-3.6.0.min.js"></script>
-    <script src="popup.js"></script>
+  Add new query
+  <div>
+    Query: <input id="add-query" />
+    Type: <select id="add-type">
+      <option id="url" value="1">Url</option>
+      <option id="html" value="2">Html</option>
+    </select>
+    Url or Html: <input id="add-content" />
+    <!--Html editor-->
+    <button id="add-btn">Add</button>
+  </div>
+
+  Map queries
+  <div>
+    Query 1: <input id="map-query1" />
+    Query 2: <input id="map-query2" />
+    <button id="map-btn">Map</button>
+  </div>
+  <script src="jquery-3.6.0.min.js"></script>
+  <script src="popup.js"></script>
 </body>
 
 </html>

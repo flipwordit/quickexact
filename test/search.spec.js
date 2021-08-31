@@ -6,7 +6,7 @@ class SmartotekaStub {
 
   constructor(queryToLinks) {
     this._queryToLinks = queryToLinks || {};
-    this._currentQuery=null;
+    this._currentQuery = null;
   }
 
   isUsefulLink(url) {//TODO: May be it needs fuzzy logic, not boolean, for compare urls.
@@ -15,26 +15,26 @@ class SmartotekaStub {
 
   add(query, url) {
     const links = this._queryToLinks[query];
-    links[url]=1;//Useful
+    links[url] = 1;//Useful
   }
 
   add(url) {
-   if(!this._currentQuery){
-    throw new Error("You should init current query before use it");
-   }
+    if (!this._currentQuery) {
+      throw new Error("You should init current query before use it");
+    }
   }
 
-  setCurrentQuery(query){
+  setCurrentQuery(query) {
     let links = this._queryToLinks[query];
 
-    if(!links){
-      links = this._queryToLinks[query]={};
+    if (!links) {
+      links = this._queryToLinks[query] = {};
     }
 
-    this.currentQuery=query;
+    this.currentQuery = query;
   }
 
-  addToCurrentQuery(query){
+  addToCurrentQuery(query) {
 
   }
 }
@@ -84,9 +84,9 @@ describe("smartoteka search", () => {
 
 });
 
-describe("smartoteka urlComparer", ()=>{
+describe("smartoteka urlComparer", () => {
   it("should equal links", () => {
-    
+
     const link1 = "https://github.com/dotnet/corefx/blob/master/src/System.IO.MemoryMappedFiles/tests/MemoryMappedFile.CrossProcess.cs";
     const link2 = "https://github.com/dotnet/corefx/blob/master/src/System.IO.MemoryMappedFiles/tests/MemoryMappedFile.CrossProcess.cs#L13";
     const comparer = new Comparer();

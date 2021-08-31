@@ -13,24 +13,36 @@ $(searchQueryInput).keypress(function (event) {
 
 searchBtn.addEventListener('click', search);
 
-function search() {
-  var query = $(searchQueryInput).val();
-
+function getSmartoteka(){
   let smartotekaStr = localStorage['Smartoteka'];
 
   let smartoteka = {};
 
-  if (smartoteka) {
+  if (smartotekaStr) {
     smartoteka = JSON.parse(smartotekaStr);
   }
   else {
     console.log("Add smartoteka")
-    smartoteka = localStorage['Smartoteka'] = {};
+    smartoteka = {};
+
+    save(smartoteka);
   }
+
+  return smartoteka;
+}
+
+function save(smartoteka){
+  localStorage.setItem('Smartoteka',JSON.stringify(smartoteka))
+}
+
+function search() {
+  
+  let smartoteka = getSmartoteka();
 
   const searchResultDiv = $('#search-result');
   searchResultDiv.empty();
 
+  let query = $(searchQueryInput).val();
   let searchResults = smartoteka[query];
 
   if (!searchResults) {
@@ -53,15 +65,34 @@ $(function () {
       search();
     }
   })
+
+  $('#add-btn').click(function (e) {
+    let query = $('#add-query').val();
+    let content = $('#add-content').val();
+
+    let smartoteka = getSmartoteka();
+
+    var queryLinks=smartoteka[query];
+
+    if(!queryLinks){
+      queryLinks=smartoteka[query]=[content];
+    }
+    else{
+      //TODO: need add check content is new
+      queryLinks.push(content);
+    }
+
+    save(smartoteka);
+  })
 })
 
 chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
+  function (request, sender, sendResponse) {
     if (request === "clear")
       sendResponse("Cool clear!");
 
-      const searchResultDiv = $('#search-result');
-      searchResultDiv.empty();
-      $(searchQueryInput).val('');
+    const searchResultDiv = $('#search-result');
+    searchResultDiv.empty();
+    $(searchQueryInput).val('');
   }
 );
