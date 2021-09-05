@@ -8,7 +8,7 @@
 <body>
   <table>
     <tr>
-      <td width="200px">
+      <td style="vertical-align: top;width:400px;">
         <input id="search-query" />
         <button id="search-btn">Search</button>
         <div id="search-result">
@@ -17,30 +17,39 @@
       <td>
         Last queries:
         <div id='lastQueries'>
-          <!--Не знаю насколько нужа восстребована история-->
-          <li>vs</li>
         </div>
       </td>
     </tr>
   </table>
-  Add new query
-  <div>
-    Query: <input id="add-query" />
-    Type: <select id="add-type">
-      <option id="url" value="1">Url</option>
-      <option id="html" value="2">Html</option>
-    </select>
-    Url or Html: <input id="add-content" />
-    <!--Html editor-->
-    <button id="add-btn">Add</button>
-  </div>
+  <br />
 
-  Map queries
-  <div>
-    Query 1: <input id="map-query1" />
-    Query 2: <input id="map-query2" />
-    <button id="map-btn">Map</button>
+  <span id="add-block-switch">&#8595;</span>
+  <div id="add-block" style="display: none;">
+    <div>
+      Add new query
+      <div> Query: <input id="add-query" /></div>
+
+      <div>Type: <select id="add-type">
+          <option id="url" value="1">Url</option>
+          <option id="html" value="2">Html</option>
+        </select></div>
+      <div>Url or Html: <input id="add-content" /></div>
+      <!--Html editor-->
+      <button id="add-btn">Add</button>
+    </div>
+
+    <br />
+    <div> Map queries
+      <div>Query 1: <input id="map-query1" /></div>
+      <div>Query 2: <input id="map-query2" /></div>
+      <button id="map-btn">Map</button>
+    </div>
   </div>
+  <div id="myGrid" style="height: 200px; width:500px;" class="ag-theme-alpine"></div>
+
+  <script src="src/SmartotekaFabricLocalStorage.js"></script>
+  <script src="src/SmartotekaFabricDgraph.js"></script>
+
   <script src="jquery-3.6.0.min.js"></script>
   <script src="popup.js"></script>
 </body>

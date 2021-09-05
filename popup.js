@@ -1,3 +1,8 @@
+let smartotekaFabric = new SmartotekaFabricDGraph("http:///localhost:8080");
+
+let lastQueriesStr = localStorage['lastQueries'] || "[]";
+let lastQueries = JSON.parse(lastQueriesStr);
+
 let searchQueryInput = document.getElementById('search-query');
 
 searchQueryInput.focus();
@@ -13,51 +18,72 @@ $(searchQueryInput).keypress(function (event) {
 
 searchBtn.addEventListener('click', search);
 
-function getSmartoteka(){
-  let smartotekaStr = localStorage['Smartoteka'];
-
-  let smartoteka = {};
-
-  if (smartotekaStr) {
-    smartoteka = JSON.parse(smartotekaStr);
-  }
-  else {
-    console.log("Add smartoteka")
-    smartoteka = {};
-
-    save(smartoteka);
-  }
-
-  return smartoteka;
-}
-
-function save(smartoteka){
-  localStorage.setItem('Smartoteka',JSON.stringify(smartoteka))
-}
-
 function search() {
-  
-  let smartoteka = getSmartoteka();
+
+  //TODO: add change current url for browser history 
+  //TODO: add opportunity open search by url with args
 
   const searchResultDiv = $('#search-result');
   searchResultDiv.empty();
 
   let query = $(searchQueryInput).val();
-  let searchResults = smartoteka[query];
 
-  if (!searchResults) {
-    searchResultDiv.text("No results found.")
+  if (lastQueries.length === 0 || lastQueries[0] !== query) {
+    lastQueries.unshift(query);
+
+    if (lastQueries.length > 10) {
+      lastQueries.pop();
+    }
+
+    localStorage.setItem('lastQueries', JSON.stringify(lastQueries));
+
+    refreshLastQueries();
   }
-  else {
-    searchResults.forEach(element => {
-      searchResultDiv.append('<li>' + element + '</li>')
+
+  smartotekaFabric.queriesProvider()
+    .search(query)
+    .then((searchResults) => {
+
+      if (!searchResults) {
+        searchResultDiv.text("No results found.")
+      }
+      else {
+        searchResults.forEach(element => {
+          searchResultDiv.append('<li><span class="answer">'
+            + (element.startsWith("http") ? ('<a href="' + element + '">' + element + '</a>') : element)
+            + '</span><span class="delete">&#x2717;</span></li>')
+        });
+
+        $(".delete", searchResultDiv).click((e) => {
+          let element = e.target;
+
+          let rowElement = $(element).parent();
+
+          let answer = $('.answer', rowElement).text();
+
+          smartotekaFabric.KBManager()
+            .remove(query, answer)
+            .then(_ => rowElement.remove());
+        })
+      }
     });
-  }
+}
 
-  //localStorage.setItem('Smartoteka',JSON.stringify({"vs":["Format code Shift + Alt + F<br/>Refactor CTRL + Shift + R<br/> Save All Ctrl+K S"]}))
+function refreshLastQueries() {
+  let lastQueriesDiv = $("#lastQueries");
+  lastQueriesDiv.empty();
+
+  lastQueries.forEach((query) => lastQueriesDiv.append("<li>" + query + "</li>"));
 }
 
 $(function () {
+
+  $('#add-block-switch').click(function () {
+    $(this).html($('#add-block').toggle().is(':hidden') ? '&#8595;' : '&#8593;');
+  });
+
+  refreshLastQueries();
+
   $('#lastQueries').click(function (e) {
     if (e.target.localName === "li") {
       $(searchQueryInput).val($(e.target).text());
@@ -65,25 +91,15 @@ $(function () {
       search();
     }
   })
-
+    ;
   $('#add-btn').click(function (e) {
     let query = $('#add-query').val();
     let content = $('#add-content').val();
 
-    let smartoteka = getSmartoteka();
+    smartotekaFabric.KBManager().add(query, content);
 
-    var queryLinks=smartoteka[query];
-
-    if(!queryLinks){
-      queryLinks=smartoteka[query]=[content];
-    }
-    else{
-      //TODO: need add check content is new
-      queryLinks.push(content);
-    }
-
-    save(smartoteka);
-  })
+    //smartotekaFabric.KBManager().add("vs shortcuts", "Format code Shift + Alt + F<br/>Refactor CTRL + Shift + R<br/> Save All Ctrl+K S")
+  });
 })
 
 chrome.runtime.onMessage.addListener(

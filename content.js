@@ -1,3 +1,6 @@
+let smartotekaFabric = new SmartotekaFabricDGraph("http://localhost:8080/query?timeout=20s");
+let queryProvider = smartotekaFabric.queriesProvider();
+
 if (location.host === "www.google.com") {
   const urlSearchParams = new URLSearchParams(window.location.search);
   const params = Object.fromEntries(urlSearchParams.entries());
@@ -5,38 +8,33 @@ if (location.host === "www.google.com") {
   const googelQuery = params["q"];
   console.log(googelQuery);//TODO: handle quote symbols '"
 
-  let dGraphQuery =
-    "{"
-    + "findNodes(func: alloftext(query, \"" + googelQuery + "\")) {"
-    + "query,"
-    + "urls,"
-    + "queries {"
-    + "query,"
-    + "urls"
-    + "}"
-    + "}"
-    + "}";
+  queryProvider.search(googelQuery)
+    .then((searchResult) => {
 
-  $.ajax({
-    type: "POST",
-    url: "http://localhost:8080/query?timeout=20s",
-    data: JSON.stringify({ "query": dGraphQuery, "variables": {} }),
-    contentType: "application/json",
-    success: function (data) {
-      let urls = findValues(data.data, "urls");
-      console.log(urls);
+      if (!searchResult)
+        return;
 
-      $('h3', $("#search"))
-        .each((ind, el) => {
-          let currentUrl = $(el).parent().attr("href");
-          if (currentUrl
-            && urls.find((v, ind, obj) => {
-              return currentUrl.startsWith(v);
-            }))
-            $(el).append("&nbsp;&#10003;");
-        });
-    }
-  });
+      $("#rcnt").children().last()
+        .before("<div id='smartoteka' style='margin-left:936px'></div>");
+      let smartotekaDiv = $("#smartoteka");
+
+      let queries = searchResult;
+      console.log(queries);
+      queries.forEach(q => smartotekaDiv.append("<li><a href='https://www.google.com/search?q=" + q + "'>" + q + "</a></li>"));
+      //TODO: add usefull links bellow each query
+
+
+      // $('h3', $("#search"))
+      //   .each((ind, el) => {
+
+      //     let currentUrl = $(el).parent().attr("href");
+      //     if (currentUrl
+      //       && urls.find((v, ind, obj) => {
+      //         return currentUrl.startsWith(v);
+      //       }))
+      //       $(el).append("&nbsp;&#10003;");
+      //   });
+    });
 }
 
 var firstHref = $("a[href^='http']").eq(0).attr("href");
@@ -54,32 +52,3 @@ chrome.runtime.onMessage.addListener(
     }
   }
 );
-
-
-function findValues(obj, key) {
-  return findValuesHelper(obj, key, []);
-}
-
-function findValuesHelper(obj, key, list) {
-  if (!obj) return list;
-  if (obj instanceof Array) {
-    for (var i in obj) {
-      list = list.concat(findValuesHelper(obj[i], key, []));
-    }
-    return list;
-  }
-
-  if ((typeof obj == "object") && (obj !== null)) {
-    var children = Object.keys(obj);
-    if (children.length > 0) {
-      for (i = 0; i < children.length; i++) {
-        list = list.concat(findValuesHelper(obj[children[i]], key, []));
-      }
-    }
-  }
-
-  if (obj[key])
-    return obj[key];
-
-  return list;
-}
