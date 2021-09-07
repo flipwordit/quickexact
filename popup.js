@@ -76,7 +76,152 @@ function refreshLastQueries() {
   lastQueries.forEach((query) => lastQueriesDiv.append("<li>" + query + "</li>"));
 }
 
+function getTags(url, title) {
+  const tagsMap = {
+    "www.google.com": "GOOGLE",
+    "ag-grid": "agGrid",
+    "aggrid": "agGrid",
+    "javascript": "JavaScript",
+    "developer.chrome.com/docs/extensions": "Chrome extension api"
+  };
+
+  let tags = [];
+  for (const [searchTag, tag] of Object.entries(tagsMap)) {
+
+    if (url.indexOf(searchTag) !== -1 || title.toLowerCase().indexOf(searchTag) !== -1) {
+      tags.push(tag);
+    }
+  }
+
+  return tags;
+}
+
 $(function () {
+  let today = new Date();
+  let tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+
+  $('.datepicker').datepicker();
+  $("#from-date-input").datepicker("setDate", today);
+  $("#to-date-input").datepicker("setDate", tomorrow);
+
+  let queryProvider = smartotekaFabric.queriesProvider();
+
+  const columnDefs = [
+    { field: "id", width: "100px", filter: 'agNumberColumnFilter' },
+    {
+      field: "lastVisitTime",
+      filter: 'agDateColumnFilter',
+      cellRenderer: params => {
+        if (!params.data)
+          return params.data;
+
+        let formattedDate = Intl.DateTimeFormat(undefined, {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+          second: 'numeric'
+        })
+          .format(params.data.lastVisitTime);
+
+        return formattedDate;
+      }
+    },
+    { field: "title", width: "250px" },
+
+    {
+      field: "url", cellRenderer: params => {
+        if (!params.data)
+          return params.data;
+
+        return "<a href='" + params.data.url + "'>" + params.data.url + "</a>";
+      }
+    },
+    {
+      field: "useful",
+      width: "100px",
+      cellRenderer: params => {
+        if (!params.data)
+          return params.data;
+
+        queryProvider.isUseful(params.data.url)
+          .then(urls => {
+            let newValue = urls.length > 0;
+            if (newValue !== params.data.useful) {
+              params.data.useful = newValue;
+              params.refreshCell();
+            }
+
+          });//TODO: move to cellRender and use packet query
+
+
+        return params.data.useful ? "&#10003;" : "";
+      }
+    },
+    { field: "tags" },
+    { field: "typedCount", headerName: "Typed Count", width: "150px", filter: 'agNumberColumnFilter' },
+    { field: "visitCount", headerName: "Visit Count", width: "150px", filter: 'agNumberColumnFilter' },
+  ];
+
+  function historyItemsHanlde(historyItems) {
+    historyItems.forEach((v, i) => {
+      v.useful = false;
+      v.tags = getTags(v.url, v.title);
+    });
+  }
+
+  const gridOptions = {
+    defaultColDef: {
+      resizable: true,
+      filter: true,
+      sortable: true,
+      wrapText: true,
+    },
+    columnDefs: columnDefs,
+    getRowStyle(params) {
+      if (params.data && params.data.url.startsWith("https://www.google.com")) {
+        return { 'color': 'green' }
+      }
+      return null;
+    },
+    getRowNodeId: (data) => data.Id,
+    components: {
+      loadingRenderer: function (params) {
+        if (params.value !== undefined) {
+          return params.value;
+        } else {
+          return '<img src="https://www.ag-grid.com/example-assets/loading.gif">';
+        }
+      },
+    },
+    rowSelection: 'multiple',//TODO: not work. Correct it!
+    // debug: true,
+  };
+
+  const gridDiv = document.querySelector('#myGrid');
+  new agGrid.Grid(gridDiv, gridOptions);
+
+
+  function refreshGrid() {
+    chrome.history.search({
+      'text': $("#search-text-input").val() || "",
+      'startTime': $("#from-date-input").datepicker('getDate').valueOf(),
+      'endTime': $("#to-date-input").datepicker('getDate').valueOf(),
+    },
+      (historyItems) => {
+
+        historyItemsHanlde(historyItems);
+
+        gridOptions.api.setRowData(historyItems);
+      });
+  }
+
+  refreshGrid();
+  $('#load-btn').click(_ => {
+    refreshGrid();
+  });
 
   $('#add-block-switch').click(function () {
     $(this).html($('#add-block').toggle().is(':hidden') ? '&#8595;' : '&#8593;');

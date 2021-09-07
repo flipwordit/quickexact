@@ -41,6 +41,39 @@ class SmartotekaFabricDGraph {
                 return promise;
             }
 
+            isUseful(url) {
+                var that = this;
+                var promise = new Promise((resolve, reject) => {
+                    let dGraphQuery =
+                        `{
+                            findNodes(func: eq(urls, "` + url + `")) {
+                                query,
+                                urls,
+                                queries {
+                                    query,
+                                    urls
+                                }
+                            }
+                        }`;
+
+                    $.ajax({
+                        type: "POST",
+                        url: fabric._dGraphUrl + "/query",
+                        data: JSON.stringify({ "query": dGraphQuery, "variables": {} }),
+                        contentType: "application/json",
+                        success: function (data) {
+                            let urls = that.#findValues(data.data, "urls");
+                            console.log(urls);
+
+                            let queries = that.#findValues(data.data, "query");
+                            resolve(urls);
+                        }
+                    });
+                });
+
+                return promise;
+            }
+
             #findValues(obj, key) {
                 return this.#findValuesHelper(obj, key, []);
             }
