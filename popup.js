@@ -129,14 +129,22 @@ $(function () {
         return formattedDate;
       }
     },
-    { field: "title", width: "250px" },
-
-    {
-      field: "url", cellRenderer: params => {
+    { field: "title", width: "600px", cellRenderer: params => {
         if (!params.data)
           return params.data;
 
-        return "<a href='" + params.data.url + "'>" + params.data.url + "</a>";
+        let faviconUrl = 'chrome://favicon/' + params.data.url;
+
+        let html = "<a class='website-link' href='" + params.data.url + "'>"
+          + `<div class="website-icon" id="icon"
+         style="background-image: -webkit-image-set(url(&quot;`
+          + faviconUrl
+          + `&quot;) 1x, url(&quot;chrome://favicon2/?size=16&amp;scale_factor=2x&amp;page_url=`
+          + faviconUrl
+          + `&amp;allow_google_server_fallback=0&quot;) 2x);"></div>`
+          + params.data.title + "</a>";
+
+        return html;
       }
     },
     {
@@ -196,7 +204,7 @@ $(function () {
         }
       },
     },
-    rowSelection: 'multiple',//TODO: not work. Correct it!
+    rowSelection: 'multiple',//Work in enterprise version. We can use free only common. But by MIT license we can modificate it.
     // debug: true,
   };
 

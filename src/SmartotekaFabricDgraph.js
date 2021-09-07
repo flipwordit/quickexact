@@ -63,7 +63,7 @@ class SmartotekaFabricDGraph {
                         contentType: "application/json",
                         success: function (data) {
                             let urls = that.#findValues(data.data, "urls");
-                            console.log(urls);
+                            //console.log(urls);
 
                             let queries = that.#findValues(data.data, "query");
                             resolve(urls);

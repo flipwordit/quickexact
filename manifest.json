@@ -2,51 +2,58 @@
   "name": "Quick & Exact",
   "description": "It helps look up information quickly and exactly",
   "version": "1.0",
-  "manifest_version": 3,
+  "manifest_version": 2,
   "content_scripts": [
-  {
-		"matches": [
-		  "<all_urls>"
-		],
-		"js": [
-      "jquery-3.6.0.min.js",
-      "src/SmartotekaFabricDGraph.js",
-      "src/SmartotekaFabricLocalStorage.js",
-        "content.js"]
-	  }
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "jquery-3.6.0.min.js",
+        "src/SmartotekaFabricDGraph.js",
+        "src/SmartotekaFabricLocalStorage.js",
+        "content.js"
+      ]
+    }
   ],
-  
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["background.js"],
+    "persistent": false
   },
-  "permissions": ["storage", "activeTab", "scripting", "tabs", "commands", "history"],
-   "commands": {
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs",
+    "commands",
+    "history",
+    "chrome://favicon/"
+  ],
+  "commands": {
     "open-search": {
       "suggested_key": {
         "default": "Ctrl+Q"
       },
       "description": "open Q&E search",
-	  "action": {},
-	  "global": true
+      "action": {},
+      "global": true
     },
-	"usefull-tab": {
+    "usefull-tab": {
       "suggested_key": {
         "default": "Alt+T"
       },
       "description": "mark active url to useful",
-	  "action": {},
-    "comment":"TODO: check used short keys https://developer.chrome.com/docs/extensions/reference/commands/#verify-commands-registered"
-  },
-	"trace-search": {
+      "action": {},
+      "comment": "TODO: check used short keys https://developer.chrome.com/docs/extensions/reference/commands/#verify-commands-registered"
+    },
+    "trace-search": {
       "suggested_key": {
         "default": "Ctrl+B"
       },
       "description": "begin or end trace search",
-	  "action": {}
+      "action": {}
     }
   },
-  
-  "action": {
+  "browser_action": {
     "default_popup": "popup.html",
     "default_icon": {
       "16": "/images/get_started16.png",
