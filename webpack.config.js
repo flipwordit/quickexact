@@ -2,13 +2,12 @@
 /* eslint-disable camelcase */
 /* eslint-disable quote-props */
 const webpack = require('webpack')
-const path = require('path')
+const { resolve, join } = require('path')
 // const argv = require('minimist')(process.argv.slice(2));
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const WebextensionPlugin = require('webpack-webextension-plugin')
 
-// const ExtensionReloader = require('webpack-extension-reloader')
+const ExtensionReloader = require('webpack-extension-reloader')
 const TerserPlugin = require('terser-webpack-plugin')
 const ZipPlugin = require('zip-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
@@ -17,14 +16,14 @@ let { version } = require('./package.json')
 
 const config = {
   mode: process.env.NODE_ENV,
-  context: path.join(__dirname, 'src'),
+  context: join(__dirname, 'src'),
   entry: {
-    'background': './background/background.js',
+    'background/background': './background/background.js',
     'popup/popup': './popup/popup.js',
     'content/content': './content/content.js',
   },
   output: {
-    path: path.join(__dirname, 'dist/'),
+    path: join(__dirname, 'dist/'),
     filename: '[name].js',
   },
   stats: {
@@ -36,7 +35,7 @@ const config = {
   resolve: {
     extensions: ['.js', '.vue', '.scss'],
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      '@': resolve(__dirname, 'src'),
     },
   },
   devtool: 'cheap-source-map',
@@ -122,7 +121,7 @@ const config = {
           manifestObj.version = version
 
           if (config.mode === 'development') {
-            // manifestObj.content_security_policy = {"script-src" : "self"}
+            manifestObj.content_security_policy = "script-src 'self' 'unsafe-eval'; object-src 'self'"
             // manifestObj.web_accessible_resources.push('html/*')
           }
 
@@ -158,18 +157,18 @@ if (config.mode === 'production') {
 //   ])
 // }
 
-// if (process.env.HMR === 'true') {
-//   config.plugins = (config.plugins || []).concat([
-//     new ExtensionReloader({
-//       port: 9595,
-//       // manifest: path.join(__dirname, 'src', 'manifest.json'),
-//       enteries: {
-//         contentScript: 'content/content',
-//         // background: 'background',
-//         extensionPage: 'popup/popup',
-//       }
-//     }),
-//   ])
-// }
+if (process.env.HMR === 'true') {
+  config.plugins = (config.plugins || []).concat([
+    new ExtensionReloader({
+      port: 9595,
+      manifest: join(__dirname, 'src', 'manifest.json'),
+      // enteries: {
+      //   contentScript: 'content/content',
+      //   background: 'background',
+      //   extensionPage: 'popup/popup',
+      // },
+    }),
+  ])
+}
 
 module.exports = config
