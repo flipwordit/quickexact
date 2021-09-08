@@ -1,26 +1,55 @@
-import $ from 'jquery'
+// import $ from 'jquery'
+// import SmartotekaFabricDGraph from '~/logic/SmartotekaFabricDgraph'
+// import SmartotekaFabricLocalStorage from '~/logic/SmartotekaFabricLocalStorage'
 
-if (window.location.host === 'www.google.com') {
-  const urlSearchParams = new URLSearchParams(window.location.search)
-  const params = Object.fromEntries(urlSearchParams.entries())
+// let smartotekaFabric = new SmartotekaFabricDGraph('http://localhost:8080/query?timeout=20s')
+// let queryProvider = smartotekaFabric.queriesProvider()
 
-  console.log(params.q)
+// if (location.host === 'www.google.com') {
+//   const urlSearchParams = new URLSearchParams(window.location.search)
+//   const params = Object.fromEntries(urlSearchParams.entries())
 
-  $('h3', $('#search')).append('&nbsp;&#10003;')
-}
+//   const googelQuery = params.q
+//   console.log(googelQuery)// TODO: handle quote symbols '"
 
-let firstHref = $("a[href^='http']").eq(0).attr('href')
+//   queryProvider.search(googelQuery)
+//     .then((searchResult) => {
+//       if (!searchResult) { return }
 
-console.log(firstHref)
+//       $('#rcnt').children().last()
+//         .before("<div id='smartoteka' style='margin-left:936px'></div>")
+//       let smartotekaDiv = $('#smartoteka')
 
-$("a[href^='http']").eq(0).append('*')
+//       let queries = searchResult
+//       console.log(queries)
+//       queries.forEach(q => smartotekaDiv.append("<li><a href='https://www.google.com/search?q=" + q + "'>" + q + '</a></li>'))
+//       // TODO: add usefull links bellow each query
 
-chrome.runtime.onMessage.addListener(
-  function (request, sender, sendResponse) {
-    if (request.message === 'clicked_browser_action') {
-      let firstHref = $("a[href^='http']").eq(0).attr('href')
+//       // $('h3', $("#search"))
+//       //   .each((ind, el) => {
 
-      console.log(firstHref)
-    }
-  },
-)
+//       //     let currentUrl = $(el).parent().attr("href");
+//       //     if (currentUrl
+//       //       && urls.find((v, ind, obj) => {
+//       //         return currentUrl.startsWith(v);
+//       //       }))
+//       //       $(el).append("&nbsp;&#10003;");
+//       //   });
+//     })
+// }
+
+// let firstHref = $("a[href^='http']").eq(0).attr('href')
+
+// console.log(firstHref)
+
+// $("a[href^='http']").eq(0).append('*')
+
+// chrome.runtime.onMessage.addListener(
+//   function (request, sender, sendResponse) {
+//     if (request.message === 'clicked_browser_action') {
+//       firstHref = $("a[href^='http']").eq(0).attr('href')
+
+//       console.log(firstHref)
+//     }
+//   },
+// )

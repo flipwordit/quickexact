@@ -1,6 +1,6 @@
 <template>
   <div class="page" :style="{backgroundColor}">
-    <n-button @click="changeColor">naive-ui</n-button>
+    <n-button @click="changeColor">Smart ui</n-button>
   </div>
 </template>
 
