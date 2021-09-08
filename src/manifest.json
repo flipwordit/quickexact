@@ -2,14 +2,17 @@
   "name": "Quick & Exact",
   "description": "It helps look up information quickly and exactly",
   "version": "1.0",
-  "manifest_version": 3,
+  "manifest_version": 2,
   "author": "Stav team",
   "icons": {
     "16": "images/icon-16.png",
     "128": "images/icon-128.png"
   },
   "background": {
-    "service_worker": "background.js"
+    "scripts": [
+      "background/background.js"
+    ],
+    "persistent": false
   },
   "permissions": [
     "storage",
@@ -33,7 +36,7 @@
       "suggested_key": {
         "default": "Alt+T"
       },
-      "description": "mark active url to usefull",
+      "description": "mark active url to useful",
       "action": {},
       "comment": "TODO: check used short keys https://developer.chrome.com/docs/extensions/reference/commands/#verify-commands-registered"
     },
@@ -45,7 +48,7 @@
       "action": {}
     }
   },
-  "action": {
+  "browser_action": {
     "default_title": "Smart",
     "default_popup": "popup/popup.html"
   },
