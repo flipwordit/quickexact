@@ -22,7 +22,8 @@ module.exports = {
     'import/resolver': {
       "alias": {
         "map": [
-          [ "@", "./source"]
+          [ "@", "./src" ],
+          [ "~", "./src" ]
         ],
         "extensions": [".vue", ".js", ".json", '.scss']
       },
