@@ -1,6 +1,6 @@
 {
   "name": "recorder",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "chrome extension to quick and exact search",
   "author": "Mikhail Tatarkov",
   "license": "MIT",
@@ -13,6 +13,8 @@
     "test": "mocha test"
   },
   "dependencies": {
+    "@johmun/vue-tags-input": "^2.1.0",
+    "@vueuse/core": "^6.3.3",
     "axios": "^0.21.1",
     "jquery": "^3.6.0",
     "ua-parser-js": "^0.7.28",
