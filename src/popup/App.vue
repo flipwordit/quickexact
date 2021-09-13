@@ -1,12 +1,12 @@
 <template>
-  <div class="page" :style="{backgroundColor}">
-    <n-button @click="changeColor">Smart ui</n-button>
+  <div class="popup">
+  <Navbar />
   </div>
 </template>
 
 <script>
-import { NButton } from 'naive-ui'
-import storage from '../utils/chromeStorage'
+import storage from '@/utils/storage'
+import Navbar from './components/Navbar'
 
 export default {
   name: 'Popup',
@@ -16,7 +16,7 @@ export default {
     }
   },
   components: {
-    NButton,
+    Navbar,
   },
   methods: {
     logger() {
@@ -34,13 +34,9 @@ export default {
         document.body.style.backgroundColor = color
       }
       // When the button is clicked, inject setPageBackgroundColor into current page
-      let [tab] = chrome.tabs.query({ active: true, currentWindow: true })
-
-      chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        function: setPageBackgroundColor,
-      })
     },
   },
 }
 </script>
+<style lang="scss">
+</style>
