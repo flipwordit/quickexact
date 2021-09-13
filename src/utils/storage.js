@@ -8,8 +8,26 @@ const get = async function (key) {
       chrome.storage.local.get(key, function (value) {
         resolve(value[key])
       })
-    } catch (ex) {
-      reject(ex)
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+/**
+ * Get whole value from Chrome Local StorageArea.
+ *
+ * @param {string or array of string keys} keys
+ */
+
+const getAll = async function (keys) {
+  return new Promise((resolve, reject) => {
+    try {
+      chrome.storage.local.get(...keys, function (value) {
+        resolve(value)
+      })
+    } catch (error) {
+      reject(error)
     }
   })
 }
@@ -24,8 +42,8 @@ const set = async function (obj) {
       chrome.storage.local.set(obj, function () {
         resolve()
       })
-    } catch (ex) {
-      reject(ex)
+    } catch (error) {
+      reject(error)
     }
   })
 }
@@ -41,14 +59,32 @@ const remove = async function (keys) {
       chrome.storage.local.remove(keys, function () {
         resolve()
       })
-    } catch (ex) {
-      reject(ex)
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+/**
+ * Setting up a hook
+ *
+ * @param {string, function} value
+ }} value
+ */
+
+function watch(value, fn) {
+  chrome.storage.onChanged.addListener((changes) => {
+    if (value in changes) {
+      const change = changes[value]
+      fn(change.oldValue, change.newValue)
     }
   })
 }
 
 export default {
   get,
+  getAll,
   set,
   remove,
+  watch,
 }
