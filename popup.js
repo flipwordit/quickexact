@@ -1,4 +1,5 @@
-let smartotekaFabric = new SmartotekaFabricDGraph("http:///localhost:8080");
+let smartotekaFabric = //new SmartotekaFabricDGraph("http:///localhost:8080")
+  new SmartotekaFabricLocalStorage();
 
 let lastQueriesStr = localStorage['lastQueries'] || "[]";
 let lastQueries = JSON.parse(lastQueriesStr);
@@ -154,11 +155,12 @@ $(function () {
     {
       field: "useful",
       width: "100px",
+      filter: "usefulTypeFilter",
       cellRenderer: params => {
         if (!params.data)
           return params.data;
 
-        queryProvider.isUseful(params.data.url)
+        queryProvider.isUseful(params.data.url)//TODO: refactor. It wiil call each time when cell renders
           .then(urls => {
             let newValue = urls.length > 0;
             if (newValue !== params.data.useful) {
@@ -201,6 +203,7 @@ $(function () {
     getRowNodeId: (data) => data.Id,
     components: {
       fuzzyFilter: FuzzyFilter,
+      usefulTypeFilter: UsefulTypeFilter,
       loadingRenderer: function (params) {
         if (params.value !== undefined) {
           return params.value;
@@ -222,6 +225,7 @@ $(function () {
       'text': $("#search-text-input").val() || "",
       'startTime': $("#from-date-input").datepicker('getDate').valueOf(),
       'endTime': $("#to-date-input").datepicker('getDate').valueOf(),
+      'maxResults': 10000
     },
       (historyItems) => {
 
@@ -347,10 +351,9 @@ class FuzzyFilter {
     // OR end with "Artist"
     let searchedRows = fuse.search(this.filterText);
 
-    searchedRows.forEach(v => 
-      {
-        v.item.finded = true;
-      });
+    searchedRows.forEach(v => {
+      v.item.finded = true;
+    });
 
     this.setFilter = true;
   }
@@ -369,6 +372,71 @@ class FuzzyFilter {
 
   setModel(model) {
     this.eFilterText.value = model.value;
+  }
+}
+
+class UsefulTypeFilter {
+  init(params) {
+    this.valueGetter = params.valueGetter;
+    this.selectedValue = null;
+    this.setupGui(params);
+  }
+
+  setupGui(params) {
+    this.gui = document.createElement('div');
+    this.gui.innerHTML = `<div style="padding: 4px; width: 100px;">
+                <div>
+                    <select id='useful-type-select'>
+                    <option value='0'>All<option/>
+                    <option value='1'>Useful<option/>
+                    <option value='2'>Unuseful<option/>
+                   
+                    </select>
+                </div>
+        
+            </div>
+        `;
+
+    const listener = (event) => {
+      this.selectedValue = event.target.value;
+
+      this.compare = () => true;
+
+      switch (this.selectedValue) {
+        case "1":
+          this.compare = (p) => this.valueGetter(p) === true;
+          break;
+        case "2":
+          this.compare = (p) => this.valueGetter(p) === false;
+          break;
+      }
+
+      params.filterChangedCallback();
+    };
+
+    this.usefulTypeSelect = this.gui.querySelector('#useful-type-select');
+    this.usefulTypeSelect.addEventListener('change', listener);
+  }
+
+  getGui() {
+    return this.gui;
+  }
+
+  doesFilterPass(params) {
+
+    return this.compare(params);
+  }
+
+  isFilterActive() {
+    return this.selectedValue != null;
+  }
+
+  getModel() {
+    return { value: this.selectedValue.value };
+  }
+
+  setModel(model) {
+    this.usefulTypeSelect.value = model.value;
   }
 }
 

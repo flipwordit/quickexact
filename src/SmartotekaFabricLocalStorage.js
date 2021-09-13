@@ -43,6 +43,10 @@ class SmartotekaFabricLocalStorage {
 
                 return promise;
             }
+
+            isUseful(url) {
+                return new Promise((resolve) => resolve(url.charCodeAt(url.length - 1) % 2 === 0 ? [1] : []));
+            }
         }
 
         return new SmartotekaQueryManager();
