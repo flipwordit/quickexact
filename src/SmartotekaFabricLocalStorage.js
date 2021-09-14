@@ -6,25 +6,32 @@ let KnowledgeType = {
 class SmartotekaFabricLocalStorage {
 
     #getSmartoteka() {
-        let smartotekaStr = localStorage['Smartoteka'];
 
-        let smartoteka = {};
+        return new Promise((resolve) => {
 
-        if (smartotekaStr) {
-            smartoteka = JSON.parse(smartotekaStr);
-        }
-        else {
-            console.log("Add smartoteka")
-            smartoteka = {};
+            chrome.storage.sync.get(['Smartoteka'], (smartoteka) => {
 
-            this.#save(smartoteka);
-        }
+                if (!smartoteka||!(smartoteka['Smartoteka'])) {
+                    console.log("Add smartoteka")
+                    smartoteka = {};
 
-        return smartoteka;
+                    this.#save(smartoteka);
+
+                    resolve(smartoteka);
+                }
+                else
+                {
+                    resolve(smartoteka['Smartoteka']);
+                }
+            });
+        });
     }
 
     #save(smartoteka) {
-        localStorage.setItem('Smartoteka', JSON.stringify(smartoteka))
+
+        chrome.storage.sync.set({ Smartoteka: smartoteka }, function () {
+            console.log('Saved');
+        });
     }
 
     queriesProvider() {
@@ -33,13 +40,13 @@ class SmartotekaFabricLocalStorage {
         class SmartotekaQueryManager {
             search(query) {
                 var promise = new Promise((resolve, reject) => {
-                    let smartoteka = parent.#getSmartoteka();
+                    parent.#getSmartoteka()
+                        .then((smartoteka) => {
+                            let searchResults = smartoteka[query];
 
-                    let searchResults = smartoteka[query];
-
-                    resolve(searchResults);
+                            resolve(searchResults);
+                        });
                 });
-
 
                 return promise;
             }
@@ -57,40 +64,47 @@ class SmartotekaFabricLocalStorage {
 
         class SmartotekaManager {
             add(query, content) {
-                let smartoteka = parent.#getSmartoteka();
+                parent.#getSmartoteka()
+                    .then((smartoteka) => {
 
-                var queryLinks = smartoteka[query];
+                        var queryLinks = smartoteka[query];
 
-                if (!queryLinks) {
-                    queryLinks = smartoteka[query] = [content];
-                }
-                else {
-                    if (queryLinks.indexOf(content) < 0)
-                        queryLinks.push(content);
-                }
+                        if (!queryLinks) {
+                            queryLinks = smartoteka[query] = [content];
+                        }
+                        else {
+                            if (queryLinks.indexOf(content) < 0)
+                                queryLinks.push(content);
+                        }
 
-                parent.#save(smartoteka);
+                        parent.#save(smartoteka);
+                    });
             }
 
             remove(query, answer) {
-                let smartoteka = parent.#getSmartoteka();
+                
+                return new Promise(resolve => {
+                    parent.#getSmartoteka()
+                    .then((smartoteka) => {
 
-                var queryLinks = smartoteka[query];
+                        var queryLinks = smartoteka[query];
 
-                if (queryLinks) {
-                    const index = queryLinks.indexOf(answer);
-                    if (index > -1) {
-                        queryLinks.splice(index, 1);
+                        if (queryLinks) {
+                            const index = queryLinks.indexOf(answer);
+                            if (index > -1) {
+                                queryLinks.splice(index, 1);
 
-                        if (queryLinks.length === 0) {
-                            smartoteka[query] = null;
+                                if (queryLinks.length === 0) {
+                                    smartoteka[query] = null;
+                                }
+                            }
+
+                            parent.#save(smartoteka);
                         }
-                    }
 
-                    parent.#save(smartoteka);
-                }
-
-                return new Promise(resolve => resolve());
+                        resolve();
+                    });
+                });
             }
         }
 

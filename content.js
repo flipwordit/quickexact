@@ -1,4 +1,5 @@
-let smartotekaFabric = new SmartotekaFabricDGraph("http://localhost:8080/query?timeout=20s");
+let smartotekaFabric = new SmartotekaFabricLocalStorage();
+//new SmartotekaFabricDGraph("http://localhost:8080/query?timeout=20s");
 let queryProvider = smartotekaFabric.queriesProvider();
 
 if (location.host === "www.google.com") {
