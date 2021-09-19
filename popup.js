@@ -1,4 +1,5 @@
-let smartotekaFabric = //new SmartotekaFabricDGraph("http:///localhost:8080")
+let smartotekaFabric =
+  //new SmartotekaFabricDGraph("https://blue-surf-390018.us-east-1.aws.cloud.dgraph.io/")
   new SmartotekaFabricLocalStorage();
 
 let lastQueriesStr = localStorage['lastQueries'] || "[]";
@@ -60,7 +61,7 @@ function search() {
 
           let rowElement = $(element).parent();
 
-          let answer = $('.answer', rowElement).text();
+          let answer = $('.answer', rowElement).html();
 
           smartotekaFabric.KBManager()
             .remove(query, answer)
@@ -99,12 +100,12 @@ function getTags(url, title) {
 
 $(function () {
   let today = new Date();
-  let tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 1);
+  let endDate = new Date();
+  endDate = new Date(new Date(endDate.setHours(23, 59, 59, 999)));
 
   $('.datepicker').datepicker();
   $("#from-date-input").datepicker("setDate", today);
-  $("#to-date-input").datepicker("setDate", tomorrow);
+  $("#to-date-input").datepicker("setDate", endDate);
 
   let queryProvider = smartotekaFabric.queriesProvider();
 
@@ -221,10 +222,13 @@ $(function () {
 
 
   function refreshGrid() {
+    let endDate = $("#to-date-input").datepicker('getDate');
+    endDate = new Date(new Date(endDate.setHours(23, 59, 59, 999)));
+
     chrome.history.search({
       'text': $("#search-text-input").val() || "",
       'startTime': $("#from-date-input").datepicker('getDate').valueOf(),
-      'endTime': $("#to-date-input").datepicker('getDate').valueOf(),
+      'endTime': endDate.valueOf(),
       'maxResults': 10000
     },
       (historyItems) => {
@@ -258,15 +262,49 @@ $(function () {
 
       search();
     }
-  })
-    ;
+  });
+
   $('#add-btn').click(function (e) {
     let query = $('#add-query').val();
     let content = $('#add-content').val();
 
+    content = $('<div/>').html(content).html();
     smartotekaFabric.KBManager().add(query, content);
 
     //smartotekaFabric.KBManager().add("vs shortcuts", "Format code Shift + Alt + F<br/>Refactor CTRL + Shift + R<br/> Save All Ctrl+K S")
+  });
+
+  $('#export-all-btn').click((e) => {
+    smartotekaFabric
+      .queriesProvider()
+      .export(new Date().toJSON().replaceAll(":", "_"));
+  });
+
+  let form = document.querySelector('#import-form');
+  let file = document.querySelector('#import-file');
+
+  form.addEventListener('submit', (event) => {
+
+    // Stop the form from reloading the page
+    event.preventDefault();
+
+    // If there's no file, do nothing
+    if (!file.value.length) return;
+
+    // Create a new FileReader() object
+    let reader = new FileReader();
+
+    // Setup the callback event to run when the file is read
+    reader.onload = (event) => {
+      let str = event.target.result;
+      let json = JSON.parse(str);
+
+      smartotekaFabric.KBManager().import(json);
+    };
+
+    // Read the file
+    reader.readAsText(file.files[0]);
+
   });
 })
 

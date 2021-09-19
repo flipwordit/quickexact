@@ -19,3 +19,7 @@
     overflow: hidden;
     text-decoration: none;
 }
+
+#export-all-btn{
+    margin-left: 100px;
+}

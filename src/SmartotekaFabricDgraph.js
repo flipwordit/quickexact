@@ -4,6 +4,20 @@ class SmartotekaFabricDGraph {
         this._dGraphUrl = dGraphUrl;
     }
 
+    #post(parameters) {
+
+        parameters.url = this._dGraphUrl + parameters.url;
+        parameters = {
+            ...{
+                type: "POST",
+                contentType: "application/json",
+                headers: { "X-Auth-Token": "MjNkYWUxNzc2NTJhNTY2M2IzZDgzNmE3YzY4MTM3NGE=" },
+            },
+            ...parameters
+        };
+
+        $.ajax(parameters);
+    }
     queriesProvider() {
         let fabric = this;
 
@@ -23,19 +37,18 @@ class SmartotekaFabricDGraph {
                             }
                         }`;
 
-                    $.ajax({
-                        type: "POST",
-                        url: fabric._dGraphUrl + "/query",
-                        data: JSON.stringify({ "query": dGraphQuery, "variables": {} }),
-                        contentType: "application/json",
-                        success: function (data) {
-                            let urls = that.#findValues(data.data, "urls");
-                            console.log(urls);
+                    fabric.#post(
+                        {
+                            url: "query",
+                            data: JSON.stringify({ "query": dGraphQuery, "variables": {} }),
+                            success: function (data) {
+                                let urls = that.#findValues(data.data, "urls");
+                                //console.log(urls);
 
-                            let queries = that.#findValues(data.data, "query");
-                            resolve(urls);
-                        }
-                    });
+                                let queries = that.#findValues(data.data, "query");
+                                resolve(urls);
+                            }
+                        });
                 });
 
                 return promise;
@@ -56,19 +69,18 @@ class SmartotekaFabricDGraph {
                             }
                         }`;
 
-                    $.ajax({
-                        type: "POST",
-                        url: fabric._dGraphUrl + "/query",
-                        data: JSON.stringify({ "query": dGraphQuery, "variables": {} }),
-                        contentType: "application/json",
-                        success: function (data) {
-                            let urls = that.#findValues(data.data, "urls");
-                            //console.log(urls);
+                    fabric.#post(
+                        {
+                            url: "query",
+                            data: JSON.stringify({ "query": dGraphQuery, "variables": {} }),
+                            success: function (data) {
+                                let urls = that.#findValues(data.data, "urls");
+                                //console.log(urls);
 
-                            let queries = that.#findValues(data.data, "query");
-                            resolve(urls);
-                        }
-                    });
+                                let queries = that.#findValues(data.data, "query");
+                                resolve(urls);
+                            }
+                        });
                 });
 
                 return promise;
@@ -123,22 +135,21 @@ class SmartotekaFabricDGraph {
                             ]
                         }`;
 
-                    $.ajax({
-                        type: "POST",
-                        url: fabric._dGraphUrl + "/mutate?commitNow=true",
-                        data: dGraphMutation,
-                        contentType: "application/json",
-                        success: function (data) {
+                    fabric.#post(
+                        {
+                            url: "mutate?commitNow=true",
+                            data: dGraphMutation,
+                            success: function (data) {
 
-                            if (data.errors) {
-                                console.log(data.errors);
-                                reject();
+                                if (data.errors) {
+                                    console.log(data.errors);
+                                    reject();
+                                }
+                                else {
+                                    resolve(true);
+                                }
                             }
-                            else {
-                                resolve(true);
-                            }
-                        }
-                    });
+                        });
                 });
 
                 return promise;
@@ -174,16 +185,22 @@ class SmartotekaFabricDGraph {
                             }
                         }`;
 
-                    $.ajax({
-                        type: "POST",
-                        url: fabric._dGraphUrl + "/mutate?commitNow=true",
-                        data: dGraphMutation,
-                        contentType: "application/rdf",
-                        success: function (data) {
+                    fabric.#post(
+                        {
+                            url: "mutate?commitNow=true",
+                            data: dGraphMutation,
+                            contentType: "application/rdf",
+                            success: function (data) {
 
-                            resolve(true);
-                        }
-                    });
+                                if (data.errors) {
+                                    console.log(data.errors);
+                                    reject();
+                                }
+                                else {
+                                    resolve(true);
+                                }
+                            }
+                        });
                 });
 
                 return promise;

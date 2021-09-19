@@ -11,7 +11,7 @@ class SmartotekaFabricLocalStorage {
 
             chrome.storage.sync.get(['Smartoteka'], (smartoteka) => {
 
-                if (!smartoteka||!(smartoteka['Smartoteka'])) {
+                if (!smartoteka || !(smartoteka['Smartoteka'])) {
                     console.log("Add smartoteka")
                     smartoteka = {};
 
@@ -19,13 +19,14 @@ class SmartotekaFabricLocalStorage {
 
                     resolve(smartoteka);
                 }
-                else
-                {
+                else {
                     resolve(smartoteka['Smartoteka']);
                 }
             });
         });
     }
+
+
 
     #save(smartoteka) {
 
@@ -35,9 +36,20 @@ class SmartotekaFabricLocalStorage {
     }
 
     queriesProvider() {
+
         let parent = this;
 
         class SmartotekaQueryManager {
+            #downloadObjectAsJson(exportObj, exportName) {
+                var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+                var downloadAnchorNode = document.createElement('a');
+                downloadAnchorNode.setAttribute("href", dataStr);
+                downloadAnchorNode.setAttribute("download", exportName + ".json");
+                document.body.appendChild(downloadAnchorNode); // required for firefox
+                downloadAnchorNode.click();
+                downloadAnchorNode.remove();
+            }
+
             search(query) {
                 var promise = new Promise((resolve, reject) => {
                     parent.#getSmartoteka()
@@ -53,6 +65,18 @@ class SmartotekaFabricLocalStorage {
 
             isUseful(url) {
                 return new Promise((resolve) => resolve(url.charCodeAt(url.length - 1) % 2 === 0 ? [1] : []));
+            }
+
+            export(fileName) {
+                var promise = new Promise((resolve, reject) => {
+                    parent.#getSmartoteka()
+                        .then((smartoteka) => {
+                            this.#downloadObjectAsJson(smartoteka, fileName);
+                            resolve(true);
+                        });
+                });
+
+                return promise;
             }
         }
 
@@ -82,29 +106,33 @@ class SmartotekaFabricLocalStorage {
             }
 
             remove(query, answer) {
-                
+
                 return new Promise(resolve => {
                     parent.#getSmartoteka()
-                    .then((smartoteka) => {
+                        .then((smartoteka) => {
 
-                        var queryLinks = smartoteka[query];
+                            var queryLinks = smartoteka[query];
 
-                        if (queryLinks) {
-                            const index = queryLinks.indexOf(answer);
-                            if (index > -1) {
-                                queryLinks.splice(index, 1);
+                            if (queryLinks) {
+                                let index = queryLinks.indexOf(answer);
 
-                                if (queryLinks.length === 0) {
-                                    smartoteka[query] = null;
+                                if (index > -1) {
+                                    queryLinks.splice(index, 1);
+
+                                    if (queryLinks.length === 0) {
+                                        smartoteka[query] = null;
+                                    }
+
+                                    parent.#save(smartoteka);
+                                    resolve();
                                 }
                             }
-
-                            parent.#save(smartoteka);
-                        }
-
-                        resolve();
-                    });
+                        });
                 });
+            }
+
+            import(json) {
+                parent.#save(json);
             }
         }
 
