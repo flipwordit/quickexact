@@ -1,12 +1,15 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable camelcase */
 /* eslint-disable quote-props */
+
 const webpack = require('webpack')
 const { resolve, join } = require('path')
 // const argv = require('minimist')(process.argv.slice(2));
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const WindiCSS = require('windicss-webpack-plugin').default
 
+const SizePlugin = require('size-plugin')
 const ExtensionReloader = require('webpack-extension-reloader')
 const TerserPlugin = require('terser-webpack-plugin')
 const ZipPlugin = require('zip-webpack-plugin')
@@ -16,7 +19,7 @@ let { version } = require('./package.json')
 
 const config = {
   mode: process.env.NODE_ENV,
-  context: join(__dirname, 'src'),
+  context: join(__dirname, 'src/'),
   entry: {
     'background/background': './background/background.js',
     'popup/popup': './popup/popup.js',
@@ -33,7 +36,7 @@ const config = {
     builtAt: true,
   },
   resolve: {
-    extensions: ['.js', '.vue', '.scss'],
+    extensions: ['*', '.js', '.vue', '.scss'],
     alias: {
       '@': resolve(__dirname, 'src'),
     },
@@ -84,25 +87,37 @@ const config = {
   performance: {
     hints: false,
   },
-  optimization: {
-    minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          mangle: false,
-          compress: {
-            drop_console: true,
-          },
-          output: {
-            comments: false,
-          },
-        },
-      }),
-    ],
-  },
+  // optimization: {
+  //   minimizer: [
+  //     new TerserPlugin({
+  //       terserOptions: {
+  //         mangle: false,
+  //         compress: {
+  //           drop_console: true,
+  //         },
+  //         output: {
+  //           comments: false,
+  //         },
+  //       },
+  //     }),
+  //   ],
+  // },
   plugins: [
+    new WindiCSS({
+      attributify: true,
+      extract: {
+        include: [
+          'src/**/*.{vue,html}',
+        ],
+        // A common use case is scanning files from the root directory
+        // if you are excluding files, make sure you always include node_modules and .git
+        exclude: ['node_modules', '.git', 'dist'],
+      },
+    }),
     new CleanWebpackPlugin({
       cleanStaleWebpackAssets: false,
     }),
+    // new SizePlugin(),
     new webpack.DefinePlugin({
       global: 'window',
       __VUE_OPTIONS_API__: 'true',
@@ -157,18 +172,20 @@ if (config.mode === 'production') {
 //   ])
 // }
 
-if (process.env.HMR === 'true') {
-  config.plugins = (config.plugins || []).concat([
-    new ExtensionReloader({
-      port: 9595,
-      manifest: join(__dirname, 'src', 'manifest.json'),
-      // enteries: {
-      //   contentScript: 'content/content',
-      //   background: 'background',
-      //   extensionPage: 'popup/popup',
-      // },
-    }),
-  ])
+module.exports = (env, argv) => {
+  if (argv.mode === 'development') {
+    config.plugins.push(
+      new ExtensionReloader({
+        reloadPage: true,
+        port: 9591,
+        // manifest: resolve(__dirname, 'src', 'manifest.json'),
+        entries: {
+        // The entries used for the content/background scripts or extension pages
+          background: 'background/background',
+          extensionPage: ['popup/popup', 'options/options'],
+        },
+      }),
+    )
+  }
+  return config
 }
-
-module.exports = config
