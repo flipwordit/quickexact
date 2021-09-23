@@ -7,6 +7,9 @@
 </head>
 
 <body>
+  <a href="/history.html">history</a>
+  <a href="/session.html">session</a>
+  <br/><br/>
   <table>
     <tr>
       <td style="vertical-align: top;width:400px;">
@@ -26,54 +29,46 @@
 
   <span id="add-block-switch">&#8595;</span>
   <button id="export-all-btn">Export all</button>
-  <br/>
+  <br />
+  <br />
   <div id="add-block" style="display: none;">
     <div>
       Add new query
-      <div> Query: <input id="add-query" /></div>
+      <div> Query: <input id="add-query" /></div> Is it needed?
 
       <div>Type: <select id="add-type">
           <option id="url" value="1">Url</option>
           <option id="html" value="2">Html</option>
         </select></div>
-      <div>Url or Html: <input id="add-content" /></div>
+        <div>Url or Html: <input id="add-content" /></div>
+        <div>Tags: <input id="add-tags" /></div>
       <!--Html editor-->
       <button id="add-btn">Add</button>
     </div>
-<br>
+    <br />
     <br />
     <div> Map queries
       <div>Query 1: <input id="map-query1" /></div>
       <div>Query 2: <input id="map-query2" /></div>
       <button id="map-btn">Map</button>
     </div>
-<br/>
-<br>
-<form id="import-form">
-	<label for="file">Import all smartoteka</label>
-	<input type="file" id="import-file" accept=".json">
-
-	<button id="import-btn">Import</button>
-</form>
-
+    <br />
+    <br>
+    <form id="import-form">
+      <label for="file">Import all smartoteka</label>
+      <br /><br />
+      <input type="file" id="import-file" accept=".json">
+      <br /><br />
+      <button id="import-btn">Import</button>
+    </form>
   </div>
-  From:<input id="from-date-input" class="datepicker" />
-  To:<input id="to-date-input" class="datepicker" />
-  Search:<input id="search-text-input" />
-  <button id="load-btn">Load</button>
-  &nbsp;<button id="clear-filter-btn">Reset filters</button>
-  <div id="myGrid" style="width:1500px;height: 800px;" class="ag-theme-alpine"></div>
-
-  <script src="ag-grid-community.min.js"></script>
-
+ 
   <script src="src/SmartotekaFabricLocalStorage.js"></script>
   <script src="src/SmartotekaFabricDgraph.js"></script>
 
   <script src="jquery-3.6.0.min.js"></script>
   <script src="jquery-ui.js"></script>
   <script src="popup.js"></script>
-
-  <script src="fuse.js"></script>
 </body>
 
 </html>

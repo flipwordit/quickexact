@@ -27,7 +27,7 @@ chrome.commands.onCommand.addListener(async (command) => {
   //         console.log(response);
   //       });
   //     } else {
-        chrome.tabs.create({ url: "popup.html" });
+        chrome.tabs.create({ url: "session.html" });
   //     }
   //   }
   // }

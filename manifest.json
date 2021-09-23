@@ -24,7 +24,9 @@
     "storage",
     "activeTab",
     "tabs",
+    "tabGroups",
     "commands",
+    "sessions",
     "history",
     "chrome://favicon/"
   ],

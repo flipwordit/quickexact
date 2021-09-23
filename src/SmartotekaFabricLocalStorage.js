@@ -9,29 +9,84 @@ class SmartotekaFabricLocalStorage {
 
         return new Promise((resolve) => {
 
-            chrome.storage.sync.get(['Smartoteka'], (smartoteka) => {
+            chrome.storage.sync.get(['Smartoteka'], (storage) => {
 
-                if (!smartoteka || !(smartoteka['Smartoteka'])) {
+                if (!storage || !(storage['Smartoteka'])) {
                     console.log("Add smartoteka")
-                    smartoteka = {};
+                    storage = {};
 
-                    this.#save(smartoteka);
+                    this.#save(storage);
 
-                    resolve(smartoteka);
+                    resolve(storage);
                 }
                 else {
-                    resolve(smartoteka['Smartoteka']);
+                    resolve(storage['Smartoteka']);
                 }
             });
         });
     }
 
+    #getTags() {
 
+        return new Promise((resolve) => {
+
+            const memberName = 'Tags';
+            chrome.storage.sync.get([memberName], (storage) => {
+
+                if (!storage || !(storage[memberName])) {
+                    console.log("Add " + memberName);
+                    storage = [];
+
+                    this.#save(storage);
+
+                    resolve(storage);
+                }
+                else {
+                    resolve(storage[memberName]);
+                }
+            });
+        });
+    }
+
+    #getSessions() {
+
+        return new Promise((resolve) => {
+
+            const memberName = 'Sessions';
+            chrome.storage.sync.get([memberName], (storage) => {
+
+                if (!storage || !(storage[memberName])) {
+                    storage = [];
+
+                    this.#save(storage);
+
+                    resolve(storage);
+                }
+                else {
+                    resolve(storage[memberName]);
+                }
+            });
+        });
+    }
+
+    #saveTags(tags) {
+
+        chrome.storage.sync.set({ Tags: tags }, function () {
+
+        });
+    }
+
+    #saveSessions(sessions) {
+
+        chrome.storage.sync.set({ Sessions: sessions }, function () {
+
+        });
+    }
 
     #save(smartoteka) {
 
         chrome.storage.sync.set({ Smartoteka: smartoteka }, function () {
-            console.log('Saved');
+
         });
     }
 
@@ -69,14 +124,26 @@ class SmartotekaFabricLocalStorage {
 
             export(fileName) {
                 var promise = new Promise((resolve, reject) => {
-                    parent.#getSmartoteka()
-                        .then((smartoteka) => {
-                            this.#downloadObjectAsJson(smartoteka, fileName);
+                    Promise.all([
+                        parent.#getSmartoteka(),
+                        parent.#getTags()
+                    ])
+                        .then(([Smartoteka, Tags]) => {
+
+                            this.#downloadObjectAsJson({ Smartoteka, Tags }, fileName);
                             resolve(true);
                         });
                 });
 
                 return promise;
+            }
+
+            getTags() {
+                return parent.#getTags();
+            }
+
+            getSessions() {
+                return parent.#getSessions();
             }
         }
 
@@ -120,7 +187,7 @@ class SmartotekaFabricLocalStorage {
                                     queryLinks.splice(index, 1);
 
                                     if (queryLinks.length === 0) {
-                                        smartoteka[query] = null;
+                                        delete smartoteka[query];
                                     }
 
                                     parent.#save(smartoteka);
@@ -132,7 +199,36 @@ class SmartotekaFabricLocalStorage {
             }
 
             import(json) {
-                parent.#save(json);
+                parent.#save(json.Smartoteka || {});
+                parent.#saveTags(json.Tags || []);
+            }
+
+            addTags(newTags) {
+                return new Promise(resolve => {
+                    if (newTags.length == 0) {
+                        resolve();
+                    }
+
+                    parent.#getTags()
+                        .then(tags => {
+                            tags = [...tags, ...newTags];
+                            parent.#saveTags(tags);
+
+                            resolve();
+                        });
+                });
+            }
+
+            addSession(session) {
+                return new Promise(resolve => {
+                    parent.#getSessions()
+                        .then(sessions => {
+                            sessions = [...sessions, session];
+                            parent.#saveSessions(sessions);
+
+                            resolve();
+                        });
+                });
             }
         }
 
