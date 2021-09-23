@@ -11,8 +11,7 @@
   "background": {
     "scripts": [
       "background/background.js"
-    ],
-    "persistent": false
+    ]
   },
   "permissions": [
     "storage",
@@ -28,7 +27,7 @@
         "windows": "Ctrl+Shift+S",
         "mac": "Command+Shift+S"
       },
-      "description": "open Q&E search",
+      "description": "open Q&E search"
     },
     "usefull-tab": {
       "suggested_key": {
