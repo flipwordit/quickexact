@@ -1,42 +1,56 @@
 <template>
   <div class="popup">
-  <Navbar />
+    <el-tabs v-model="activeName" @tab-click="handleClick">
+      <el-tab-pane label="Tabs" name="tabs">
+        <tabs />
+      </el-tab-pane>
+      <el-tab-pane label="Sessions" name="sessions">
+        <sessions />
+      </el-tab-pane>
+      <el-tab-pane label="Bookmarks" name="bookmarks">
+        <snippets />
+      </el-tab-pane>
+      <el-tab-pane label="History" name="history">
+        <snippets />
+      </el-tab-pane>
+      <el-tab-pane label="Incognito" name="incognito">
+        <snippets />
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
 <script>
-import storage from '@/utils/storage'
-import Navbar from './components/Navbar'
+import tabs from '@/popup/pages/tabs'
+import sessions from '@/popup/pages/sessions'
+import snippets from '@/popup/pages/snippets'
 
 export default {
   name: 'Popup',
+  components: {
+    tabs,
+    sessions,
+    snippets,
+  },
   data() {
     return {
-      backgroundColor: 'white',
+      activeName: 'tabs',
     }
   },
-  components: {
-    Navbar,
-  },
   methods: {
-    logger() {
-      console.log('click')
-    },
-    async changeColor() {
-      const backgroundColor = await storage.get(['color'])
-      console.log(backgroundColor)
-      this.backgroundColor = backgroundColor
-      // The body of this function will be execuetd as a content script inside the
-      // current page
-      async function setPageBackgroundColor() {
-        const color = await storage.get(['color'])
-        console.log(color)
-        document.body.style.backgroundColor = color
-      }
-      // When the button is clicked, inject setPageBackgroundColor into current page
+    handleClick(tab, event) {
+      console.log(tab, event)
     },
   },
 }
 </script>
 <style lang="scss">
+ .el-tabs__header {
+   margin:0;
+ }
+ .el-tabs__nav {
+    width: 100% !important;
+    display: flex;
+    justify-content: space-evenly;
+ }
 </style>
