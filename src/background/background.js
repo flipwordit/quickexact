@@ -43,7 +43,6 @@ chrome.commands.onCommand.addListener(async (command) => {
   console.log('Command:' + command)
   switch (command) {
     case 'search':
-      console.log('open popup')
       openPopup()
       // let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
