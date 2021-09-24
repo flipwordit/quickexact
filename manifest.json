@@ -9,7 +9,7 @@
         "<all_urls>"
       ],
       "js": [
-        "jquery-3.6.0.min.js",
+        "src/libraries/jquery-3.6.0.min.js",
         "src/SmartotekaFabricDGraph.js",
         "src/SmartotekaFabricLocalStorage.js",
         "content.js"

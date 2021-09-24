@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="history.css">
+  <link rel="stylesheet" href="../libraries/jquery-ui.css">
+</head>
+
+<body>
+  <a href="../kb/kb.html">smartoteka</a>
+  <a href="../session/session.html">session</a>
+  <br/><br/>
+  From:<input id="from-date-input" class="datepicker" />
+  To:<input id="to-date-input" class="datepicker" />
+  Search:<input id="search-text-input" />
+  <button id="load-btn">Load</button>
+  &nbsp;<button id="clear-filter-btn">Reset filters</button>
+  <div id="myGrid" style="width:1500px;height: 800px;" class="ag-theme-alpine"></div>
+
+  <script src="../libraries/ag-grid-community.min.js"></script>
+
+  <script src="../SmartotekaFabricLocalStorage.js"></script>
+  <script src="../SmartotekaFabricDgraph.js"></script>
+
+  <script src="../libraries/jquery-3.6.0.min.js"></script>
+  <script src="../libraries/jquery-ui.js"></script>
+  <script src="history.js"></script>
+
+  <script src="../libraries/fuse.js"></script>
+</body>
+
+</html>
