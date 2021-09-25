@@ -1,9 +1,10 @@
-function createSessionGrid(selector){
+function createSessionGrid(selector) {
   const sessionGridColumns = [
     {
       field: "date",
       width: "110px",
       filter: 'agDateColumnFilter',
+      sort: 'desc',
       cellRenderer: params => {
         if (!params.data)
           return params.data;
@@ -16,9 +17,9 @@ function createSessionGrid(selector){
           minute: 'numeric',
           second: 'numeric'
         })
-          .format(params.data.lastVisitTime);
+          .format(params.data.date);
 
-        return formattedDate.replace(" ","<br>");
+        return formattedDate.replace(" ", "<br>");
       }
     },
     {
@@ -28,6 +29,7 @@ function createSessionGrid(selector){
     },
     {
       headerName: "tabs count",
+      field: "tabs",
       width: "100px",
       filter: "usefulTypeFilter",
       valueGetter: params => {
@@ -39,16 +41,6 @@ function createSessionGrid(selector){
     },
     { field: "tags", width: "200px", filter: 'agSetColumnFilter' }
   ];
-
-  function historyItemsHanlde(historyItems, tabGroups) {
-
-    historyItems.forEach((v, i) => {
-      v.useful = false;
-      v.tags = getTags(v.url, v.title);
-      //TODO: tabGroups available in version 3
-      //v.groupName = v.groupId == -1 ? "" : tabGroups.find(el => el.id === groupId).title;
-    });
-  }
 
   const sessionGridOptions = {
     defaultColDef: {
@@ -69,11 +61,77 @@ function createSessionGrid(selector){
           return '<img src="https://www.ag-grid.com/example-assets/loading.gif">';
         }
       },
-    }
+    },
+    rowSelection: 'single',
+    getContextMenuItems: getContextMenuItems,
   };
+
+
+
+  function getContextMenuItems(params) {
+    return [
+      {
+        name: 'Open in current window',
+        action: function () {
+
+          let tabs = getSelectedTabs(params);
+
+          tabs.forEach(tab => {
+            chrome.tabs.create({
+              windowId: chrome.windows.WINDOW_ID_CURRENT,
+              url: tab.url
+            });
+          });
+        }
+      },
+      {
+        name: 'Open in new window',
+        action: function () {
+
+          let tabs = getSelectedTabs(params);
+
+          function createWindow(url) {
+            return new Promise(r => {
+              chrome.windows.create({ url: url }, window => r(window));
+            });
+          }
+
+          let windowPromise = null;
+
+          tabs.forEach(tab => {
+
+            if (windowPromise) {
+              windowPromise.then(window => {
+                chrome.tabs.create({
+                  windowId: window.id,
+                  url: tab.url
+                });
+              });
+            }
+            else {
+              windowPromise = createWindow(tab.url);
+            }
+          });
+        }
+      },
+      'separator',
+      {
+        name: 'Delete',
+        action: function () {
+          sessionGridOptions.onDeleting(params.node.data)
+            .then(() =>
+              sessionGridOptions.api.applyTransaction({
+                remove: [params.node.data]
+              })
+            );
+        }
+      },
+    ];
+
+  }
 
   const sessionGridDiv = document.querySelector(selector);
   new agGrid.Grid(sessionGridDiv, sessionGridOptions);
 
-  return sessionGridOptions.api;
-}  
+  return sessionGridOptions;
+}

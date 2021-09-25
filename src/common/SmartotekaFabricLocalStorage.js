@@ -70,24 +70,21 @@ class SmartotekaFabricLocalStorage {
     }
 
     #saveTags(tags) {
-
-        chrome.storage.sync.set({ Tags: tags }, function () {
-
-        });
+        return new Promise(r =>
+            chrome.storage.sync.set({ Tags: tags }, () => r())
+        );
     }
 
     #saveSessions(sessions) {
-
-        chrome.storage.sync.set({ Sessions: sessions }, function () {
-
-        });
+        return new Promise(r =>
+            chrome.storage.sync.set({ Sessions: sessions }, () => r())
+        );
     }
 
     #save(smartoteka) {
-
-        chrome.storage.sync.set({ Smartoteka: smartoteka }, function () {
-
-        });
+        return new Promise(r =>
+            chrome.storage.sync.set({ Smartoteka: smartoteka }, () => r())
+        );
     }
 
     queriesProvider() {
@@ -126,11 +123,19 @@ class SmartotekaFabricLocalStorage {
                 var promise = new Promise((resolve, reject) => {
                     Promise.all([
                         parent.#getSmartoteka(),
-                        parent.#getTags()
+                        parent.#getTags(),
+                        parent.#getSessions()
                     ])
-                        .then(([Smartoteka, Tags]) => {
+                        .then(([Smartoteka, Tags, Sessions]) => {
 
-                            this.#downloadObjectAsJson({ Smartoteka, Tags }, fileName);
+                            this.#downloadObjectAsJson(
+                                {
+                                    Smartoteka,
+                                    Tags,
+                                    Sessions
+                                },
+                                fileName);
+
                             resolve(true);
                         });
                 });
@@ -201,6 +206,7 @@ class SmartotekaFabricLocalStorage {
             import(json) {
                 parent.#save(json.Smartoteka || {});
                 parent.#saveTags(json.Tags || []);
+                parent.#saveSessions(json.Sessions || []);
             }
 
             addTags(newTags) {
@@ -227,6 +233,19 @@ class SmartotekaFabricLocalStorage {
                             parent.#saveSessions(sessions);
 
                             resolve();
+                        });
+                });
+            }
+            deleteSession(session) {
+                return new Promise(resolve => {
+                    parent.#getSessions()
+                        .then(sessions => {
+                            var index = sessions.findIndex(el => el.query === session.query && el.date === session.date);
+                            if (index !== -1) {
+                                sessions.splice(index, 1);
+                            }
+                            parent.#saveSessions(sessions)
+                                .then(() => resolve());
                         });
                 });
             }
