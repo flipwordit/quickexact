@@ -11,10 +11,7 @@ $(function () {
 
   let sessionGrid = createSessionGrid('#sessionGrid');
 
-  sessionGrid.onDeleting = (session) => {
-    return smartotekaFabric.KBManager().deleteSession(session);
-  };
-  sessionGrid.onSelectionChanged = function () {
+  function getSelectedSession() {
     let selectedRows = sessionGrid.api.getSelectedRows();
     let session = null;
 
@@ -27,7 +24,32 @@ $(function () {
       session = selectedRows[0];
     }
 
+    return session;
+  }
+
+  sessionGrid.onDeleting = (session) => {
+    return smartotekaFabric.KBManager().deleteSession(session);
+  };
+
+  sessionGrid.onSelectionChanged = function () {
+    let session = getSelectedSession();
+
     refreshTabsGrid(session.query === "Current" ? null : session.tabs);
+  }
+
+  sessionGrid.onReplacing = function (session) {
+    return new Promise(resolve => {
+      getAllTabs()
+        .then((tabs) => {
+          session.tabs = tabs;
+          smartotekaFabric.KBManager().updateSession(session)
+            .then(_ => {
+              refreshTabsGrid(tabs);
+
+              resolve(tabs);
+            });
+        });
+    });
   }
 
   function refreshSessionGrid() {
@@ -44,7 +66,17 @@ $(function () {
 
   refreshSessionGrid();
 
-  let tabsGridApi = createTabsGrid('#tabsGrid', queryProvider);
+  let tabsGrid = createTabsGrid('#tabsGrid', queryProvider);
+
+  tabsGrid.onDeleting = (tabs) => {
+    return new Promise(resolve => {
+      let session = getSelectedSession();
+      session.tabs = session.tabs.filter(el => tabs.findIndex(t => t.id == el.id) === -1);
+
+      smartotekaFabric.KBManager().updateSession(session)
+        .then(_ => resolve(session.tabs));
+    });
+  };
 
   function historyItemsHanlde(historyItems, tabGroups) {
 
@@ -60,15 +92,15 @@ $(function () {
     let handleTabs = (tabs) => {
       historyItemsHanlde(tabs, null);//);
 
-      tabsGridApi.setRowData(tabs);
+      tabsGrid.api.setRowData(tabs);
     }
 
     if (tabs) {
       handleTabs(tabs)
     }
     else {
-      chrome.tabs.query({},
-        (tabs) => {
+      getAllTabs()
+        .then((tabs) => {
           let node = sessionGrid.api
             .getDisplayedRowAtIndex(0);
 
@@ -92,11 +124,11 @@ $(function () {
   chrome.tabs.onMoved.addListener(refreshTabsGridWithThrottle);
   chrome.tabs.onReplaced.addListener(refreshTabsGridWithThrottle);
   chrome.tabs.onUpdated.addListener(refreshTabsGridWithThrottle);
-  
+
   $('#clear-filter-btn').click(_ => clearFilters());
 
   function clearFilters() {
-    tabsGridApi.setFilterModel(null);
+    tabsGrid.api.setFilterModel(null);
   }
   let tags = [];
 
@@ -126,7 +158,7 @@ $(function () {
         $('#add-tags').val(null).trigger('change');
       });
 
-    let tabs = tabsGridApi.getSelectedNodes().map(node => node.data);
+    let tabs = tabsGrid.api.getSelectedNodes().map(node => node.data);
 
     let session = {
       date: dateCreation,

@@ -9,7 +9,7 @@ class SmartotekaFabricLocalStorage {
 
         return new Promise((resolve) => {
 
-            chrome.storage.sync.get(['Smartoteka'], (storage) => {
+            chrome.storage.local.get(['Smartoteka'], (storage) => {
 
                 if (!storage || !(storage['Smartoteka'])) {
                     console.log("Add smartoteka")
@@ -31,7 +31,7 @@ class SmartotekaFabricLocalStorage {
         return new Promise((resolve) => {
 
             const memberName = 'Tags';
-            chrome.storage.sync.get([memberName], (storage) => {
+            chrome.storage.local.get([memberName], (storage) => {
 
                 if (!storage || !(storage[memberName])) {
                     console.log("Add " + memberName);
@@ -53,7 +53,7 @@ class SmartotekaFabricLocalStorage {
         return new Promise((resolve) => {
 
             const memberName = 'Sessions';
-            chrome.storage.sync.get([memberName], (storage) => {
+            chrome.storage.local.get([memberName], (storage) => {
 
                 if (!storage || !(storage[memberName])) {
                     storage = [];
@@ -71,19 +71,19 @@ class SmartotekaFabricLocalStorage {
 
     #saveTags(tags) {
         return new Promise(r =>
-            chrome.storage.sync.set({ Tags: tags }, () => r())
+            chrome.storage.local.set({ Tags: tags }, () => r())
         );
     }
 
     #saveSessions(sessions) {
         return new Promise(r =>
-            chrome.storage.sync.set({ Sessions: sessions }, () => r())
+            chrome.storage.local.set({ Sessions: sessions }, () => r())
         );
     }
 
     #save(smartoteka) {
         return new Promise(r =>
-            chrome.storage.sync.set({ Smartoteka: smartoteka }, () => r())
+            chrome.storage.local.set({ Smartoteka: smartoteka }, () => r())
         );
     }
 
@@ -233,6 +233,19 @@ class SmartotekaFabricLocalStorage {
                             parent.#saveSessions(sessions);
 
                             resolve();
+                        });
+                });
+            }
+            updateSession(session) {
+                return new Promise(resolve => {
+                    parent.#getSessions()
+                        .then(sessions => {
+                            var index = sessions.findIndex(el => el.date === session.date);
+                            if (index !== -1) {
+                                sessions[index] = session;
+                            }
+                            parent.#saveSessions(sessions)
+                                .then(() => resolve());
                         });
                 });
             }

@@ -39,7 +39,24 @@ function createSessionGrid(selector) {
         return params.data.tabs.length;
       }
     },
-    { field: "tags", width: "200px", filter: 'agSetColumnFilter' }
+    {
+      field: "tags",
+      width: "200px",
+      filter: 'agSetColumnFilter',
+      valueGetter: params => {
+        if (!params.data)
+          return params.data;
+
+        return (params.data.tags || []).map(el => el.text);
+      },
+      valueFormatter: params => {
+        if (!params.data)
+          return params.data;
+
+        return (params.data.tags || []).map(el => el.text)
+          .join(', ');
+      }
+    }
   ];
 
   const sessionGridOptions = {
@@ -73,45 +90,23 @@ function createSessionGrid(selector) {
       {
         name: 'Open in current window',
         action: function () {
-
-          let tabs = getSelectedTabs(params);
-
-          tabs.forEach(tab => {
-            chrome.tabs.create({
-              windowId: chrome.windows.WINDOW_ID_CURRENT,
-              url: tab.url
-            });
-          });
+          openTabs(params.node.data.tabs);
         }
       },
       {
         name: 'Open in new window',
         action: function () {
-
-          let tabs = getSelectedTabs(params);
-
-          function createWindow(url) {
-            return new Promise(r => {
-              chrome.windows.create({ url: url }, window => r(window));
-            });
-          }
-
-          let windowPromise = null;
-
-          tabs.forEach(tab => {
-
-            if (windowPromise) {
-              windowPromise.then(window => {
-                chrome.tabs.create({
-                  windowId: window.id,
-                  url: tab.url
-                });
-              });
-            }
-            else {
-              windowPromise = createWindow(tab.url);
-            }
-          });
+          openTabsInNewWindow(params.node.data.tabs);
+        }
+      },
+      'separator',
+      {
+        name: 'Replace current',
+        action: function () {
+          sessionGridOptions.onReplacing(params.node.data)
+            .then((tabs) =>
+              params.node.setDataValue('tabs', tabs)
+            );
         }
       },
       'separator',
