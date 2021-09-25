@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <title>Sessions</title>
+
 <head>
   <link rel="stylesheet" href="session.css">
   <link rel="stylesheet" href="../libraries/jquery-ui.css">
@@ -13,23 +14,32 @@
   <br /><br />
   <table>
     <tr>
+      <td></td>
+      <td>
+        <div id="grid-btns">
+          <button id="close-others-btn">Close others</button>
+          <button id="clear-filter-btn">Reset filters</button>
+        </div>
+      </td>
+    </tr>
+    <tr>
       <td>
         <br>
         <div id="sessionGrid" style="width:600px;height: 800px;" class="ag-theme-alpine"></div>
       </td>
       <td>
-        <button id="clear-filter-btn">Reset filters</button>
+
         <div id="tabsGrid" style="width:1100px;height: 800px;" class="ag-theme-alpine"></div>
       </td>
-      
+
       <td>
         <div id="add-block">
           <div>
             <div> Query or title: <input id="add-query" /></div>
-            <div>Tags: <select id="add-tags" ></select></div>
-            <br/>
+            <div>Tags: <select id="add-tags"></select></div>
+            <br />
             <div><button style="float: right;" id="add-btn">Add</button></div>
-            
+
           </div>
         </div>
       </td>

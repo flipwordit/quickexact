@@ -52,3 +52,9 @@ function getAllTabs() {
     chrome.tabs.query({}, (tabs) => r(tabs))
   );
 }
+
+function closeTabs(tabs) {
+  return new Promise(r =>
+    chrome.tabs.remove(tabs.map(el=>el.id), r)
+  );
+}

@@ -188,4 +188,13 @@ $(function () {
 
     createMultiselectTags("#add-tags", tags);
   });
+
+  $('#close-others-btn').click(() => {
+    let session = getSelectedSession();
+
+    getAllTabs()
+      .then((tabs) =>
+        closeTabs(tabs.filter(tab => session.tabs.findIndex(st => st.id === tab.id) === -1))
+      );
+  });
 })

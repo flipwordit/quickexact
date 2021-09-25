@@ -101,21 +101,11 @@ function createTabsGrid(selector, queryProvider) {
 
                     let tabUrls = getSelectedTabs(params).map(tab => tab.url);
 
-                    chrome.tabs.query({},
-                        (tabs) => {
-                            let tabIds = [];
-                            tabs.forEach(tab => {
-
-                                if (tabUrls.indexOf(tab.url) >= 0) {
-                                    tabIds.push(tab.id);
-                                }
-                            });
-
-                            chrome.tabs.remove(tabIds);
-                        });
-                },
-
-                //icon: '<img src="../images/skills/windows.png"/>'
+                    getAllTabs()
+                        .then((tabs) =>
+                            closeTabs(tabs.filter(tab => tabUrls.indexOf(tab.url) >= 0))
+                        );
+                }
             },
             'separator',
             {
@@ -125,7 +115,7 @@ function createTabsGrid(selector, queryProvider) {
                     tabsGridOptions.onDeleting(tabs)
                         .then(() =>
                             tabsGridOptions.api.applyTransaction({
-                                remove: tabs
+                                remove: [tabs]
                             })
                         );
                 }

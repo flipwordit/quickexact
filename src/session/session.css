@@ -27,3 +27,8 @@
 #add-block div{
     margin: 5px;
 }
+
+#grid-btns button{
+    float: right;
+    margin-left: 10px;
+}
