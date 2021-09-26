@@ -38,9 +38,9 @@ export default {
       }],
     }
   },
-  watch: {
-    'tag': 'initItems',
-  },
+  // watch: {
+  //   'tag': 'initItems',
+  // },
   computed: {
     filteredItems() {
       return this.autocompleteItems.filter(i => i.text.toLowerCase().includes(this.tag.toLowerCase()))
