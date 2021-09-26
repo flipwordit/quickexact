@@ -2,7 +2,7 @@
   <div class="tab" @click="activate">
     <img class="favicon" :src="tab.favIconUrl"/>
     <div class="title">{{tab.title}}</div>
-    <div class="url">{{tab.url}}</div>
+    <div class="url">{{url}}</div>
     <div class="actions">
       <vue-feather type="x" stroke="silver" @click.stop="closeTab"/>
     </div>
@@ -20,6 +20,12 @@ export default {
       default: () => {},
     },
   },
+  computed: {
+    url() {
+      const match = this.tab.url.match(/(?:^https?:\/\/([^/]+)(?:[/,]|$)|^(.*)$)/)
+      return match[0]
+    },
+  },
   methods: {
     activate() {
       this.$emit('activate')
@@ -33,12 +39,14 @@ export default {
 </script>
 
 <style lang="scss">
+@import '../../styles/variables';
 .tab {
   display: grid;
   grid-template: 18px 15px / 50px 1fr 50px;
   align-items: center;
   border-bottom: 1px solid rgba(227, 227, 227, 0.619);
   padding: 6px 0;
+  font-family: $roboto;
 
   &:hover {
     background: rgb(242, 255, 242);
@@ -46,7 +54,7 @@ export default {
   }
 
   .title {
-    width: 100%;
+    width: 95%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
