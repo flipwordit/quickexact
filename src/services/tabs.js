@@ -14,6 +14,10 @@ export default {
     browser.windows.update(id, { focused: true })
   },
 
+  async minimizeWindow(id) {
+    browser.windows.update(id, { state: 'minimized' })
+  },
+
   async drawAttention(id) {
     browser.windows.update(id, { drawAttention: true })
   },
