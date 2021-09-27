@@ -92,7 +92,21 @@ $(function () {
     let handleTabs = (tabs) => {
       historyItemsHanlde(tabs, null);//);
 
-      tabsGrid.api.setRowData(tabs);
+      let oldTabs = [];
+      tabsGrid.api.forEachNode(node => {
+        if (node.data)
+          oldTabs.push(node.data);
+      });
+
+      let newRows = tabs.filter(t => oldTabs.findIndex(ot => ot.id === t.id) < 0);
+      let removeRows = oldTabs.filter(ot => tabs.findIndex(t => ot.id === t.id) < 0);
+      let updateRows = tabs.filter(t => oldTabs.findIndex(ot => ot.id === t.id) >= 0);
+
+      tabsGrid.api.applyTransaction({
+        add: newRows,
+        remove: removeRows,
+        update: updateRows
+      });
     }
 
     if (tabs) {
