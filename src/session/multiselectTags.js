@@ -1,6 +1,8 @@
-function createMultiselectTags(selector, tags){
-    
-    $(selector).select2({
+function createMultiselectTags(selector, tags) {
+
+  let multilist = $(selector);
+
+  multilist.select2({
     width: '100%',
     multiple: true,
     tags: true,
@@ -16,7 +18,8 @@ function createMultiselectTags(selector, tags){
       return {
         id: term,
         text: term,
-        newTag: true // add additional parameters
+        newTag: true,
+        score: 0
       }
     },
     insertTag: function (data, tag) {
@@ -35,12 +38,26 @@ function createMultiselectTags(selector, tags){
         keys: ['text']
       }
 
-      const fuse = new Fuse([text], options)
+      if (multilist.lastSearch !== term.term) {
+        multilist.lastSearch = term.term;
+        let tags = [];
 
-      let searchedRows = fuse.search(term.term);
+        $('option', multilist)
+          .each(function (index) {
+            tags.push({
+              id: $(this).attr("value"),//TODO:val() throw Cannot read properties of undefined (reading 'toLowerCase')
+              text: $(this).text()
+            });
+          });
 
-      if (searchedRows[0]) {
-        text.score = searchedRows[0].score;
+        const fuse = new Fuse(tags, options)
+
+        multilist.searchedRows = fuse.search(term.term);
+      }
+
+      let find = multilist.searchedRows.find(el => el.item.id === text.id);
+      if (find) {
+        text.score = find.score;
         return text;
       }
 
@@ -50,7 +67,9 @@ function createMultiselectTags(selector, tags){
       return data.filter(function (item) {
         return !!item;
       }).sort((a, b) => {
-        let score = b.score - a.score;
+        let score = b.score < a.score
+          ? 1
+          : (b.score > a.score) ? -1 : 0;
 
         return score ? score : (a.text.localeCompare(b.text));
       });

@@ -5,37 +5,13 @@ let KnowledgeType = {
 
 class SmartotekaFabricLocalStorage {
 
-    #getSmartoteka() {
-
+    #getFromStorage(memberName, defaultValue) {
         return new Promise((resolve) => {
-
-            chrome.storage.local.get(['Smartoteka'], (storage) => {
-
-                if (!storage || !(storage['Smartoteka'])) {
-                    console.log("Add smartoteka")
-                    storage = {};
-
-                    this.#save(storage);
-
-                    resolve(storage);
-                }
-                else {
-                    resolve(storage['Smartoteka']);
-                }
-            });
-        });
-    }
-
-    #getTags() {
-
-        return new Promise((resolve) => {
-
-            const memberName = 'Tags';
             chrome.storage.local.get([memberName], (storage) => {
 
                 if (!storage || !(storage[memberName])) {
                     console.log("Add " + memberName);
-                    storage = [];
+                    storage = defaultValue;
 
                     this.#save(storage);
 
@@ -48,25 +24,20 @@ class SmartotekaFabricLocalStorage {
         });
     }
 
+    #getSmartoteka() {
+        return this.#getFromStorage("Smartoteka", {});
+    }
+
+    #getCheatSheets() {
+        return this.#getFromStorage("CheatSheets", []);
+    }
+
+    #getTags() {
+        return this.#getFromStorage("Tags", []);
+    }
+
     #getSessions() {
-
-        return new Promise((resolve) => {
-
-            const memberName = 'Sessions';
-            chrome.storage.local.get([memberName], (storage) => {
-
-                if (!storage || !(storage[memberName])) {
-                    storage = [];
-
-                    this.#save(storage);
-
-                    resolve(storage);
-                }
-                else {
-                    resolve(storage[memberName]);
-                }
-            });
-        });
+        return this.#getFromStorage("Sessions", []);
     }
 
     #saveTags(tags) {
@@ -78,6 +49,12 @@ class SmartotekaFabricLocalStorage {
     #saveSessions(sessions) {
         return new Promise(r =>
             chrome.storage.local.set({ Sessions: sessions }, () => r())
+        );
+    }
+
+    #saveCheatSheets(cheatSheets) {
+        return new Promise(r =>
+            chrome.storage.local.set({ CheatSheets: cheatSheets }, () => r())
         );
     }
 
@@ -124,15 +101,17 @@ class SmartotekaFabricLocalStorage {
                     Promise.all([
                         parent.#getSmartoteka(),
                         parent.#getTags(),
-                        parent.#getSessions()
+                        parent.#getSessions(),
+                        parent.#getCheatSheets()
                     ])
-                        .then(([Smartoteka, Tags, Sessions]) => {
+                        .then(([Smartoteka, Tags, Sessions, CheatSheets]) => {
 
                             this.#downloadObjectAsJson(
                                 {
                                     Smartoteka,
                                     Tags,
-                                    Sessions
+                                    Sessions,
+                                    CheatSheets
                                 },
                                 fileName);
 
@@ -149,6 +128,10 @@ class SmartotekaFabricLocalStorage {
 
             getSessions() {
                 return parent.#getSessions();
+            }
+
+            getCheatSheets() {
+                return parent.#getCheatSheets();
             }
         }
 
@@ -207,6 +190,7 @@ class SmartotekaFabricLocalStorage {
                 parent.#save(json.Smartoteka || {});
                 parent.#saveTags(json.Tags || []);
                 parent.#saveSessions(json.Sessions || []);
+                parent.#saveCheatSheets(json.CheatSheets || []);
             }
 
             addTags(newTags) {
@@ -236,6 +220,19 @@ class SmartotekaFabricLocalStorage {
                         });
                 });
             }
+
+            addCheatSheet(cheatSheet) {
+                return new Promise(resolve => {
+                    parent.#getCheatSheets()
+                        .then(cheatSheets => {
+                            cheatSheets = [...cheatSheets, cheatSheet];
+                            parent.#saveCheatSheets(cheatSheets);
+
+                            resolve();
+                        });
+                });
+            }
+
             updateSession(session) {
                 return new Promise(resolve => {
                     parent.#getSessions()
@@ -249,6 +246,25 @@ class SmartotekaFabricLocalStorage {
                         });
                 });
             }
+
+            updateCheatSheets(updateCheatSheets) {
+                return new Promise(resolve => {
+                    parent.#getCheatSheets()
+                        .then(cheatSheets => {
+                            updateCheatSheets
+                                .forEach(cheatSheet => {
+                                    var index = cheatSheets.findIndex(el => el.date === cheatSheet.date);
+                                    if (index !== -1) {
+                                        cheatSheets[index] = cheatSheet;
+                                    }
+                                });
+                                
+                            parent.#saveCheatSheets(cheatSheets)
+                                .then(() => resolve());
+                        });
+                });
+            }
+
             deleteSession(session) {
                 return new Promise(resolve => {
                     parent.#getSessions()
@@ -258,6 +274,20 @@ class SmartotekaFabricLocalStorage {
                                 sessions.splice(index, 1);
                             }
                             parent.#saveSessions(sessions)
+                                .then(() => resolve());
+                        });
+                });
+            }
+
+            deleteCheatSheet(cheatSheet) {
+                return new Promise(resolve => {
+                    parent.#getCheatSheets()
+                        .then(cheatSheets => {
+                            var index = cheatSheets.findIndex(el => el.content === cheatSheet.content && el.date === cheatSheet.date);
+                            if (index !== -1) {
+                                cheatSheets.splice(index, 1);
+                            }
+                            parent.#saveCheatSheets(cheatSheets)
                                 .then(() => resolve());
                         });
                 });

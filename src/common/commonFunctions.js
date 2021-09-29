@@ -1,4 +1,25 @@
 
+ function comparer(a, b) {
+  return a < b
+    ? -1 : (a > b
+      ? 1 :
+      0);
+}
+let comparerFunc = (get) => { return (a, b) => comparer(get(a), get(b)); };
+
+let comparerCombine = (comparators) => {
+  return (a, b) => {
+    for (let i = 0; i < comparators.length; i++) {
+      let result = comparerFunc(comparators[i])(a, b);
+
+      if (result != 0)
+        return result;
+    }
+
+    return 0;
+  };
+}
+
 function throttle(func, ms) {
 
   let savedArgs,
@@ -21,6 +42,49 @@ function throttle(func, ms) {
 
   return wrapper;
 }
+
+function mergeArraysById(a1, a2, getId) {
+  return [
+    ...a1,
+     ...a2.filter(el2 => a1.findIndex(el1 => getId(el1) === getId(el2)) < 0)];
+}
+
+function joinArrays(arrays, getValue) {
+
+  for (let i = 0; i < arrays.length; i++) {
+    arrays[i] = arrays[i].sort(comparerFunc(getValue));
+  }
+
+  let joinTags = [];
+  let indexes = arrays.map(_ => 0);
+
+  for (indexes[0] = 0; indexes[0] < arrays[0].length; indexes[0]++) {
+    let value = getValue(arrays[0][indexes[0]]);
+
+    let findCount = 0;
+    for (j = 1; j < arrays.length && findCount === j - 1; j++) {
+      let currentArray = arrays[j];
+      let k = indexes[j];
+      for (; k < currentArray.length; k++) {
+        let nextArrayValue = getValue(currentArray[k]);
+
+        if (value <= nextArrayValue) {
+          findCount = findCount + (value === nextArrayValue ? 1 : 0);
+          break;
+        }
+      }
+
+      indexes[j] = k;
+    }
+
+    if (findCount === arrays.length - 1) {
+      joinTags.push(arrays[0][indexes[0]]);
+    }
+  }
+
+  return joinTags;
+}
+
 
 function openTabs(tabs, windowId) {
   windowId = windowId || chrome.windows.WINDOW_ID_CURRENT;
@@ -55,6 +119,6 @@ function getAllTabs() {
 
 function closeTabs(tabs) {
   return new Promise(r =>
-    chrome.tabs.remove(tabs.map(el=>el.id), r)
+    chrome.tabs.remove(tabs.map(el => el.id), r)
   );
 }
