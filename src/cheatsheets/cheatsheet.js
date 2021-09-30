@@ -149,9 +149,9 @@ $(function () {
     let cheatsheet = {
       date: dateCreation,
       content: $("#add-content").val(),
-      tags: selectedTags
+      tags: unique(selectedTags
         .map(el => { return { id: el.id, text: el.text }; })
-        .sort((a, b) => a.text.localeCompare(b.text)),
+        .sort((a, b) => a.text.localeCompare(b.text)), el => el.id),
     };
 
     if (addUpdateHandler !== null) {
@@ -252,48 +252,101 @@ $(function () {
     return arrayToSearch.map(el => el.tag);
   }
 
+  function generateAdditionalTags(params, selectedTags) {
+    let term = $.trim(params.term);
+
+    if (term == '' || term.length < 2) {
+      return [];
+    }
+
+    let rows = getFilteredRows();
+
+    let arrayToSearch = buildSearchArray(rows, selectedTags);
+
+    let result = orderByRate(arrayToSearch, term);
+
+    let take = takeByRate(result);
+
+    return take
+      .map(el => {
+        let value = el.prefix.substring(0, el.prefix.length - 1);
+
+        return {
+          id: value,
+          text: value,//TODO: maybe add description about this variant 
+          newTag: true,
+          unionTag: true,
+          score: el.rate
+        };
+      });
+  }
+
   smartotekaFabric.queriesProvider().getTags().then(argTags => {
     tags = argTags;
 
-    createMultiselectTags("#add-tags", tags,
-      (params) => {
-        let term = $.trim(params.term);
+    createMultiselectTags("#add-tags", tags, generateAdditionalTags);
+    createMultiselectTags("#filter-tags", tags, generateAdditionalTags);
 
-        if (term == '' || term.length < 2) {
-          return [];
-        }
-
-        let selectedTags = getSelectedTags();
-        let rows = getFilteredRows();
-
-        let arrayToSearch = buildSearchArray(rows, selectedTags);
-
-        let result = orderByRate(arrayToSearch, term);
-
-        let take = takeByRate(result);
-
-        return take
-          .map(el => {
-            let value = el.prefix.substring(0, el.prefix.length - 1);
-
-            return {
-              id: value,
-              text: value,//TODO: maybe add description about this variant 
-              newTag: true,
-              unionTag: true,
-              score: el.rate
-            };
-          });
-      });
   });
 
-  $('#add-tags').on('change', function (e) {
+  $('#filter-tags').on('change', function (e) {
     const instance = cheatSheetsGrid.api.getFilterInstance('tags');
-    instance.setModel({ values: $('#add-tags').select2('data').map(el => el.text) });
+    instance.setModel({
+      values: $('#filter-tags')
+        .select2('data')
+        .map(el => el.text)
+    });
+
     cheatSheetsGrid.api.onFilterChanged();
+  });
+
+  $('#clear-filter-tags-btn').click(_ => {
+    $('#filter-tags')
+      .val(null)
+      .trigger('change');
+  });
+  setTimeout(() => {
+    $('.select2-search__field, .select2-search').keydown(function (e) {
+      if (e.code === "Escape") {
+        setTimeout(() => $(document.activeElement).blur());
+
+        return;
+      }
+      switch (e.key) {
+        case '~':
+          {
+            if ($(document.activeElement).attr('aria-describedby') === 'select2-add-tags-container') {
+              e.preventDefault();
+              $('#add-tags')
+                .val(null)
+                .trigger('change');
+            }
+            else {
+              e.preventDefault();
+              $('#filter-tags')
+                .val(null)
+                .trigger('change');
+            }
+          } break;
+      }
+    });
+  }, 100);
+
+  $(document).keydown(function (e) {
+    if (e.code === "Escape") {
+      setTimeout(() => $(document.activeElement).blur());
+      return;
+    }
+    switch (e.key) {
+      case 'f':
+        {
+          setTimeout(() => $('#filter-tags').focus(), 0);
+        } break;
+      case 'a':
+        {
+          setTimeout(() => $('#add-content').focus());
+        } break;
+    }
   });
 })
 
-function getSelectedTags() {
-  return $('#add-tags').select2('data').map(el => el.text);
-}

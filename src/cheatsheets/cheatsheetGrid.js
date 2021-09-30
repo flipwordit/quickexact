@@ -93,6 +93,12 @@ function createCheatSheetsGrid(selector) {
     function getContextMenuItems(params) {
         return [
             {
+                name: 'Copy',
+                action: function () {
+                    navigator.clipboard.writeText(params.node.data.content);
+                }
+            },
+            {
                 name: 'Delete',
                 action: function () {
                     cheatSheetsGridOptions.onDeleting(params.node.data)

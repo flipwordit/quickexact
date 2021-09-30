@@ -3861,6 +3861,8 @@ S2.define('select2/data/tags',[
         var checkText = optionText === paramsTerm;
 
         if (checkText || checkChildren) {
+          params.finded = true;
+
           if (child) {
             return false;
           }
@@ -3868,7 +3870,7 @@ S2.define('select2/data/tags',[
           obj.data = data;
           callback(obj);
 
-         // return;
+          // return;
         }
       }
 

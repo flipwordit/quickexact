@@ -1,5 +1,5 @@
 
- function comparer(a, b) {
+function comparer(a, b) {
   return a < b
     ? -1 : (a > b
       ? 1 :
@@ -46,7 +46,11 @@ function throttle(func, ms) {
 function mergeArraysById(a1, a2, getId) {
   return [
     ...a1,
-     ...a2.filter(el2 => a1.findIndex(el1 => getId(el1) === getId(el2)) < 0)];
+    ...a2.filter(el2 => a1.findIndex(el1 => getId(el1) === getId(el2)) < 0)];
+}
+
+function unique(array, getFieldValue) {
+  return array.filter((value, index, self) => self.findIndex(el => getFieldValue(el) === getFieldValue(value)) === index)
 }
 
 function joinArrays(arrays, getValue) {

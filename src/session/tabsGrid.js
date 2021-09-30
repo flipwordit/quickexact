@@ -115,7 +115,7 @@ function createTabsGrid(selector, queryProvider) {
                     tabsGridOptions.onDeleting(tabs)
                         .then(() =>
                             tabsGridOptions.api.applyTransaction({
-                                remove: [tabs]
+                                remove: tabs
                             })
                         );
                 }

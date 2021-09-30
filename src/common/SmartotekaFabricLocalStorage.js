@@ -42,7 +42,7 @@ class SmartotekaFabricLocalStorage {
 
     #saveTags(tags) {
         return new Promise(r =>
-            chrome.storage.local.set({ Tags: tags }, () => r())
+            chrome.storage.local.set({ Tags: unique(tags, el => el.id) }, () => r())
         );
     }
 
@@ -258,7 +258,7 @@ class SmartotekaFabricLocalStorage {
                                         cheatSheets[index] = cheatSheet;
                                     }
                                 });
-                                
+
                             parent.#saveCheatSheets(cheatSheets)
                                 .then(() => resolve());
                         });
