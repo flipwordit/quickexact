@@ -332,6 +332,11 @@ $(function () {
     });
   }, 100);
 
+  $('#add-block-switch').click(function () {
+    $(this).html(
+      "Add\\Edit&nbsp;"+($('#add-block').toggle().is(':hidden') ? '&#8595;' : '&#8593;'));
+  });
+
   $(document).keydown(function (e) {
     if (e.code === "Escape") {
       setTimeout(() => $(document.activeElement).blur());
@@ -344,6 +349,7 @@ $(function () {
         } break;
       case 'a':
         {
+          $('#add-block').show();
           setTimeout(() => $('#add-content').focus());
         } break;
     }
