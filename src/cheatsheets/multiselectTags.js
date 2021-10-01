@@ -34,6 +34,9 @@ function createMultiselectTags(selector, tags, helpTags) {
       if (!params.tokenize && helpTags) {
         let tags = helpTags(params, multilist.select2('data').map(el => el.text));
 
+        if (params.finded)
+          return tags;
+
         return [
           {
             id: term,
@@ -44,12 +47,15 @@ function createMultiselectTags(selector, tags, helpTags) {
           ...tags];
       }
 
-      return {
-        id: term,
-        text: term,
-        newTag: true,
-        score: 0
-      };
+      if (!params.finded)
+        return {
+          id: term,
+          text: term,
+          newTag: true,
+          score: 0
+        };
+
+      return null;
     },
     insertTag: function (data, tag) {
       // Insert the tag at the end of the results

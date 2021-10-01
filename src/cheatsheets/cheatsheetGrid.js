@@ -1,10 +1,10 @@
-function createCheatSheetsGrid(selector) {
+function createCheatSheetsGrid(selector, externalFilter) {
 
     const restrict = {
         "Chrome": {
             "Api": {
-                "V3":{},
-                "V2":{},
+                "V3": {},
+                "V2": {},
                 "tab": {
                     "event": {}
                 }
@@ -21,7 +21,7 @@ function createCheatSheetsGrid(selector) {
         }
     }
 
-    window.restrictMap={};
+    window.restrictMap = {};
     restrictToMap(restrict, restrictMap);
 
     const cheatSheetsGridColumns = [
@@ -86,9 +86,18 @@ function createCheatSheetsGrid(selector) {
         },
         rowSelection: 'multiple',
         getContextMenuItems: getContextMenuItems,
+        isExternalFilterPresent: isExternalFilterPresent,
+        doesExternalFilterPass: doesExternalFilterPass,
     };
 
+    function isExternalFilterPresent() {
+        // if ageType is not everyone, then we are filtering
+        return externalFilter;
+    }
 
+    function doesExternalFilterPass(node) {
+        return !externalFilter || externalFilter(node);
+    }
 
     function getContextMenuItems(params) {
         return [

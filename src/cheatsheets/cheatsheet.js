@@ -3,10 +3,9 @@ let smartotekaFabric =
   new SmartotekaFabricLocalStorage();
 
 $(function () {
+  window.filterTags = { count: 0 };
 
-  let queryProvider = smartotekaFabric.queriesProvider();
-
-  let cheatSheetsGrid = createCheatSheetsGrid('#cheatSheetsGrid', queryProvider);
+  let cheatSheetsGrid = createCheatSheetsGrid('#cheatSheetsGrid', filterByTags);
 
   let addUpdateHandler = null;
 
@@ -146,12 +145,14 @@ $(function () {
         $('#add-tags').val(null).trigger('change');
       });
 
+    let tagsToCheatSheet = selectedTags
+      .map(el => { return { id: el.id, text: el.text }; })
+      .sort((a, b) => a.text.localeCompare(b.text));
+
     let cheatsheet = {
       date: dateCreation,
       content: $("#add-content").val(),
-      tags: unique(selectedTags
-        .map(el => { return { id: el.id, text: el.text }; })
-        .sort((a, b) => a.text.localeCompare(b.text)), el => el.id),
+      tags: unique(tagsToCheatSheet, el => el.id),
     };
 
     if (addUpdateHandler !== null) {
@@ -290,15 +291,25 @@ $(function () {
   });
 
   $('#filter-tags').on('change', function (e) {
-    const instance = cheatSheetsGrid.api.getFilterInstance('tags');
-    instance.setModel({
-      values: $('#filter-tags')
-        .select2('data')
-        .map(el => el.text)
-    });
+    window.filterTags = { count: 0 };
+
+    let filterTags = $('#filter-tags')
+      .select2('data')
+      .map(el => el.text);
+
+    let countTags = 0;
+    unique(filterTags, el => el)
+      .map(tag => window.filterTags[tag] = ++countTags);
+
+    window.filterTags.count = countTags;
 
     cheatSheetsGrid.api.onFilterChanged();
   });
+
+
+  function filterByTags(node) {
+    return !node.data || node.data.tags.filter(tag => window.filterTags[tag.id]).length === window.filterTags.count;
+  }
 
   $('#clear-filter-tags-btn').click(_ => {
     $('#filter-tags')
@@ -334,7 +345,7 @@ $(function () {
 
   $('#add-block-switch').click(function () {
     $(this).html(
-      "Add\\Edit&nbsp;"+($('#add-block').toggle().is(':hidden') ? '&#8595;' : '&#8593;'));
+      "Add\\Edit&nbsp;" + ($('#add-block').toggle().is(':hidden') ? '&#8595;' : '&#8593;'));
   });
 
   $(document).keydown(function (e) {
