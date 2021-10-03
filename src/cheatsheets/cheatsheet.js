@@ -14,6 +14,7 @@ $(function () {
 
     if (cheatSheets.length === 1) {
       $("#add-btn").text("Update");
+      $("#copy-btn").show();
 
       let selectedCheatSheet = cheatSheets[0];
 
@@ -22,16 +23,22 @@ $(function () {
       $('#add-tags').trigger('change');
 
       //update, copy
-      addUpdateHandler = (cheatSheet) => {
-        cheatSheet.date = selectedCheatSheet.date;//Set id for update
+      addUpdateHandler = (cheatSheet, isUpdate) => {
+        if (isUpdate)
+          cheatSheet.date = selectedCheatSheet.date;//Set id for update
 
-        smartotekaFabric.KBManager().updateCheatSheets([cheatSheet])
+        smartotekaFabric.KBManager()
+          .updateCheatSheets([cheatSheet])
           .then(() => {
-            cheatSheetsGrid.api.applyTransaction({
-              update: [cheatSheet]
-            });
+            cheatSheetsGrid.api.applyTransaction(
+              isUpdate
+                ? { update: [cheatSheet] }
+                : { add: [cheatSheet] }
+            );
+
             $('#add-content').val(null);
             $("#add-btn").text("Add");
+            $("#copy-btn").hide();
           });
       };
     }
@@ -124,7 +131,7 @@ $(function () {
   }
   let tags = [];
 
-  $('#add-btn').click(_ => {
+  $('#add-btn,#copy-btn').click(function () {
 
     let dateCreation = new Date().valueOf();
 
@@ -156,7 +163,7 @@ $(function () {
     };
 
     if (addUpdateHandler !== null) {
-      addUpdateHandler(cheatsheet);
+      addUpdateHandler(cheatsheet, $(this).attr('id') === 'add-btn');
 
       addUpdateHandler = null;
     }
@@ -204,7 +211,11 @@ $(function () {
     for (let i = 0; i < arrayTagArrays.length; i++) {
       let tags = arrayTagArrays[i];
 
+      if (tags.length <= selectedTags.length + 1)
+        continue;
+
       let prefix = "";
+      let prefixLength = 0;
       for (let j = 0; j < tags.length; j++) {
         let currentTag = tags[j].text;
 
@@ -212,8 +223,9 @@ $(function () {
           continue;
 
         prefix += currentTag + ",";
+        prefixLength++;
 
-        if (j === 0) {
+        if (j === 0 || prefixLength < 2) {
           continue;
         }
 
@@ -233,6 +245,9 @@ $(function () {
       let prefixMap = tagPrefixMap[tag];
 
       for (let prefix in prefixMap.prefixes) {
+        if (prefixMap.count === 1)
+          continue;
+
         arrayToSearch.push({
           tag: tag,
           tagCount: prefixMap.count,
@@ -277,7 +292,7 @@ $(function () {
           text: value,//TODO: maybe add description about this variant 
           newTag: true,
           unionTag: true,
-          score: el.rate
+          score: -el.rate * 0.01
         };
       });
   }
@@ -348,11 +363,16 @@ $(function () {
       "Add\\Edit&nbsp;" + ($('#add-block').toggle().is(':hidden') ? '&#8595;' : '&#8593;'));
   });
 
-  $(document).keydown(function (e) {
+  $(document).keypress(function (e) {
     if (e.code === "Escape") {
       setTimeout(() => $(document.activeElement).blur());
       return;
     }
+
+    if (document.activeElement.type === "textarea"
+      || document.activeElement.type === "text")
+      return;
+
     switch (e.key) {
       case 'f':
         {

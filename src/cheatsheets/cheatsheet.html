@@ -39,20 +39,23 @@
           <p>a - go to add</p>
           <p>ESC - lost focus</p>
           <p>~ - clear selected tags in focus field</p>
-        
-        <br>
-        <br>
-       <span id="add-block-switch"> Add\Edit&nbsp;&#8595;</span>
-        <div id="add-block" style="display: none;">
-          <div>
-            <div> Content: <input id="add-content" /></div>
-            <div>Tags: <select id="add-tags"></select></div>
-            <br />
-            <div><button style="float: right;" id="add-btn">Add</button></div>
 
+          <br>
+          <br>
+          <span id="add-block-switch"> Add\Edit&nbsp;&#8595;</span>
+          <div id="add-block" style="display: none;">
+            <div>
+              <div> Content: <input id="add-content" style="width:300px" /></div>
+              <div>Tags: <select id="add-tags"></select></div>
+              <br />
+              <div><button style="float: right;" id="add-btn">Add</button>
+                
+                <button style="float: right;display:none;margin-left: 10px;" id="copy-btn">Copy</button>
+              </div>
+
+            </div>
           </div>
         </div>
-      </div>
       </td>
     </tr>
   </table>
