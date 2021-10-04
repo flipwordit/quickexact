@@ -13,6 +13,7 @@ $(function () {
     let cheatSheets = getSelectedCheatSheets();
 
     if (cheatSheets.length === 1) {
+      $('#add-content').show();
       $("#add-btn").text("Update");
       $("#copy-btn").show();
 
@@ -22,25 +23,48 @@ $(function () {
       $('#add-tags').val(selectedCheatSheet.tags.map(el => el.id));
       $('#add-tags').trigger('change');
 
+      function clearAddBlockState() {
+        $('#add-content').val(null);
+        $("#add-btn").text("Add");
+        $("#copy-btn").hide();
+      }
       //update, copy
       addUpdateHandler = (cheatSheet, isUpdate) => {
-        if (isUpdate)
+        if (isUpdate) {
           cheatSheet.date = selectedCheatSheet.date;//Set id for update
 
-        smartotekaFabric.KBManager()
-          .updateCheatSheets([cheatSheet])
-          .then(() => {
-            cheatSheetsGrid.api.applyTransaction(
-              isUpdate
-                ? { update: [cheatSheet] }
-                : { add: [cheatSheet] }
-            );
+          smartotekaFabric.KBManager()
+            .updateCheatSheets([cheatSheet])
+            .then(() => {
+              cheatSheetsGrid.api.applyTransaction(
+                { update: [cheatSheet] }
+              );
 
-            $('#add-content').val(null);
-            $("#add-btn").text("Add");
-            $("#copy-btn").hide();
-          });
-      };
+              clearAddBlockState();
+            });
+        } else {
+          smartotekaFabric.KBManager()
+            .addCheatSheet(cheatSheet)
+            .then(() => {
+              cheatSheetsGrid.api.applyTransaction(
+                { add: [cheatSheet] }
+              );
+
+              let addedNode = null;
+              cheatSheetsGrid.api.forEachNodeAfterFilter(node => {
+                if (node.data.date === cheatSheet.date) {
+                  addedNode = node;
+                }
+              });
+
+              if (addedNode) {
+                addedNode.setSelected(true, true);
+              } else {
+                clearAddBlockState();
+              }
+            });
+        }
+      }
     }
     else if (cheatSheets.length > 1) {
       //group update. Only tags

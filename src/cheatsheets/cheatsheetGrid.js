@@ -10,6 +10,12 @@ function createCheatSheetsGrid(selector, externalFilter) {
                 }
             },
 
+        },
+        "Vs code":{
+            "shortcut":{}
+        },
+        "vs":{
+            "shortcut":{}
         }
     }
 
