@@ -69,8 +69,12 @@ function createTabsGrid(selector, queryProvider) {
     function getContextMenuItems(params) {
         return [
             'copy',
-            'export',
-            'separator',
+            {
+                name: 'Make active',
+                action: function () {
+                    chrome.tabs.update(params.node.data.id, { active: true, highlighted: true });
+                }
+            },
             {
                 name: 'Open in current window',
                 action: function () {
@@ -92,6 +96,10 @@ function createTabsGrid(selector, queryProvider) {
                 action: function () {
 
                     let tabIds = getSelectedTabs(params).map(tab => tab.id);
+
+                    tabIds = tabIds.indexOf(params.node.data.id) < 0
+                        ? [params.node.data.id]
+                        : tabIds;
                     chrome.tabs.remove(tabIds);
                 },
             },
@@ -100,6 +108,10 @@ function createTabsGrid(selector, queryProvider) {
                 action: function () {
 
                     let tabUrls = getSelectedTabs(params).map(tab => tab.url);
+
+                    tabUrls = tabUrls.indexOf(params.node.data.url) < 0
+                        ? [params.node.data.url]
+                        : tabUrls;
 
                     getAllTabs()
                         .then((tabs) =>
@@ -112,6 +124,10 @@ function createTabsGrid(selector, queryProvider) {
                 name: 'Delete',
                 action: function () {
                     let tabs = getSelectedTabs(params);
+                    tabs = tabIds.findIndex(tab => tab.id === params.node.data.id) < 0
+                        ? [params.node.data]
+                        : tabs;
+
                     tabsGridOptions.onDeleting(tabs)
                         .then(() =>
                             tabsGridOptions.api.applyTransaction({
