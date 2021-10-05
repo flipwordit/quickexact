@@ -8,16 +8,22 @@ function createTabsGrid(selector, queryProvider) {
     const tabsGridColumns = [
         {
             field: "id",
-            width: "100px",
-            filter: 'agNumberColumnFilter',
+            hide: true
+        },
+        {
+            field: "index",
             hide: true
         },
         {
             field: "title",
             width: "600px",
-            // dndSource: true,
             rowDrag: true,
             filter: "fuzzyFilter",
+            comparator: (a, b, nodeA, nodeB, isInverted) =>{
+                if(!a||!b)
+                    return 0;
+                return a.localeCompare(b, undefined, { sensitivity: 'accent' });
+            },
             cellRenderer: params => {
                 if (!params.data)
                     return params.data;

@@ -105,9 +105,17 @@ $(function () {
     let indexMoving = selectedSession.tabs.indexOf(movingNode.data);
     let indexOver = selectedSession.tabs.indexOf(overNode.data);
 
-    movingNode.data.windowId = overNode.group
+    let windowId = overNode.group
       ? overNode.key
       : overNode.data.windowId;
+
+    if (isExistsSorting(tabsGrid) && windowId === movingNode.data.windowId) {
+      alert("For change tab orders - cancel grid sorting!");
+      
+      return;
+    }
+
+    movingNode.data.windowId = windowId;
 
     if (selectedSession.query === "Current") {
       chrome.tabs.move(
@@ -140,6 +148,14 @@ $(function () {
     });
   };
 
+  function isExistsSorting(tabsGrid) {
+    let columnStates = tabsGrid.columnApi.getColumnState();
+    let sortColumnIndex = columnStates.findIndex(el => el.sort);
+    let notExistsSorting = sortColumnIndex < 0 || columnStates[sortColumnIndex].colId === 'index';
+
+    return !notExistsSorting;
+  }
+
   function historyItemsHanlde(historyItems, tabGroups) {
 
     historyItems.forEach((v, i) => {
@@ -154,22 +170,31 @@ $(function () {
     let handleTabs = (tabs) => {
       historyItemsHanlde(tabs, null);//);
 
-      tabsGrid.api.setRowData(tabs);
-      // let oldTabs = [];
-      // tabsGrid.api.forEachNode(node => {
-      //   if (node.data)
-      //     oldTabs.push(node.data);
-      // });
+      let oldTabs = [];
+      let i = 0;
+      tabsGrid.api.forEachNode(node => {
+        if (node.data) {
+          oldTabs.push(node.data);
+        }
+      });
 
-      // let newRows = tabs.filter(t => oldTabs.findIndex(ot => ot.id === t.id) < 0);
-      // let removeRows = oldTabs.filter(ot => tabs.findIndex(t => ot.id === t.id) < 0);
-      // let updateRows = tabs.filter(t => oldTabs.findIndex(ot => ot.id === t.id) >= 0);
+      let newRows = tabs.filter(t => oldTabs.findIndex(ot => ot.id === t.id) < 0);
+      let removeRows = oldTabs.filter(ot => tabs.findIndex(t => ot.id === t.id) < 0);
+      let updateRows = tabs.filter(t => oldTabs.findIndex(ot => ot.id === t.id) >= 0);
 
-      // tabsGrid.api.applyTransaction({//Обновление не изменяет порядок записей
-      //   add: newRows,
-      //   remove: removeRows,
-      //   update: updateRows
-      // });
+      tabsGrid.api.applyTransaction({//Обновление не изменяет порядок записей
+        add: newRows,
+        remove: removeRows,
+        update: updateRows
+      });
+
+
+      if (!isExistsSorting(tabsGrid)) {
+        tabsGrid.columnApi.applyColumnState({
+          state: [{ colId: 'index', sort: 'asc' }],
+          defaultState: { sort: null },
+        });
+      }
     }
 
     if (tabs) {
