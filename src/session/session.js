@@ -100,34 +100,32 @@ $(function () {
 
     var movingNode = event.node;
 
-    let rows = [];
-    tabsGrid.api.forEachNode(n => {
-      if (n.data) rows.push(n.data);
-    });
+    let selectedSession = getSelectedSession();
 
-    let indexMoving = rows.indexOf(movingNode.data);
-    let indexOver = rows.indexOf(overNode.data);
+    let indexMoving = selectedSession.tabs.indexOf(movingNode.data);
+    let indexOver = selectedSession.tabs.indexOf(overNode.data);
 
-    moveInArray(rows, indexMoving, indexOver);
+    movingNode.data.windowId = overNode.group
+      ? overNode.key
+      : overNode.data.windowId;
 
-    var windowId;
-    if (overNode.group) {
-      // if over a group, we take the group key (which will be the
-      // country as we are grouping by country)
-      windowId = overNode.key;
-    } else {
-      // if over a non-group, we take the country directly
-      windowId = overNode.data.windowId;
+    if (selectedSession.query === "Current") {
+      chrome.tabs.move(
+        movingNode.data.id,
+        {
+          index: overNode.data.index, windowId: movingNode.data.windowId
+        },
+        () => refreshTabsGrid());
+
+      return;
     }
 
-    movingNode.data.windowId = windowId;
+    moveInArray(selectedSession.tabs, indexMoving, indexOver);
 
-    let selectedSession = getSelectedSession();
-    selectedSession.tabs = rows;
-
-    smartotekaFabric.KBManager().updateSession(selectedSession)
+    smartotekaFabric.KBManager()
+      .updateSession(selectedSession)
       .then(_ => {
-        tabsGrid.api.setRowData(rows);
+        tabsGrid.api.setRowData(selectedSession.tabs);
         tabsGrid.api.clearFocusedCell();
       });
   }
@@ -156,21 +154,22 @@ $(function () {
     let handleTabs = (tabs) => {
       historyItemsHanlde(tabs, null);//);
 
-      let oldTabs = [];
-      tabsGrid.api.forEachNode(node => {
-        if (node.data)
-          oldTabs.push(node.data);
-      });
+      tabsGrid.api.setRowData(tabs);
+      // let oldTabs = [];
+      // tabsGrid.api.forEachNode(node => {
+      //   if (node.data)
+      //     oldTabs.push(node.data);
+      // });
 
-      let newRows = tabs.filter(t => oldTabs.findIndex(ot => ot.id === t.id) < 0);
-      let removeRows = oldTabs.filter(ot => tabs.findIndex(t => ot.id === t.id) < 0);
-      let updateRows = tabs.filter(t => oldTabs.findIndex(ot => ot.id === t.id) >= 0);
+      // let newRows = tabs.filter(t => oldTabs.findIndex(ot => ot.id === t.id) < 0);
+      // let removeRows = oldTabs.filter(ot => tabs.findIndex(t => ot.id === t.id) < 0);
+      // let updateRows = tabs.filter(t => oldTabs.findIndex(ot => ot.id === t.id) >= 0);
 
-      tabsGrid.api.applyTransaction({
-        add: newRows,
-        remove: removeRows,
-        update: updateRows
-      });
+      // tabsGrid.api.applyTransaction({//Обновление не изменяет порядок записей
+      //   add: newRows,
+      //   remove: removeRows,
+      //   update: updateRows
+      // });
     }
 
     if (tabs) {
@@ -310,7 +309,6 @@ $(function () {
       event.dataTransfer.dropEffect = 'copy';
       event.preventDefault();
     }
-
   }
 
   function gridDrop(event, grid) {
@@ -323,7 +321,7 @@ $(function () {
     var tabs = JSON.parse(jsonData);
 
     // if data missing or data has no it, do nothing
-    if (!tabs || !tabs.length||tabs[0].id == null) {
+    if (!tabs || !tabs.length || tabs[0].id == null) {
       return;
     }
 
