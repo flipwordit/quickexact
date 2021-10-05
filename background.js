@@ -27,7 +27,10 @@ chrome.commands.onCommand.addListener(async (command) => {
   //         console.log(response);
   //       });
   //     } else {
-        chrome.tabs.create({ url: "src/cheatsheets/cheatsheet.html" });
+        chrome.tabs.create({ url: 
+          //"src/cheatsheets/cheatsheet.html"
+          "src/session/session.html"
+         });
   //     }
   //   }
   // }

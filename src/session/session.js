@@ -7,6 +7,19 @@ let smartotekaFabric =
 
 $(function () {
 
+  $("#sessionGrid").on("dragover", function (event) {
+    gridDragOver(event.originalEvent);
+  });
+
+  $("#sessionGrid").on("dragleave", function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  });
+
+  $("#sessionGrid").on("drop", function (event) {
+    gridDrop(event.originalEvent, "session");
+  });
+
   let queryProvider = smartotekaFabric.queriesProvider();
 
   let sessionGrid = createSessionGrid('#sessionGrid');
@@ -35,6 +48,17 @@ $(function () {
     let session = getSelectedSession();
 
     refreshTabsGrid(session.query === "Current" ? null : session.tabs);
+
+    if (session.query === "Current") {
+      $("#add-name").text("Save session");
+      $("#add-btn").text("Save");
+      $("#add-btn").attr("saveSession");
+    }
+    else {
+      $("#add-name").text("Add tab to session");
+      $("#add-btn").text("Add tab");
+      $("#add-btn").attr("addTab");
+    }
   }
 
   sessionGrid.onReplacing = function (session) {
@@ -67,6 +91,46 @@ $(function () {
   refreshSessionGrid();
 
   let tabsGrid = createTabsGrid('#tabsGrid', queryProvider);
+
+  tabsGrid.onRowDragEnd = (event) => {
+    var overNode = event.overNode;
+    if (!overNode) {
+      return;
+    }
+
+    var movingNode = event.node;
+
+    let rows = [];
+    tabsGrid.api.forEachNode(n => {
+      if (n.data) rows.push(n.data);
+    });
+
+    let indexMoving = rows.indexOf(movingNode.data);
+    let indexOver = rows.indexOf(overNode.data);
+
+    moveInArray(rows, indexMoving, indexOver);
+
+    var windowId;
+    if (overNode.group) {
+      // if over a group, we take the group key (which will be the
+      // country as we are grouping by country)
+      windowId = overNode.key;
+    } else {
+      // if over a non-group, we take the country directly
+      windowId = overNode.data.windowId;
+    }
+
+    movingNode.data.windowId = windowId;
+
+    let selectedSession = getSelectedSession();
+    selectedSession.tabs = rows;
+
+    smartotekaFabric.KBManager().updateSession(selectedSession)
+      .then(_ => {
+        tabsGrid.api.setRowData(rows);
+        tabsGrid.api.clearFocusedCell();
+      });
+  }
 
   tabsGrid.onDeleting = (tabs) => {
     return new Promise(resolve => {
@@ -130,7 +194,13 @@ $(function () {
     refreshTabsGrid();
   });
 
-  let refreshTabsGridWithThrottle = throttle(() => refreshTabsGrid(), 500);
+  let refreshTabsGridWithThrottle = throttle(() => {
+    let session = getSelectedSession();
+
+    if (session.query === "Current") {
+      refreshTabsGrid();
+    }
+  }, 500);
   //TODO: Ag-grid can update without change post and state records. Later we can use it.
 
   chrome.tabs.onCreated.addListener(refreshTabsGridWithThrottle);
@@ -172,29 +242,50 @@ $(function () {
         $('#add-tags').val(null).trigger('change');
       });
 
-    let tabs = tabsGrid.api.getSelectedNodes().map(node => node.data);
+    let currentSession = getSelectedSession();
 
-    let session = {
-      date: dateCreation,
-      query: $("#add-query").val(),
-      tags: selectedTags.map(el => { return { id: el.id, text: el.text }; }),
-      tabs: tabs
-    };
+    if (currentSession.query === "Current") {
+      let tabs = tabsGrid.api.getSelectedNodes().map(node => node.data);
 
-    let node = sessionGrid.api
-      .getDisplayedRowAtIndex(0);
+      let session = {
+        date: dateCreation,
+        query: $("#add-query").val(),
+        tags: selectedTags.map(el => { return { id: el.id, text: el.text }; }),
+        tabs: tabs
+      };
 
-    node.setDataValue('date', dateCreation + 1);
+      let node = sessionGrid.api
+        .getDisplayedRowAtIndex(0);
 
-    smartotekaFabric.KBManager().addSession(session)
-      .then(() => {
-        $('#add-query').val(null);
+      node.setDataValue('date', dateCreation + 1);
 
-        sessionGrid.api.applyTransaction({
-          add: [session],
-          addIndex: 1
+      smartotekaFabric.KBManager().addSession(session)
+        .then(() => {
+          $('#add-query').val(null);
+
+          sessionGrid.api.applyTransaction({
+            add: [session],
+            addIndex: 1
+          });
         });
-      });
+    } else {
+      let tab = {
+        windowId: currentSession.tabs[0].windowId,
+        tabId: dateCreation,
+        url: $("#add-query").val(),
+        tags: selectedTags.map(el => { return { id: el.id, text: el.text }; }),
+      };
+
+      currentSession.tabs.push(tab);
+      smartotekaFabric.KBManager().updateSession(currentSession)
+        .then(() => {
+          $('#add-query').val(null);
+
+          tabsGrid.api.applyTransaction({
+            add: [tab]
+          });
+        });
+    }
   });
 
   smartotekaFabric.queriesProvider().getTags().then(argTags => {
@@ -211,4 +302,55 @@ $(function () {
         closeTabs(tabs.filter(tab => session.tabs.findIndex(st => st.id === tab.id) === -1))
       );
   });
+
+  function gridDragOver(event) {
+    var dragSupported = event.dataTransfer.types.length;
+
+    if (dragSupported) {
+      event.dataTransfer.dropEffect = 'copy';
+      event.preventDefault();
+    }
+
+  }
+
+  function gridDrop(event, grid) {
+    event.preventDefault();
+
+    var userAgent = window.navigator.userAgent;
+    var isIE = userAgent.indexOf('Trident/') >= 0;
+
+    var jsonData = event.dataTransfer.getData(isIE ? 'text' : 'application/json');
+    var tabs = JSON.parse(jsonData);
+
+    // if data missing or data has no it, do nothing
+    if (!tabs || !tabs.length||tabs[0].id == null) {
+      return;
+    }
+
+    var gridApi = grid == 'session' ? sessionGrid.api : tabsGrid.api;
+
+    // do nothing if row is already in the grid, otherwise we would have duplicates
+
+    let rowId = $(event.target).closest('.ag-row').attr('row-id');
+
+    if (!rowId) {
+      console.log('not find row');
+      return;
+    }
+
+    var row = gridApi.getRowNode(rowId);
+    if (!row) {
+      console.log('not find row node in grid');
+      return;
+    }
+
+    row.data.tabs = unique(row.data.tabs.concat(tabs), tab => tab.url);
+
+    smartotekaFabric.KBManager().updateSession(row.data)
+      .then(_ =>
+        gridApi.applyTransaction({
+          update: [row.data]
+        }));
+  }
 })
+

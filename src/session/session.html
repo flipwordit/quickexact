@@ -26,7 +26,7 @@
     <tr>
       <td>
         <br>
-        <div id="sessionGrid" style="width:600px;height: 800px;" class="ag-theme-alpine"></div>
+        <div id="sessionGrid" style="width:600px;height: 800px;" class="ag-theme-alpine" ></div>
       </td>
       <td>
 
@@ -36,10 +36,11 @@
       <td>
         <div id="add-block">
           <div>
+            <span id="add-name">Save session</span>
             <div> Query or title: <input id="add-query" /></div>
             <div>Tags: <select id="add-tags"></select></div>
             <br />
-            <div><button style="float: right;" id="add-btn">Add</button></div>
+            <div><button style="float: right;" id="add-btn">Save</button></div>
 
           </div>
         </div>
@@ -63,6 +64,7 @@
   <script src="../libraries/fuse.js"></script>
   <script src="../common/ag-grid-components/FuzzyFilter.js"></script>
   <script src="../common/ag-grid-components/UsefulTypeFilter.js"></script>
+  <script src="../common/ag-grid-components/DragSourceRenderer.js"></script>
   <script src="../common/commonFunctions.js"></script>
 </body>
 

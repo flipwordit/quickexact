@@ -43,6 +43,12 @@ function throttle(func, ms) {
   return wrapper;
 }
 
+function moveInArray(arr, fromIndex, toIndex) {
+  var element = arr[fromIndex];
+  arr.splice(fromIndex, 1);
+  arr.splice(toIndex, 0, element);
+}
+
 function mergeArraysById(a1, a2, getId) {
   return [
     ...a1,
@@ -126,3 +132,4 @@ function closeTabs(tabs) {
     chrome.tabs.remove(tabs.map(el => el.id), r)
   );
 }
+

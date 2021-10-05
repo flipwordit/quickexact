@@ -6,14 +6,35 @@ function createTabsGrid(selector, queryProvider) {
     // });
 
     const tabsGridColumns = [
-        { field: "id", width: "100px", filter: 'agNumberColumnFilter', hide: true },
+        {
+            field: "id",
+            width: "100px",
+            filter: 'agNumberColumnFilter',
+            hide: true
+        },
         {
             field: "title",
             width: "600px",
+            // dndSource: true,
+            rowDrag: true,
             filter: "fuzzyFilter",
             cellRenderer: params => {
                 if (!params.data)
                     return params.data;
+
+                let row = $(params.eParentOfValue).closest('.ag-row');
+
+                row[0].addEventListener('dragstart', (dragEvent) => {
+                    var userAgent = window.navigator.userAgent;
+                    var isIE = userAgent.indexOf('Trident/') >= 0;
+
+                    let tabs = getSelectedTabs(params);
+                    dragEvent.dataTransfer.setData(
+                        isIE ? 'text' : 'application/json',
+                        JSON.stringify(tabs)
+                    );
+                });
+                row.attr('draggable', true);
 
                 let faviconUrl = 'chrome://favicon/' + params.data.url;
 
@@ -72,6 +93,7 @@ function createTabsGrid(selector, queryProvider) {
             {
                 name: 'Make active',
                 action: function () {
+                    chrome.windows.update(params.node.data.windowId, { focused: true })
                     chrome.tabs.update(params.node.data.id, { active: true, highlighted: true });
                 }
             },
@@ -124,7 +146,7 @@ function createTabsGrid(selector, queryProvider) {
                 name: 'Delete',
                 action: function () {
                     let tabs = getSelectedTabs(params);
-                    tabs = tabIds.findIndex(tab => tab.id === params.node.data.id) < 0
+                    tabs = tabs.findIndex(tab => tab.id === params.node.data.id) < 0
                         ? [params.node.data]
                         : tabs;
 
@@ -158,7 +180,6 @@ function createTabsGrid(selector, queryProvider) {
         },
         groupDefaultExpanded: true,
         groupSelectsChildren: true,
-
         columnDefs: tabsGridColumns,
         getRowStyle(params) {
             if (params.data && params.data.url.startsWith("https://www.google.com")) {
