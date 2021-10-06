@@ -235,7 +235,7 @@ $(function () {
     for (let i = 0; i < arrayTagArrays.length; i++) {
       let tags = arrayTagArrays[i];
 
-      if (tags.length <= selectedTags.length + 1)
+      if (tags.length <= selectedTags.length + (nextLevel ? 0 : 1))
         continue;
 
       let prefix = "";
@@ -249,7 +249,7 @@ $(function () {
         prefix += currentTag + ",";
         prefixLength++;
 
-        if (j === 0 || prefixLength < 2) {
+        if (j === 0 || !nextLevel && prefixLength < 2) {
           continue;
         }
 
@@ -269,7 +269,7 @@ $(function () {
       let prefixMap = tagPrefixMap[tag];
 
       for (let prefix in prefixMap.prefixes) {
-        if (prefixMap.count === 1)
+        if (!nextLevel && prefixMap.count === 1)
           continue;
 
         arrayToSearch.push({
