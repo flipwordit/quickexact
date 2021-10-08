@@ -187,10 +187,20 @@ class SmartotekaFabricLocalStorage {
             }
 
             import(json) {
+                let sessions = json.Sessions || [];
+                let cheatSheets = json.CheatSheets || [];
+
                 parent.#save(json.Smartoteka || {});
-                parent.#saveTags(json.Tags || []);
-                parent.#saveSessions(json.Sessions || []);
-                parent.#saveCheatSheets(json.CheatSheets || []);
+                parent.#saveSessions(sessions);
+                parent.#saveCheatSheets(cheatSheets);
+
+                let allTags = [];
+
+                cheatSheets.forEach(el => allTags = allTags.concat(el.tags));
+                sessions.forEach(el => allTags = allTags.concat(el.tags));
+
+                allTags = unique(allTags.concat(json.Tags || []), el => el.id);
+                parent.#saveTags(allTags);
             }
 
             addTags(newTags) {

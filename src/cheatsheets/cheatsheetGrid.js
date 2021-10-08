@@ -11,11 +11,14 @@ function createCheatSheetsGrid(selector, externalFilter) {
             },
 
         },
-        "Vs code":{
-            "shortcut":{}
+        "Vs code": {
+            "shortcut": {}
         },
-        "vs":{
-            "shortcut":{}
+        "vs code": {
+            "shortcut": {}
+        },
+        "vs": {
+            "shortcut": {}
         }
     }
 
@@ -34,7 +37,12 @@ function createCheatSheetsGrid(selector, externalFilter) {
         {
             field: "content",
             width: "800px",
-            filter: "fuzzyFilter"
+            filter: "fuzzyFilter",
+            cellRenderer: params => {
+                let template = "<pre><code class='language-js'>" + params.data.content + "</code></pre>";
+
+                return template;
+            }
         },
         {
             field: "tags",

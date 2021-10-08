@@ -111,7 +111,7 @@ $(function () {
 
     if (isExistsSorting(tabsGrid) && windowId === movingNode.data.windowId) {
       alert("For change tab orders - cancel grid sorting!");
-      
+
       return;
     }
 
@@ -130,10 +130,13 @@ $(function () {
 
     moveInArray(selectedSession.tabs, indexMoving, indexOver);
 
+    selectedSession.tabs[indexMoving].index = indexMoving;
+    selectedSession.tabs[indexOver].index = indexOver;
+
     smartotekaFabric.KBManager()
       .updateSession(selectedSession)
       .then(_ => {
-        tabsGrid.api.setRowData(selectedSession.tabs);
+        transactionUpdateTabsGridWithSort(selectedSession.tabs);
         tabsGrid.api.clearFocusedCell();
       });
   }
@@ -166,12 +169,8 @@ $(function () {
     });
   }
 
-  function refreshTabsGrid(tabs) {
-    let handleTabs = (tabs) => {
-      historyItemsHanlde(tabs, null);//);
-
-      let oldTabs = [];
-      let i = 0;
+  function transactionUpdateTabsGridWithSort(tabs){
+    let oldTabs = [];
       tabsGrid.api.forEachNode(node => {
         if (node.data) {
           oldTabs.push(node.data);
@@ -195,6 +194,13 @@ $(function () {
           defaultState: { sort: null },
         });
       }
+  }
+
+  function refreshTabsGrid(tabs) {
+    let handleTabs = (tabs) => {
+      historyItemsHanlde(tabs, null);//);
+
+      transactionUpdateTabsGridWithSort(tabs);
     }
 
     if (tabs) {

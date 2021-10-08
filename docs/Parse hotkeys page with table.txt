@@ -1,0 +1,24 @@
+https://support.google.com/chrome/answer/157179?hl=en&co=GENIE.Platform%3DDesktop&oco=1#zippy=%2C%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0-%D1%81-%D0%B2%D0%BA%D0%BB%D0%B0%D0%B4%D0%BA%D0%B0%D0%BC%D0%B8-%D0%B8-%D0%BE%D0%BA%D0%BD%D0%B0%D0%BC%D0%B8%2Cgoogle-chrome-feature-shortcuts%2Caddress-bar-shortcuts%2Cwebpage-shortcuts%2Cmouse-shortcuts
+
+Parse template simple table
+
+1) Higlight founded table
+$(".nice-table").css("color","green");
+
+2) configure what we need from this table (selectors). In simple case there are columnt 0 and column 1
+"description":$("td", value).eq(0).text(),
+"sample":$("td", value).eq(1).text()
+
+3) add click handler on each table's row
+$(".nice-table tr").on('click',function(){$(this).toggleClass("smartoteka-to-add");if($(this).hasClass("smartoteka-to-add"))$(this).css("color","red");else $(this).css("color","green");})
+
+4) user select rows
+
+5) var ar=[];$(".nice-table tr.smartoteka-to-add").each(function(i, value){ar.push({"description":$("td", value).eq(0).text(),"sample":$("td", value).eq(0).text()});})
+
+JSON.stringify(ar) send to set tags. Add to smartoteka
+
+
+result:
+
+'[{"description":"Open a new window","sample":"Ctrl + n"},{"description":"Open a new window in Incognito mode","sample":"Ctrl + Shift + n"},{"description":"Open a new tab, and jump to it","sample":"Ctrl + t"},{"description":"Close the current tab","sample":"Ctrl + w or Ctrl + F4"},{"description":"Open the History page in a new tab","sample":"Ctrl + h"},{"description":"Open Developer Tools","sample":"Ctrl + Shift + j or F12"},{"description":"Open the Clear Browsing Data options","sample":"Ctrl + Shift + Delete"},{"description":"Jump to the address bar","sample":"Ctrl + l or Alt + d or F6"},{"description":"Reload the current page, ignoring cached content","sample":"Shift + F5 or Ctrl + Shift + r"},{"description":"Save your current webpage as a bookmark","sample":"Ctrl + d"},{"description":"Save all open tabs as bookmarks in a new folder","sample":"Ctrl + Shift + d"},{"description":"Open a link in new background tab","sample":"Ctrl + Click a link"},{"description":"Open a link, and jump to it","sample":"Ctrl + Shift + Click a link"},{"description":"Open a link in a new window","sample":"Shift + Click a link"}]'
