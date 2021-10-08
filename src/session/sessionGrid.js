@@ -1,4 +1,4 @@
-function createSessionGrid(selector) {
+function createSessionGrid(selector, externalFilter) {
   const sessionGridColumns = [
     {
       field: "date",
@@ -81,6 +81,8 @@ function createSessionGrid(selector) {
     },
     rowSelection: 'single',
     getContextMenuItems: getContextMenuItems,
+    isExternalFilterPresent: () => externalFilter,
+    doesExternalFilterPass: (node) => !externalFilter || externalFilter(node),
   };
 
 
@@ -128,5 +130,5 @@ function createSessionGrid(selector) {
   const sessionGridDiv = document.querySelector(selector);
   new agGrid.Grid(sessionGridDiv, sessionGridOptions);
 
-  return sessionGridOptions;
+  return agGridExtendApi(sessionGridOptions);
 }

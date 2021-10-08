@@ -15,7 +15,12 @@
   <br /><br />
   <table>
     <tr>
-      <td></td>
+      <td>
+        <span style="display:inline-block;width: 95%;">
+          Query: <select id="filter-tags"></select>
+        </span><span style="display:inline-block;"><button id="clear-filter-tags-btn">X</button></span>
+
+      </td>
       <td>
         <div id="grid-btns">
           <button id="close-others-btn">Close others</button>
@@ -26,7 +31,7 @@
     <tr>
       <td>
         <br>
-        <div id="sessionGrid" style="width:600px;height: 800px;" class="ag-theme-alpine" ></div>
+        <div id="sessionGrid" style="width:600px;height: 800px;" class="ag-theme-alpine"></div>
       </td>
       <td>
 
@@ -55,16 +60,20 @@
 
   <script src="../libraries/jquery-3.6.0.min.js"></script>
   <script src="../libraries/jquery-ui.js"></script>
-  <script src="../libraries/select2.min.js"></script>
+  <script src="../libraries/select2.js"></script>
   <script src="session.js"></script>
   <script src="sessionGrid.js"></script>
   <script src="tabsGrid.js"></script>
-  <script src="multiselectTags.js"></script>
+  <script src="../common/multiselectTags.js"></script>
+  <script src="../common/mulitselectTagsHandlers.js"></script>
 
   <script src="../libraries/fuse.js"></script>
   <script src="../common/ag-grid-components/FuzzyFilter.js"></script>
   <script src="../common/ag-grid-components/UsefulTypeFilter.js"></script>
+  <script src="../common/ag-grid-components/ag-grid-extension.js"></script>
   <script src="../common/commonFunctions.js"></script>
+  <script src="../common/restrictionMap.js"></script>
+  <script src="../common/rateTags.js"></script>
 </body>
 
 </html>

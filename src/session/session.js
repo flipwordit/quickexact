@@ -22,7 +22,7 @@ $(function () {
 
   let queryProvider = smartotekaFabric.queriesProvider();
 
-  let sessionGrid = createSessionGrid('#sessionGrid');
+  let sessionGrid = createSessionGrid('#sessionGrid', getFilterByTags());
 
   function getSelectedSession() {
     let selectedRows = sessionGrid.api.getSelectedRows();
@@ -159,46 +159,39 @@ $(function () {
     return !notExistsSorting;
   }
 
-  function historyItemsHanlde(historyItems, tabGroups) {
+  function historyItemsHanlde(historyItems) {
 
     historyItems.forEach((v, i) => {
       v.useful = false;
       v.tags = [];
-      //TODO: tabGroups available in version 3
-      //v.groupName = v.groupId == -1 ? "" : tabGroups.find(el => el.id === groupId).title;
-    });
+     });
   }
 
-  function transactionUpdateTabsGridWithSort(tabs){
-    let oldTabs = [];
-      tabsGrid.api.forEachNode(node => {
-        if (node.data) {
-          oldTabs.push(node.data);
-        }
+  function transactionUpdateTabsGridWithSort(tabs) {
+    let oldTabs = tabsGrid.api.getAllRows();
+
+    let newRows = tabs.filter(t => oldTabs.findIndex(ot => ot.id === t.id) < 0);
+    let removeRows = oldTabs.filter(ot => tabs.findIndex(t => ot.id === t.id) < 0);
+    let updateRows = tabs.filter(t => oldTabs.findIndex(ot => ot.id === t.id) >= 0);
+
+    tabsGrid.api.applyTransaction({//Обновление не изменяет порядок записей
+      add: newRows,
+      remove: removeRows,
+      update: updateRows
+    });
+
+
+    if (!isExistsSorting(tabsGrid)) {
+      tabsGrid.columnApi.applyColumnState({
+        state: [{ colId: 'index', sort: 'asc' }],
+        defaultState: { sort: null },
       });
-
-      let newRows = tabs.filter(t => oldTabs.findIndex(ot => ot.id === t.id) < 0);
-      let removeRows = oldTabs.filter(ot => tabs.findIndex(t => ot.id === t.id) < 0);
-      let updateRows = tabs.filter(t => oldTabs.findIndex(ot => ot.id === t.id) >= 0);
-
-      tabsGrid.api.applyTransaction({//Обновление не изменяет порядок записей
-        add: newRows,
-        remove: removeRows,
-        update: updateRows
-      });
-
-
-      if (!isExistsSorting(tabsGrid)) {
-        tabsGrid.columnApi.applyColumnState({
-          state: [{ colId: 'index', sort: 'asc' }],
-          defaultState: { sort: null },
-        });
-      }
+    }
   }
 
   function refreshTabsGrid(tabs) {
     let handleTabs = (tabs) => {
-      historyItemsHanlde(tabs, null);//);
+      historyItemsHanlde(tabs);
 
       transactionUpdateTabsGridWithSort(tabs);
     }
@@ -244,7 +237,6 @@ $(function () {
   function clearFilters() {
     tabsGrid.api.setFilterModel(null);
   }
-  let tags = [];
 
   //TODO: when selectRows - add automatic tags with grow color.
   //TODO wne we select many rows - union or intersect their tags?
@@ -318,10 +310,13 @@ $(function () {
     }
   });
 
-  smartotekaFabric.queriesProvider().getTags().then(argTags => {
-    tags = argTags;
+  smartotekaFabric.queriesProvider().getTags().then(tags => {
+    registerRestrictionMap();
+    
+    let generateAdditionalTags = generateAdditionalTagsFunction(sessionGrid);
 
-    createMultiselectTags("#add-tags", tags);
+    createMultiselectTags("#add-tags", tags, generateAdditionalTags);
+    createMultiselectTags("#filter-tags", tags, generateAdditionalTags);
   });
 
   $('#close-others-btn').click(() => {
@@ -381,5 +376,7 @@ $(function () {
           update: [row.data]
         }));
   }
+
+  registerFilterToGrid(sessionGrid);
 })
 

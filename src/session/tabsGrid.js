@@ -213,5 +213,5 @@ function createTabsGrid(selector, queryProvider) {
     const tabsGridDiv = document.querySelector(selector);
     new agGrid.Grid(tabsGridDiv, tabsGridOptions);
 
-    return tabsGridOptions;
+    return agGridExtendApi(tabsGridOptions);
 }

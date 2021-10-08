@@ -1,37 +1,6 @@
 function createCheatSheetsGrid(selector, externalFilter) {
 
-    const restrict = {
-        "Chrome": {
-            "Api": {
-                "V3": {},
-                "V2": {},
-                "tab": {
-                    "event": {}
-                }
-            },
-
-        },
-        "Vs code": {
-            "shortcut": {}
-        },
-        "vs code": {
-            "shortcut": {}
-        },
-        "vs": {
-            "shortcut": {}
-        }
-    }
-
-    function restrictToMap(restrict, map, parent = '.') {
-        let id = 0;
-        for (let key in restrict) {
-            map[key] = parent + id++;//TODO: заменить на дроби
-            restrictToMap(restrict[key], map, map[key]);
-        }
-    }
-
-    window.restrictMap = {};
-    restrictToMap(restrict, restrictMap);
+    registerRestrictionMap();
 
     const cheatSheetsGridColumns = [
         {
@@ -100,18 +69,9 @@ function createCheatSheetsGrid(selector, externalFilter) {
         },
         rowSelection: 'multiple',
         getContextMenuItems: getContextMenuItems,
-        isExternalFilterPresent: isExternalFilterPresent,
-        doesExternalFilterPass: doesExternalFilterPass,
+        isExternalFilterPresent: () => externalFilter,
+        doesExternalFilterPass: (node) => !externalFilter || externalFilter(node),
     };
-
-    function isExternalFilterPresent() {
-        // if ageType is not everyone, then we are filtering
-        return externalFilter;
-    }
-
-    function doesExternalFilterPass(node) {
-        return !externalFilter || externalFilter(node);
-    }
 
     function getContextMenuItems(params) {
         return [
@@ -139,5 +99,5 @@ function createCheatSheetsGrid(selector, externalFilter) {
     const cheatSheetsGridDiv = document.querySelector(selector);
     new agGrid.Grid(cheatSheetsGridDiv, cheatSheetsGridOptions);
 
-    return cheatSheetsGridOptions;
+    return agGridExtendApi(cheatSheetsGridOptions);
 }
