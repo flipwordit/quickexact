@@ -7,6 +7,7 @@ let smartotekaFabric =
 
 $(function () {
 
+
   $("#sessionGrid").on("dragover", function (event) {
     gridDragOver(event.originalEvent);
   });
@@ -50,16 +51,42 @@ $(function () {
     refreshTabsGrid(session.query === "Current" ? null : session.tabs);
 
     if (session.query === "Current") {
-      $("#add-name").text("Save session");
-      $("#add-btn").text("Save");
-      $("#add-btn").attr("saveSession");
+      $("#btn-save-session").show();
+      $("#btn-edit-session").hide();
+      $("#btn-add-tab").hide();
     }
     else {
-      $("#add-name").text("Add tab to session");
-      $("#add-btn").text("Add tab");
-      $("#add-btn").attr("addTab");
+      $("#btn-save-session").hide();
+      $("#btn-edit-session").show();
+      $("#btn-add-tab").show();
     }
   }
+
+  $("#btn-save-session").click(function () {
+    $(this).hide();
+
+    $("#add-block").show();
+    $("#add-name").text("Save session");
+    $("#query-or-title").show();
+    $("#add-query").val(null);
+    $("#add-btn").text("Save");
+    $("#add-tags").val(null).trigger('change');
+    $("#add-btn").attr("mode", "saveSession");
+  });
+
+  $("#btn-edit-session").click(function () {
+    $(this).hide();
+
+    let session = getSelectedSession();
+    $("#add-block").show();
+    $("#add-name").text("Update session");
+    $("#query-or-title").show();
+    $("#add-query").val(session.query);
+    $("#add-btn").text("Update");
+    $("#add-tags").val(session.tags.map(el => el.id)).trigger('change');
+    $("#add-btn").attr("mode", "updateSession");
+  });
+
 
   sessionGrid.onReplacing = function (session) {
     return new Promise(resolve => {
@@ -164,7 +191,7 @@ $(function () {
     historyItems.forEach((v, i) => {
       v.useful = false;
       v.tags = [];
-     });
+    });
   }
 
   function transactionUpdateTabsGridWithSort(tabs) {
@@ -266,53 +293,59 @@ $(function () {
 
     let currentSession = getSelectedSession();
 
-    if (currentSession.query === "Current") {
-      let tabs = tabsGrid.api.getSelectedNodes().map(node => node.data);
+    let mode = $("#add-btn").attr('mode');
+    switch (mode) {
+      case 'saveSession':
+        {
+          let tabs = tabsGrid.api.getSelectedNodes().map(node => node.data);
 
-      let session = {
-        date: dateCreation,
-        query: $("#add-query").val(),
-        tags: selectedTags.map(el => { return { id: el.id, text: el.text }; }),
-        tabs: tabs
-      };
+          let session = {
+            date: dateCreation,
+            query: $("#add-query").val(),
+            tags: selectedTags.map(el => { return { id: el.id, text: el.text }; }),
+            tabs: tabs
+          };
 
-      let node = sessionGrid.api
-        .getDisplayedRowAtIndex(0);
+          let node = sessionGrid.api
+            .getDisplayedRowAtIndex(0);
 
-      node.setDataValue('date', dateCreation + 1);
+          node.setDataValue('date', dateCreation + 1);
 
-      smartotekaFabric.KBManager().addSession(session)
-        .then(() => {
-          $('#add-query').val(null);
+          smartotekaFabric.KBManager().addSession(session)
+            .then(() => {
+              $('#add-query').val(null);
 
-          sessionGrid.api.applyTransaction({
-            add: [session],
-            addIndex: 1
-          });
-        });
-    } else {
-      let tab = {
-        windowId: currentSession.tabs[0].windowId,
-        tabId: dateCreation,
-        url: $("#add-query").val(),
-        tags: selectedTags.map(el => { return { id: el.id, text: el.text }; }),
-      };
+              sessionGrid.api.applyTransaction({
+                add: [session],
+                addIndex: 1
+              });
 
-      currentSession.tabs.push(tab);
-      smartotekaFabric.KBManager().updateSession(currentSession)
-        .then(() => {
-          $('#add-query').val(null);
+              $("#add-block").hide();
+            });
+        }
+        break;
+      case 'updateSession':
+        {
+          currentSession.query = $("#add-query").val();
+          currentSession.tags = selectedTags.map(el => { return { id: el.id, text: el.text }; });
 
-          tabsGrid.api.applyTransaction({
-            add: [tab]
-          });
-        });
+          smartotekaFabric.KBManager().updateSession(currentSession)
+            .then(() => {
+              $('#add-query').val(null);
+
+              sessionGrid.api.applyTransaction({
+                update: [currentSession]
+              });
+              $("#add-block").hide();
+            });
+        }
+        break;
     }
   });
 
   smartotekaFabric.queriesProvider().getTags().then(tags => {
     registerRestrictionMap();
-    
+
     let generateAdditionalTags = generateAdditionalTagsFunction(sessionGrid);
 
     createMultiselectTags("#add-tags", tags, generateAdditionalTags);
