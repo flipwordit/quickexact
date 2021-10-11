@@ -133,6 +133,11 @@ class SmartotekaFabricLocalStorage {
             getCheatSheets() {
                 return parent.#getCheatSheets();
             }
+
+            getSelectSession() {
+
+                return parent.#getFromStorage("selectSessionId", null);
+            }
         }
 
         return new SmartotekaQueryManager();
@@ -184,6 +189,13 @@ class SmartotekaFabricLocalStorage {
                             }
                         });
                 });
+            }
+
+            setSelectSession(sessionId) {
+
+                return new Promise(r =>
+                    chrome.storage.local.set({ selectSessionId: sessionId }, () => r())
+                );
             }
 
             import(json) {

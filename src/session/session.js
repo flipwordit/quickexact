@@ -60,6 +60,8 @@ $(function () {
       $("#btn-edit-session").show();
       $("#btn-add-tab").show();
     }
+
+    smartotekaFabric.KBManager().setSelectSession(session.date);
   }
 
   $("#btn-save-session").click(function () {
@@ -111,7 +113,17 @@ $(function () {
         sessions.unshift({ date: new Date().valueOf(), query: "Current", tabs: [] });
         sessionGrid.api.setRowData(sessions);
 
-        sessionGrid.api.getDisplayedRowAtIndex(0).setSelected(true);
+        smartotekaFabric.queriesProvider()
+          .getSelectSession()
+          .then(sessionId => {
+            let node = sessionId
+              ? sessionGrid.api.getRowNode(sessionId)
+              : null;
+            if (!node) {
+              node = sessionGrid.api.getDisplayedRowAtIndex(0);
+            }
+            node.setSelected(true);
+          });
       });
   }
 
