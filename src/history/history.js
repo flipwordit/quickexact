@@ -78,28 +78,6 @@ $(function () {
         return html;
       }
     },
-    {
-      field: "useful",
-      width: "100px",
-      filter: "usefulTypeFilter",
-      cellRenderer: params => {
-        if (!params.data)
-          return params.data;
-
-        queryProvider.isUseful(params.data.url)//TODO: refactor. It wiil call each time when cell renders
-          .then(urls => {
-            let newValue = urls.length > 0;
-            if (newValue !== params.data.useful) {
-              params.data.useful = newValue;
-              params.refreshCell();
-            }
-
-          });//TODO: move to cellRender and use packet query
-
-
-        return params.data.useful ? "&#10003;" : "";
-      }
-    },
     { field: "tags" },
     { field: "typedCount", headerName: "Typed Count", width: "150px", filter: 'agNumberColumnFilter' },
     { field: "visitCount", headerName: "Visit Count", width: "150px", filter: 'agNumberColumnFilter' },

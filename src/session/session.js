@@ -199,14 +199,6 @@ $(function () {
     return !notExistsSorting;
   }
 
-  function historyItemsHanlde(historyItems) {
-
-    historyItems.forEach((v, i) => {
-      v.useful = false;
-      v.tags = [];
-    });
-  }
-
   function transactionUpdateTabsGridWithSort(tabs) {
     let oldTabs = tabsGrid.api.getAllRows();
 
@@ -230,14 +222,9 @@ $(function () {
   }
 
   function refreshTabsGrid(tabs) {
-    let handleTabs = (tabs) => {
-      historyItemsHanlde(tabs);
-
-      transactionUpdateTabsGridWithSort(tabs);
-    }
 
     if (tabs) {
-      handleTabs(tabs)
+      transactionUpdateTabsGridWithSort(tabs)
     }
     else {
       getAllTabs()
@@ -248,7 +235,7 @@ $(function () {
           node.setDataValue('date', new Date().valueOf());
           node.setDataValue('tabs', tabs);
 
-          handleTabs(tabs);
+          transactionUpdateTabsGridWithSort(tabs);
         });
     }
   }

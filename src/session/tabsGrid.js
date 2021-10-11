@@ -56,28 +56,6 @@ function createTabsGrid(selector, queryProvider) {
                 return html;
             }
         },
-        {
-            field: "useful",
-            width: "100px",
-            filter: "usefulTypeFilter",
-            cellRenderer: params => {
-                if (!params.data)
-                    return params.data;
-
-                queryProvider.isUseful(params.data.url)//TODO: refactor. It wiil call each time when cell renders
-                    .then(urls => {
-                        let newValue = urls.length > 0;
-                        if (newValue !== params.data.useful) {
-                            params.data.useful = newValue;
-                            params.refreshCell();
-                        }
-
-                    });//TODO: move to cellRender and use packet query
-
-
-                return params.data.useful ? "&#10003;" : "";
-            }
-        },
         { field: "tags", width: "200px", filter: 'agSetColumnFilter' },
         { field: "windowId", headerName: "window", rowGroup: true, hide: true },
         //TODO: tabGroups available in version 3
