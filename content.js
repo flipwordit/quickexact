@@ -53,3 +53,30 @@ chrome.runtime.onMessage.addListener(
     }
   }
 );
+
+setTimeout(() => {
+
+  new Toast({
+    title: false,
+    text: 'Сообщение...',
+    theme: 'light',
+    autohide: true,
+    interval: 3000
+  });
+
+}, 200);
+
+chrome.runtime.onMessage.addListener(
+  function (request, sender, sendResponse) {
+    if (request.message) {
+      new Toast({
+        title: false,
+        text: request.message,
+        theme: 'light',
+        autohide: true,
+        interval: 3000
+      });
+      sendResponse({ success: true });
+    }
+  }
+);

@@ -8,16 +8,20 @@
       "matches": [
         "<all_urls>"
       ],
+      "css": ["src/libraries/toast.min.css"],
       "js": [
         "src/libraries/jquery-3.6.0.min.js",
         "src/common/SmartotekaFabricDGraph.js",
         "src/common/SmartotekaFabricLocalStorage.js",
+        "src/libraries/toast.min.js",
         "content.js"
       ]
     }
   ],
   "background": {
-    "scripts": ["background.js"],
+    "scripts": [
+      "src/common/SmartotekaFabricLocalStorage.js",
+      "background.js"],
     "persistent": false
   },
   "permissions": [
@@ -39,11 +43,11 @@
       "action": {},
       "global": true
     },
-    "usefull-tab": {
+    "add-tab-to-session": {
       "suggested_key": {
         "default": "Alt+T"
       },
-      "description": "mark active url to useful",
+      "description": "Add tab to selected session",
       "action": {},
       "comment": "TODO: check used short keys https://developer.chrome.com/docs/extensions/reference/commands/#verify-commands-registered"
     },

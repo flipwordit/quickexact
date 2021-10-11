@@ -134,9 +134,27 @@ class SmartotekaFabricLocalStorage {
                 return parent.#getCheatSheets();
             }
 
-            getSelectSession() {
+            getSelectSessionId() {
 
                 return parent.#getFromStorage("selectSessionId", null);
+            }
+
+            getSelectSession() {
+
+                return new Promise(r => {
+                    Promise.all([
+                        this.getSessions(),
+                        this.getSelectSessionId()])
+                        .then((values) => {
+                            let [sessions, sessionId] = values;
+
+                            let index = sessions.findIndex(el => el.date === sessionId);
+
+                            let session = index < 0 ? null : sessions[index];
+
+                            r(session);
+                        });
+                });
             }
         }
 

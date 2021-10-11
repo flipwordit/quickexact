@@ -61,7 +61,8 @@ $(function () {
       $("#btn-add-tab").show();
     }
 
-    smartotekaFabric.KBManager().setSelectSession(session.date);
+    smartotekaFabric.KBManager()
+      .setSelectSession(session.query === "Current" ? null : session.date);
   }
 
   $("#btn-save-session").click(function () {
@@ -114,7 +115,7 @@ $(function () {
         sessionGrid.api.setRowData(sessions);
 
         smartotekaFabric.queriesProvider()
-          .getSelectSession()
+          .getSelectSessionId()
           .then(sessionId => {
             let node = sessionId
               ? sessionGrid.api.getRowNode(sessionId)
