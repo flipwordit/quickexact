@@ -21,21 +21,30 @@ chrome.commands.onCommand.addListener(async (command) => {
 
   switch (command) {
     case "open-search": {
-      // let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      const urlSessionPage = "src/session/session.html";
 
-      // //Current tab is this extension
-      // //TODO: relace to find if current extension open in tabs and make it active
-      // //Do we need many tabs with smartoteka? Many windows?
-      // if (tab.url === "chrome-extension://fkfammijpebbgdjblnmkkmobgenppkda/popup.html") {
-      //   chrome.tabs.sendMessage(tab.id, "clear", function(response) {
-      //     console.log(response);
-      //   });
-      // } else {
-      chrome.tabs.create({
-        url:
-          //"src/cheatsheets/cheatsheet.html"
-          "src/session/session.html"
-      });
+      getActiveTab()
+        .then(activeTab => {
+          if (activeTab.url.indexOf(chrome.runtime.id) >= 0) {
+            chrome.tabs.update(activeTab.id, { url: urlSessionPage })
+          } else {
+            chrome.tabs.query({ currentWindow: true, url: "chrome-extension://" + chrome.runtime.id + "/" + urlSessionPage },
+              (tabs) => {
+                if (tabs.length) {
+                  chrome.tabs.update(tabs[0].id, { highlighted: true },
+                    () => {
+                      chrome.tabs.reload();
+                    });
+                } else {
+                  chrome.tabs.create({
+                    url:
+                      //"src/cheatsheets/cheatsheet.html"
+                      urlSessionPage
+                  });
+                }
+              });
+          }
+        });
       break;
     }
     case "add-tab-to-session": {
@@ -54,7 +63,10 @@ chrome.commands.onCommand.addListener(async (command) => {
                     .then(() => {
                       chrome.tabs.sendMessage(
                         activeTab.id,
-                        { message: "Added to '" + session.query + "'" }, function (response) {
+                        {
+                          message: "Added to '" + session.query + "'"
+                        },
+                        function (response) {
                           console.log(response.success);
                         });
                     });
@@ -76,7 +88,10 @@ chrome.commands.onCommand.addListener(async (command) => {
 
                       chrome.tabs.sendMessage(
                         activeTab.id,
-                        { message: "Added to '" + session.query + "'" }, function (response) {
+                        {
+                          message: "Added to '" + session.query + "'"
+                        },
+                        function (response) {
                           console.log(response.success);
                         });
                     });

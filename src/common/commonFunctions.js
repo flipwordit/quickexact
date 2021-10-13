@@ -155,6 +155,18 @@ function getAllTabs() {
   );
 }
 
+function getTabsByPattern(pattern) {
+  return new Promise(r =>
+    chrome.tabs.query({}, (tabs) => r(tabs))
+  );
+}
+
+function getActiveTab() {
+  return new Promise(r =>
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => r(tabs.length ? tabs[0] : null))
+  );
+}
+
 function closeTabs(tabs) {
   return new Promise(r =>
     chrome.tabs.remove(tabs.map(el => el.id), r)
@@ -168,5 +180,9 @@ function closeTabsByUrlIfOpen(tabsToClose) {
     .then((tabs) =>
       closeTabs(tabs.filter(tab => tabUrls.indexOf(tab.url) >= 0))
     );
+}
+
+function redirectCurrentTab(url) {
+  window.location.assign(url);
 }
 

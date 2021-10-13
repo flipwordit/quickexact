@@ -2,7 +2,7 @@ function createSessionGrid(selector, externalFilter) {
   const sessionGridColumns = [
     {
       field: "date",
-      width: "110px",
+      width: 110,
       filter: 'agDateColumnFilter',
       sort: 'desc',
       cellRenderer: params => {
@@ -24,13 +24,13 @@ function createSessionGrid(selector, externalFilter) {
     },
     {
       field: "query",
-      width: "200px",
+      width: 200,
       filter: "fuzzyFilter"
     },
     {
       headerName: "tabs count",
       field: "tabs",
-      width: "100px",
+      width: 100,
       filter: "usefulTypeFilter",
       valueGetter: params => {
         if (!params.data)
@@ -41,7 +41,7 @@ function createSessionGrid(selector, externalFilter) {
     },
     {
       field: "tags",
-      width: "200px",
+      width: 200,
       filter: 'agSetColumnFilter',
       valueGetter: params => {
         if (!params.data)

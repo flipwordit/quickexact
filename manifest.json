@@ -21,7 +21,9 @@
   "background": {
     "scripts": [
       "src/common/SmartotekaFabricLocalStorage.js",
-      "background.js"],
+      "src/common/commonFunctions.js",
+      "background.js"
+    ],
     "persistent": false
   },
   "permissions": [

@@ -122,39 +122,6 @@ $(function () {
 
     //smartotekaFabric.KBManager().add("vs shortcuts", "Format code Shift + Alt + F<br/>Refactor CTRL + Shift + R<br/> Save All Ctrl+K S")
   });
-
-  $('#export-all-btn').click((e) => {
-    smartotekaFabric
-      .queriesProvider()
-      .export(new Date().toJSON().replaceAll(":", "_"));
-  });
-
-  let form = document.querySelector('#import-form');
-  let file = document.querySelector('#import-file');
-
-  form.addEventListener('submit', (event) => {
-
-    // Stop the form from reloading the page
-    event.preventDefault();
-
-    // If there's no file, do nothing
-    if (!file.value.length) return;
-
-    // Create a new FileReader() object
-    let reader = new FileReader();
-
-    // Setup the callback event to run when the file is read
-    reader.onload = (event) => {
-      let str = event.target.result;
-      let json = JSON.parse(str);
-
-      smartotekaFabric.KBManager().import(json);
-    };
-
-    // Read the file
-    reader.readAsText(file.files[0]);
-
-  });
 })
 
 chrome.runtime.onMessage.addListener(

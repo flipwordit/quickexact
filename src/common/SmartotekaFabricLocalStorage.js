@@ -40,6 +40,10 @@ class SmartotekaFabricLocalStorage {
         return this.#getFromStorage("Sessions", []);
     }
 
+    #getSpeedDeal() {
+        return this.#getFromStorage("SpeedDeal", {});
+    }
+
     #saveTags(tags) {
         return new Promise(r =>
             chrome.storage.local.set({ Tags: unique(tags, el => el.id) }, () => r())
@@ -49,6 +53,12 @@ class SmartotekaFabricLocalStorage {
     #saveSessions(sessions) {
         return new Promise(r =>
             chrome.storage.local.set({ Sessions: sessions }, () => r())
+        );
+    }
+
+    #saveSpeedDeal(speedDeal) {
+        return new Promise(r =>
+            chrome.storage.local.set({ SpeedDeal: speedDeal }, () => r())
         );
     }
 
@@ -122,6 +132,24 @@ class SmartotekaFabricLocalStorage {
                 return promise;
             }
 
+            exportSpeedDeal(fileName) {
+                var promise = new Promise((resolve, reject) => {
+                    Promise.all([
+                        parent.#getSpeedDeal()
+                    ])
+                        .then(([SpeedDeal]) => {
+
+                            this.#downloadObjectAsJson(
+                                SpeedDeal,
+                                fileName);
+
+                            resolve(true);
+                        });
+                });
+
+                return promise;
+            }
+
             getTags() {
                 return parent.#getTags();
             }
@@ -169,6 +197,10 @@ class SmartotekaFabricLocalStorage {
                             r(session);
                         });
                 });
+            }
+
+            getSpeedDeal(){
+                return parent.#getSpeedDeal();
             }
         }
 
@@ -245,6 +277,10 @@ class SmartotekaFabricLocalStorage {
 
                 allTags = unique(allTags.concat(json.Tags || []), el => el.id);
                 parent.#saveTags(allTags);
+            }
+
+            importSpeedDeal(json) {
+                parent.#saveSpeedDeal(json||{});
             }
 
             addTags(newTags) {

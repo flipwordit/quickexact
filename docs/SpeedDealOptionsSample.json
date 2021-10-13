@@ -1,0 +1,15 @@
+{
+    "d": {
+        "n": {
+            "type": "session",
+            "desciption": "Social networks",
+            "id": "1633000621364",
+            "action": "o"
+        },
+        "c": {
+            "type": "cheatsheets",
+            "desciption": "CheatSheets",
+            "action": "g"
+        }
+    }
+}

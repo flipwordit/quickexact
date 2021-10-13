@@ -16,7 +16,7 @@ function createTabsGrid(selector, queryProvider) {
         },
         {
             field: "title",
-            width: "600px",
+            width: 600,
             rowDrag: true,
             filter: "fuzzyFilter",
             comparator: (a, b, nodeA, nodeB, isInverted) => {
@@ -56,7 +56,7 @@ function createTabsGrid(selector, queryProvider) {
                 return html;
             }
         },
-        { field: "tags", width: "200px", filter: 'agSetColumnFilter' },
+        { field: "tags", width: 200, filter: 'agSetColumnFilter' },
         { field: "windowId", headerName: "window", rowGroup: true, hide: true },
         //TODO: tabGroups available in version 3
         //{ field: "groupId", headerName: "window", rowGroup: true, hide: true }

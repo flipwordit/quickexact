@@ -5,7 +5,7 @@ function createCheatSheetsGrid(selector, externalFilter) {
     const cheatSheetsGridColumns = [
         {
             field: "content",
-            width: "800px",
+            width: 800,
             filter: "fuzzyFilter",
             cellRenderer: params => {
                 let template = "<pre><code class='language-js'>" + params.data.content + "</code></pre>";
@@ -15,7 +15,7 @@ function createCheatSheetsGrid(selector, externalFilter) {
         },
         {
             field: "tags",
-            width: "300px",
+            width: 300,
             filter: 'agSetColumnFilter',
             valueGetter: params => {
                 if (!params.data)
