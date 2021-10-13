@@ -156,6 +156,20 @@ class SmartotekaFabricLocalStorage {
                         });
                 });
             }
+
+            getSession(sessionId) {
+
+                return new Promise(r => {
+                    this.getSessions()
+                        .then((sessions) => {
+                            let index = sessions.findIndex(el => el.date === sessionId);
+
+                            let session = index < 0 ? null : sessions[index];
+
+                            r(session);
+                        });
+                });
+            }
         }
 
         return new SmartotekaQueryManager();

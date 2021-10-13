@@ -43,6 +43,34 @@ function throttle(func, ms) {
   return wrapper;
 }
 
+function secondRunImmediately(func, ms) {
+
+  let savedArgs,
+    savedThis;
+
+  let timerId = null;
+  function wrapper() {
+    savedArgs = arguments;
+    savedThis = this;
+
+    if (timerId) {
+      clearTimeout(timerId)
+
+      func.apply(savedThis, savedArgs);
+      savedArgs = savedThis = null;
+    }
+    else {
+      timerId = setTimeout(function () {
+        timerId = null;
+        func.apply(savedThis, savedArgs);
+        savedArgs = savedThis = null;
+      }, ms);
+    }
+  }
+
+  return wrapper;
+}
+
 function moveInArray(arr, fromIndex, toIndex) {
   var element = arr[fromIndex];
   arr.splice(fromIndex, 1);
@@ -131,5 +159,14 @@ function closeTabs(tabs) {
   return new Promise(r =>
     chrome.tabs.remove(tabs.map(el => el.id), r)
   );
+}
+
+function closeTabsByUrlIfOpen(tabsToClose) {
+  let tabUrls = tabsToClose.map(tab => tab.url);
+
+  getAllTabs()
+    .then((tabs) =>
+      closeTabs(tabs.filter(tab => tabUrls.indexOf(tab.url) >= 0))
+    );
 }
 

@@ -411,5 +411,143 @@ $(function () {
   }
 
   registerFilterToGrid(sessionGrid);
+
+  function toHelp(step, keyMapper = (k) => k, delim = ",") {
+    return Object
+      .keys(step)
+      .map(keyMapper)
+      .join(delim)
+  }
+
+  let speedDealShortCut = {
+    "d": {
+      "n": {
+        type: "session",
+        desciption: "Social networks",
+        id: "1633000621364",
+        action: "o"
+      },
+      "c": {
+        type: "cheatsheets",
+        desciption: "CheatSheets",
+        action: "g"
+      }
+    }
+  };
+
+  let pointer = speedDealShortCut;
+
+  let actions = {
+    session: {
+      o: {
+        desciption: "Open in current window",
+        action: openTabs
+      },
+      n: {
+        desciption: "Open in new window",
+        action: openTabsInNewWindow
+      },
+      c: {
+        desciption: "Close tabs and dublicates",
+        action: closeTabsByUrlIfOpen
+      }
+    },
+    cheatsheets: {
+      g: {
+        desciption: "Go to cheat sheets",
+        action: () => redirect("../cheatsheets/cheatsheet.html")
+      }
+    }
+  };
+
+  function redirect(url) {
+    window.location.assign(url);
+  }
+
+  let handler = () => { };
+  let keyDownHandler = () => { };
+
+  function speedDealKeyPress(e) {
+    let nextStep = pointer[e.key.toLowerCase()];
+
+    if (!nextStep)
+      return;
+
+    console.log(e.key + ": " + toHelp(nextStep));
+
+    pointer = nextStep;
+
+    if (typeof (pointer) === "object" && !nextStep.action) {
+      setTimeout(() => {
+        $("#speadDealHelp-values").html("<br>" + toHelp(pointer, (k) => k + "&nbsp;-&nbsp;" + pointer[k].desciption, "<br>"));
+      }, 0);
+    }
+
+
+    if (nextStep.type) {
+
+      pointer = actions[nextStep.type];
+
+      setTimeout(() => {
+        $("#speadDealHelp-values").html("<br>" + toHelp(pointer, (k) => k + "&nbsp;-&nbsp;" + pointer[k].desciption, "<br>"));
+      }, 0);
+
+      handler = pointer[nextStep.action].action;
+      let mainHandler = () => { };
+
+      switch (nextStep.type) {
+
+        case "session":
+          let id = parseInt(nextStep.id);
+
+          mainHandler = () => {
+            smartotekaFabric.queriesProvider()
+              .getSession(id)
+              .then(session => {
+
+                if (session) {
+                  console.log("Run operation" + new Date())
+                  handler(session.tabs);
+                }
+                else {
+                  alert("session not found!")
+                }
+
+                $(document).unbind("keypress.speedDeal");
+                $("#speadDealHelp").hide();
+              });
+          }
+          break;
+        case "cheatsheets":
+          mainHandler = () => handler();
+          break;
+        default:
+          throw new Error("Unexpected type '" + nextStep.type + "'")
+          break;
+      }
+
+      keyDownHandler = secondRunImmediately(mainHandler, 1500);
+      keyDownHandler();
+    } else {
+      if (nextStep.action) {
+        console.log("Set operation" + new Date())
+        handler = nextStep.action;
+
+        keyDownHandler();
+        setTimeout(() => {
+          $("#speadDealHelp-values").text(nextStep.desciption);
+          $("#speadDealHelp").text("You choosed:")
+        }, 0);
+      }
+    }
+  }
+
+  $(document).bind("keypress.speedDeal", speedDealKeyPress);
+
+  // setTimeout(() => {
+  //   $(document).unbind("keypress.speedDeal");
+  //   $("#speadDealHelp").hide();
+  // }, 3000);
+
 })
 

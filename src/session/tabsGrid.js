@@ -19,8 +19,8 @@ function createTabsGrid(selector, queryProvider) {
             width: "600px",
             rowDrag: true,
             filter: "fuzzyFilter",
-            comparator: (a, b, nodeA, nodeB, isInverted) =>{
-                if(!a||!b)
+            comparator: (a, b, nodeA, nodeB, isInverted) => {
+                if (!a || !b)
                     return 0;
                 return a.localeCompare(b, undefined, { sensitivity: 'accent' });
             },
@@ -113,16 +113,13 @@ function createTabsGrid(selector, queryProvider) {
                 name: 'Close all if open',
                 action: function () {
 
-                    let tabUrls = getSelectedTabs(params).map(tab => tab.url);
+                    let tabs = getSelectedTabs(params);
 
-                    tabUrls = tabUrls.indexOf(params.node.data.url) < 0
-                        ? [params.node.data.url]
-                        : tabUrls;
+                    tabs = tabs.findIndex(el => el.id === params.node.data.id) < 0
+                        ? [params.node.data]
+                        : tabs;
 
-                    getAllTabs()
-                        .then((tabs) =>
-                            closeTabs(tabs.filter(tab => tabUrls.indexOf(tab.url) >= 0))
-                        );
+                    closeTabsByUrlIfOpen(tabs)
                 }
             },
             'separator',
