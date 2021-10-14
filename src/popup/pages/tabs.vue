@@ -46,12 +46,5 @@ export default {
 </script>
 
 <style>
-.main {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  position: fixed;
-  top: 90px;
-  width: 100%;
-  height: calc(100% - 90px);
-  overflow: auto;
-}
+
 </style>

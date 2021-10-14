@@ -32,6 +32,7 @@ export default {
       tabsService.activateTab(this.tab.id)
     },
     closeTab() {
+      // fold in effec
       tabsService.closeTab(this.tab.id)
     },
   },
@@ -42,14 +43,16 @@ export default {
 @import '../../styles/variables';
 .tab {
   display: grid;
-  grid-template: 18px 15px / 50px 1fr 50px;
+  grid-template: 20px 18px / 50px 1fr 80px;
   align-items: center;
-  border-bottom: 1px solid rgba(227, 227, 227, 0.619);
+  border-bottom: 1px solid rgb(240, 246, 244);
+  border-top: 1px solid rgba(227, 227, 227, 0.619);
   padding: 6px 0;
   font-family: $roboto;
+  transition: all 0.2s;
 
   &:hover {
-    background: rgb(242, 255, 242);
+    background: hsl(210deg, 16%, 95%);
     cursor: pointer;
   }
 
@@ -58,6 +61,7 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: $black;
   }
   .favicon {
     height: 1.5rem;
@@ -73,7 +77,7 @@ export default {
     text-overflow: ellipsis;
     font-size: 0.875rem;
     font-style: italic;
-    color: rgba(75, 72, 72, 0.784);
+    color: rgba(97, 103, 103, 0.784);
     grid-row: 2 / 3;
     grid-column: 2 / 3;
   }
