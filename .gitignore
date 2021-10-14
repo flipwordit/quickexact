@@ -25,3 +25,4 @@ debug.log
 tests/screenshots/extension/*
 
 .vscode
+/package-lock.json
