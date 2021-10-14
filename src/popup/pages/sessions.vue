@@ -1,16 +1,16 @@
 <template>
   <div class="page">
-    <Navbar />
+    <Snippet />
   </div>
 </template>
 
 <script>
-import Navbar from '@/popup/components/Navbar'
+import Snippet from '@/popup/components/Snippet'
 
 export default {
   name: 'SmartSessions',
   components: {
-    Navbar,
+    Snippet,
   },
 }
 </script>
