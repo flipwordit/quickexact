@@ -21,6 +21,7 @@
     "fuse.js": "^6.4.6",
     "geopattern": "^1.2.3",
     "jquery": "^3.6.0",
+    "luxon": "^2.0.2",
     "ua-parser-js": "^0.7.28",
     "uuid": "^8.3.2",
     "v-tooltip": "^2.1.3",
