@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <title>Knowledge base</title>
+<head>
+  <link rel="stylesheet" href="kb.css">
+  <link rel="stylesheet" href="../libraries/jquery-ui.css">
+</head>
+
+<body>
+  <a href="../history/history.html">history</a>
+  <a href="../session/session.html">session</a>
+  <a href="../cheatsheets/cheatsheet.html">cheatsheets</a>
+  <br/><br/>
+  <table>
+    <tr>
+      <td style="vertical-align: top;width:400px;">
+        <input id="search-query" />
+        <button id="search-btn">Search</button>
+        <div id="search-result">
+        </div>
+      </td>
+      <td>
+        Last queries:
+        <div id='lastQueries'>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <br />
+
+  <span id="add-block-switch">&#8595;</span>
+  <br />
+  <br />
+  <div id="add-block" style="display: none;">
+    <div>
+      Add new query
+      <div> Query: <input id="add-query" /></div> Is it needed?
+
+      <div>Type: <select id="add-type">
+          <option id="url" value="1">Url</option>
+          <option id="html" value="2">Html</option>
+        </select></div>
+        <div>Url or Html: <input id="add-content" /></div>
+        <div>Tags: <input id="add-tags" /></div>
+      <!--Html editor-->
+      <button id="add-btn">Add</button>
+    </div>
+    <br />
+    <br />
+    <div> Map queries
+      <div>Query 1: <input id="map-query1" /></div>
+      <div>Query 2: <input id="map-query2" /></div>
+      <button id="map-btn">Map</button>
+    </div>
+  </div>
+ 
+  <script src="../common/SmartotekaFabricLocalStorage.js"></script>
+  <script src="../common/SmartotekaFabricDgraph.js"></script>
+  <script src="../common/commonFunctions.js"></script>
+
+  <script src="../libraries/jquery-3.6.0.min.js"></script>
+  <script src="../libraries/jquery-ui.js"></script>
+  <script src="kb.js"></script>
+</body>
+
+</html>

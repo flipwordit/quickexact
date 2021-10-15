@@ -126,6 +126,7 @@ const config = {
     new VueLoaderPlugin(),
     new CopyWebpackPlugin([
       { from: 'images', to: 'images' },
+      { from: 'src_jq', to: 'src_jq' },
       { from: 'fonts/**/*', to: 'fonts/[name].[ext]' },
       { from: 'popup/popup.html', to: 'popup/popup.html' },
       {

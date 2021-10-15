@@ -1,106 +1,108 @@
 <template>
   <div class="popup">
     <Navbar>
-      <input type="search" placeholder="Search" v-model="query" @input="fetchWindows"/>
+      <!-- <input type="search" placeholder="Search" v-model="query" @input="fetchWindows"/>
       <div class="actions">
 
-      </div>
+      </div> -->
     </Navbar>
     <main>
-      <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane :label="tabsCount +' Tabs'" name="tabs">
-        <tabs />
-      </el-tab-pane>
-      <el-tab-pane label="Sessions" name="sessions">
-        <sessions />
-      </el-tab-pane>
-      <el-tab-pane label="Bookmarks" name="bookmarks">
-        <bookmarks />
-      </el-tab-pane>
-      <el-tab-pane :label="recordsCount + ' History'" name="history">
-        <history />
-      </el-tab-pane>
-    </el-tabs>
+      <p>Selected: {{ selected }}</p>
+       <select2 :options2="options" v-model="selected">
+          <option disabled value="0">Select one</option>
+        </select2>
+      <!-- <snippet /> -->
+      <div v-for="sr in searchResults" :key="sr.date">
+        <li>{{ sr.title }}</li>
+      </div>
     </main>
-
-    <footer class="recorder" v-if="false">
-      <div class="name">Session</div>
-    </footer>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import Navbar from '@/popup/components/Navbar'
-import tabs from '@/popup/pages/tabs'
-import sessions from '@/popup/pages/sessions'
-import bookmarks from '@/popup/pages/bookmarks'
-import history from './pages/history'
+import { mapActions, mapGetters } from "vuex";
+import Navbar from "@/popup/components/Navbar";
+import tabs from "@/popup/pages/tabs";
+
+import Snippet from "@/popup/components/Snippet";
+import bookmarks from "@/popup/pages/bookmarks";
+import history from "./pages/history";
+import Select2 from "@/popup/components/Select2.vue";
+
+require("@/src_jq/common/SmartotekaFabricLocalStorage.js");
 
 export default {
-  name: 'Popup',
+  name: "Popup",
   components: {
+    Snippet,
     tabs,
-    sessions,
     bookmarks,
     Navbar,
     history,
+    Select2,
   },
   data() {
     return {
-      activeName: 'sessions',
-      query: '',
-    }
+      activeName: "sessions",
+      query: "",
+      searchResults: [],
+      selected: 2,
+      options: [
+        { id: 1, text: "Hello" },
+        { id: 2, text: "World" },
+      ],
+    };
   },
+  beforeMount() {},
   mounted() {
-    this.collectWindows()
-    this.collectHistory()
-    this.collectBookmarks()
+    let smartotekaFabric = new SmartotekaFabricLocalStorage();
+
+    let that = this;
+
+    smartotekaFabric
+      .queriesProvider()
+      .getSessions()
+      .then((sessions) => {
+        that.searchResults = sessions.map((el) => {
+          return { date: el.date, title: el.query };
+        });
+      });
   },
-  computed: {
-    ...mapGetters(['tabsCount', 'recordsCount']),
-  },
+  computed: {},
   methods: {
-    ...mapActions([
-      'collectWindows', 'collectHistory', 'collectBookmarks',
-    ]),
-
-    fetchWindows() {
-      console.log('fetchWindows')
-      this.collectWindows(this.query)
-    },
     handleClick(tab, event) {
-      console.log(tab, event)
+      console.log(tab, event);
     },
-
   },
-}
+};
 </script>
-<style lang="scss">
- .el-tabs__header {
-   margin:0;
- }
- .el-tabs__nav {
-    width: 100% !important;
-    display: flex;
-    justify-content: space-evenly;
- }
- .recorder {
-   position: fixed;
-   bottom: 0;
-   left: 0;
-   width: 100%;
-   height: 300px;
-   background: white;
- }
 
- .main {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+<style lang="scss">
+.el-tabs__header {
+  margin: 0;
+}
+.el-tabs__nav {
+  width: 100% !important;
+  display: flex;
+  justify-content: space-evenly;
+}
+.recorder {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 300px;
+  background: white;
+}
+
+.main {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   position: fixed;
   top: 90px;
   width: 100%;
   height: calc(100% - 90px);
   overflow: auto;
-  background: hsl(203deg, 34%, 95%);;
+  background: hsl(203deg, 34%, 95%);
 }
 </style>

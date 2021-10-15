@@ -1,9 +1,8 @@
-let KnowledgeType = {
-  Usefull: 1,
-  Preserved: 2,
-}
 
-class SmartotekaFabricLocalStorage {
+export default class SmartotekaFabricLocalStorage {
+  constructor() {
+  }
+
   #getSmartoteka() {
     let smartotekaStr = localStorage.Smartoteka
 
@@ -30,7 +29,7 @@ class SmartotekaFabricLocalStorage {
 
     class SmartotekaQueryManager {
       search(query) {
-        let promise = new Promise((resolve, reject) => {
+        let promise = new Promise((resolve) => {
           let smartoteka = parent.#getSmartoteka()
 
           let searchResults = smartoteka[query]
@@ -86,5 +85,3 @@ class SmartotekaFabricLocalStorage {
     return new SmartotekaManager()
   }
 }
-
-export default SmartotekaFabricLocalStorage

@@ -1,0 +1,34 @@
+#search-result .delete{
+    float: right;
+    margin-right: 10px;
+}
+
+.website-icon {
+    background-repeat: no-repeat;
+    background-size: 16px;
+    flex: none;
+    height: 16px;
+    width: 16px;
+    margin-right: 16px;
+    margin-top: 12px;    
+}
+
+.website-link {
+    color: var(--cr-primary-text-color);
+    display: flex;
+    overflow: hidden;
+    text-decoration: none;
+}
+
+#export-all-btn{
+    margin-left: 100px;
+}
+
+#add-block div{
+    margin: 5px;
+}
+
+#grid-btns button{
+    float: right;
+    margin-left: 10px;
+}

@@ -21,7 +21,8 @@
     "unlimitedStorage",
     "commands",
     "history",
-    "chrome://favicon2/"
+    "chrome://favicon2/",
+    "chrome://favicon/"
   ],
   "commands": {
     "_execute_action": {
@@ -51,7 +52,7 @@
     "chrome://*"
   ],
   "browser_action": {
-    "default_title": "Tabulation"
+    "default_title": "Smartoteka"
   },
   "content_security_policy": "img-src chrome://favicon2;",
   "content_scripts": [
