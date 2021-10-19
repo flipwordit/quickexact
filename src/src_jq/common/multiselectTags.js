@@ -2,7 +2,7 @@ function createMultiselectTags(selector, tags, helpTags) {
 
   let multilist = $(selector);
 
-  multilist.select2({
+  let select2List=multilist.select2({
     width: '100%',
     multiple: true,
     tags: true,
@@ -41,7 +41,7 @@ function createMultiselectTags(selector, tags, helpTags) {
           {
             id: term,
             text: term,
-            tag:true,
+            tag: true,
             newTag: true,
             score: 0
           },
@@ -52,7 +52,7 @@ function createMultiselectTags(selector, tags, helpTags) {
         return {
           id: term,
           text: term,
-          tag:true,
+          tag: true,
           newTag: true,
           score: 0
         };
@@ -121,4 +121,8 @@ function createMultiselectTags(selector, tags, helpTags) {
 
     multilist.searchedRows = fuse.search(term.term);
   }
+
+  return select2List;
 }
+
+window.createMultiselectTags = createMultiselectTags;

@@ -8,7 +8,7 @@
     </Navbar>
     <main>
       <p>Selected: {{ selected }}</p>
-       <select2 :options2="options" v-model="selected">
+       <select2 :options="options" v-model="selected">
           <option disabled value="0">Select one</option>
         </select2>
       <!-- <snippet /> -->
@@ -28,6 +28,7 @@ import Snippet from "@/popup/components/Snippet";
 import bookmarks from "@/popup/pages/bookmarks";
 import history from "./pages/history";
 import Select2 from "@/popup/components/Select2.vue";
+import Button from './components/Button.vue';
 
 require("@/src_jq/common/SmartotekaFabricLocalStorage.js");
 
@@ -40,6 +41,7 @@ export default {
     Navbar,
     history,
     Select2,
+    Button,
   },
   data() {
     return {
@@ -66,6 +68,11 @@ export default {
         that.searchResults = sessions.map((el) => {
           return { date: el.date, title: el.query };
         });
+      });
+
+
+      smartotekaFabric.queriesProvider().getTags().then(tags => {
+        this.options=tags;
       });
   },
   computed: {},

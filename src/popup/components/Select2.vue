@@ -1,35 +1,42 @@
 <template>
-  <select>
-    <slot></slot>
-  </select>
+  <span style="display: inline-block; width: 95%">
+    Query:
+    <select>
+      <slot></slot>
+    </select>
+    <span style="display: inline-block"><button id="clear-filter-tags-btn">X</button></span>
+  </span>
 </template>
 
 <script>
 require("@/src_jq/libraries/jquery-3.6.0.min.js");
 require("@/src_jq/libraries/select2.js");
-
+require("@/src_jq/common/multiselectTags.js");
 
 export default {
   name: "select2",
-  pprops: ["options2", "value"],
+  props: {
+    options: Object,
+    modelValue: String,
+  },
   mounted: function () {
+    console.log("mounted");
     var vm = this;
-    $(this.$el)
-      // init select2
-      .select2({ data: vm.$attrs.options2 })
-      .val(vm.$attrs.value)
+
+    createMultiselectTags(this.$el, vm.$props.options)
+      //.val(vm.$props.modelValue)
       .trigger("change")
-      // emit event on change.
       .on("change", function () {
-        vm.$emit("input", vm.$attrs.value);
+        vm.$emit("update:modelValue", this.value);
       });
   },
   watch: {
-    value: function (value) {
+    modelValue: function (value) {
+      console.log("value" + value);
       // update value
       $(this.$el).val(value).trigger("change");
     },
-    options2: function (options) {
+    options: function (options) {
       // update options
       $(this.$el).empty().select2({ data: options });
     },
@@ -39,3 +46,6 @@ export default {
   },
 };
 </script>
+<style>
+@import "/src_jq/libraries/select2.min.css";
+</style>
