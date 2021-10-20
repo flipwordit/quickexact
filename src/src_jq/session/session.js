@@ -411,7 +411,5 @@ $(function () {
   }
 
   registerFilterToGrid(sessionGrid);
-
-  registerSpeedDeal("#speedDealHelp", smartotekaFabric);
 })
 

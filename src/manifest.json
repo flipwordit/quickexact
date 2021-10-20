@@ -10,7 +10,8 @@
   },
   "background": {
     "scripts": [
-      "background/background.js"
+      "background/background.js",
+      "src_jq/common/commonFunctions.js"
     ]
   },
   "permissions": [

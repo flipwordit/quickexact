@@ -7,6 +7,16 @@
       </div> -->
     </Navbar>
     <main>
+      <div
+        id="speedDealHelp"
+        style="font-size: 150%; font-weight: bold; display: none"
+      >
+        You can press
+        <span class="values" style="color: green"
+          >hot key after configure it on settings page</span
+        >&nbsp;
+      </div>
+
       <!-- <p>Selected: {{ selected }}</p> -->
       <select2
         :options="options"
@@ -15,12 +25,16 @@
       >
         <option disabled value="0">Select one</option>
       </select2>
-     
-      <div >
-         <Session v-for="session in searchResults" :key="session.date" :session="session" />
+
+      <div>
+        <Session
+          v-for="session in searchResults"
+          :key="session.date"
+          :session="session"
+        />
       </div>
-      
-       <!-- <snippet /> -->
+
+      <!-- <snippet /> -->
     </main>
   </div>
 </template>
@@ -62,31 +76,81 @@ export default {
   },
   beforeMount() {},
   mounted() {
-    let smartotekaFabric = new SmartotekaFabricLocalStorage();
+    let vm = this;
 
-    let that = this;
+    chrome.runtime.onMessage.addListener(function (
+      request,
+      sender,
+      sendResponse
+    ) {
+      if (request === "clear") sendResponse("Cool clear!");
 
- smartotekaFabric
+      registerSpeedDeal("#speedDealHelp", vm.smartotekaFabric);
+    });
+    registerSpeedDeal("#speedDealHelp", vm.smartotekaFabric);
+
+    this.smartotekaFabric
       .queriesProvider()
       .getSessions()
       .then((sessions) => {
-        that.sessions = sessions;
+        vm.sessions = sessions;
+
+        let allTags = [];
+
+        sessions.forEach(
+          (el) =>
+            (allTags = allTags
+              .concat(el.tags)
+              .concat([{ id: el.query, text: el.query }]))
+        );
+
+        this.options = unique(allTags, (el) => el.id);
       });
     // smartotekaFabric
     //   .queriesProvider()
     //   .getCheatSheets()
     //   .then((sessions) => {
-    //     that.sessions = sessions.map((el) => {
+    //     vm.sessions = sessions.map((el) => {
     //       return { date: el.date, title: el.content, tags: el.tags };
     //     });
     //   });
 
-    smartotekaFabric
-      .queriesProvider()
-      .getTags()
-      .then((tags) => {
-        this.options = tags;
-      });
+    // this.smartotekaFabric
+    //   .queriesProvider()
+    //   .getTags()
+    //   .then((tags) => {
+    //     this.options = tags;
+    //   });
+
+    window.addEventListener(
+      "keypress",
+      (e) => {
+        if (e.code === "Escape") {
+          setTimeout(() => $(document.activeElement).blur());
+          return;
+        }
+
+        if (
+          document.activeElement.type === "textarea" ||
+          document.activeElement.type === "text"
+        )
+          return;
+
+        switch (e.key) {
+          case "f":
+            {
+              setTimeout(() => $(".select2-search__field").focus(), 0);
+            }
+            break;
+          case "c":
+            {
+              registerSpeedDeal("#speedDealHelp", vm.smartotekaFabric);
+            }
+            break;
+        }
+      },
+      false
+    );
   },
   computed: {
     searchResults() {
@@ -101,10 +165,14 @@ export default {
         (tag) => (filterTags[tag] = ++countTags)
       );
       filterTags.count = countTags;
+      let filterByTags = getFilterByFilterTags((el) => el, filterTags);
 
       return (this.sessions || []).filter(
-        getFilterByFilterTags((el) => el, filterTags)
+        (session) => filterTags[session.query] || filterByTags(session)
       );
+    },
+    smartotekaFabric() {
+      return new SmartotekaFabricLocalStorage();
     },
   },
   methods: {

@@ -18,7 +18,15 @@ import storage from '@/utils/storage'
 async function openPopup() {
   let popup = await storage.get('popup')
   if (popup) {
-    chrome.windows.update(popup, { focused: true })
+
+    chrome.windows.update(popup, { focused: true },
+      (openWindow) => {
+        getActiveTab().then((tab) => {
+          chrome.tabs.sendMessage(tab.id, "clear", function (response) {
+            console.log(response);
+          });
+        });
+      });
   } else {
     chrome.windows.create(
       {

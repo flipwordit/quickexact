@@ -184,7 +184,7 @@ function closeTabsByUrlIfOpen(tabsToClose) {
       let tabsToClose = getTabsToClose();
 
       if (tabsToClose.length > 0) {
-        chrome.windows.remove(tabsToClose.map(tab=>tab.windowId)[0]);
+        chrome.windows.remove(tabsToClose.map(tab => tab.windowId)[0]);
       }
     });
 }
@@ -196,8 +196,10 @@ function redirectCurrentTab(url) {
 window.unique = unique;
 window.comparerCombine = comparerCombine;
 window.throttle = throttle;
+window.secondRunImmediately = secondRunImmediately;
 
 window.openTabs = openTabs;
 window.openTabsInNewWindow = openTabsInNewWindow;
 window.closeTabsByUrlIfOpen = closeTabsByUrlIfOpen;
 window.redirectCurrentTab = redirectCurrentTab;
+window.getActiveTab = getActiveTab;

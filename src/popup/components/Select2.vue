@@ -5,7 +5,9 @@
       <slot></slot>
     </select>
     <span style="display: inline-block"
-      ><button id="clear-filter-tags-btn">X</button></span
+      ><button id="clear-filter-tags-btn" @click.self="clearAllFilters">
+        X
+      </button></span
     >
   </span>
 </template>
@@ -34,7 +36,7 @@ export default {
     let sendUpdateEvent = throttle(() => vm.sendUpdateEvent(), 100);
 
     createMultiselectTags(
-      $("select", this.$el),
+      this.selectList(),
       vm.$props.options,
       generateAdditionalTagsFunction(() => this.searchResults)
     )
@@ -47,22 +49,22 @@ export default {
       if (this.modelValue === value) return;
       console.log("value" + value);
       // update value
-      $("select", this.$el).val(value).trigger("change");
+      this.selectList().val(value).trigger("change");
     },
     options: function (options) {
       console.log("options");
 
-      $("select", this.$el).empty();
+      this.selectList().empty();
 
       createMultiselectTags(
-        $("select", this.$el),
+        this.selectList(),
         options,
         generateAdditionalTagsFunction(() => this.searchResults)
       );
     },
   },
   destroyed: function () {
-    $("select", this.$el).off().select2("destroy");
+    this.selectList().off().select2("destroy");
   },
   computed: {
     selectedTags() {
@@ -86,8 +88,14 @@ export default {
     sendUpdateEvent: function () {
       console.log("change");
 
-      this.$emit("update:modelValue", $('select',this.$el).select2("data"));
+      this.$emit("update:modelValue", this.selectList().select2("data"));
     },
+    clearAllFilters() {
+      this.selectList().val(null).trigger("change");
+    },
+    selectList(){
+      return $("select", this.$el);
+    }
   },
 };
 </script>
