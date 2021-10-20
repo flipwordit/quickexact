@@ -1,3 +1,31 @@
+function getActions() {
+    if (!window.actions)
+        window.actions = {
+            session: {
+                o: {
+                    description: "Open in current window",
+                    action: openTabs
+                },
+                n: {
+                    description: "Open in new window",
+                    action: openTabsInNewWindow
+                },
+                c: {
+                    description: "Close tabs and dublicates",
+                    action: closeTabsByUrlIfOpen
+                }
+            },
+            cheatsheets: {
+                g: {
+                    description: "Go to cheat sheets",
+                    action: () => redirectCurrentTab("../cheatsheets/cheatsheet.html")
+                }
+            }
+        };
+
+    return window.actions;
+}
+
 function registerSpeedDeal(helpPaneId, smartotekaFabric) {
     function toHelp(step, keyMapper = (k) => k, delim = ",") {
         return Object
@@ -6,29 +34,7 @@ function registerSpeedDeal(helpPaneId, smartotekaFabric) {
             .join(delim)
     }
 
-    let actions = {
-        session: {
-            o: {
-                desciption: "Open in current window",
-                action: openTabs
-            },
-            n: {
-                desciption: "Open in new window",
-                action: openTabsInNewWindow
-            },
-            c: {
-                desciption: "Close tabs and dublicates",
-                action: closeTabsByUrlIfOpen
-            }
-        },
-        cheatsheets: {
-            g: {
-                desciption: "Go to cheat sheets",
-                action: () => redirectCurrentTab("../cheatsheets/cheatsheet.html")
-            }
-        }
-    };
-
+    let actions = getActions();
 
     smartotekaFabric.queriesProvider().getSpeedDeal()
         .then(speedDealShortCut => {
@@ -58,7 +64,7 @@ function registerSpeedDeal(helpPaneId, smartotekaFabric) {
 
                 if (typeof (pointer) === "object" && !nextStep.action) {
                     setTimeout(() => {
-                        $(".values", helpPaneId).html("<br>" + toHelp(pointer, (k) => k + "&nbsp;-&nbsp;" + pointer[k].desciption, "<br>"));
+                        $(".values", helpPaneId).html("<br>" + toHelp(pointer, (k) => k + "&nbsp;-&nbsp;" + pointer[k].description, "<br>"));
                     }, 0);
                 }
 
@@ -71,7 +77,7 @@ function registerSpeedDeal(helpPaneId, smartotekaFabric) {
 
                         keyDownHandler();
                         setTimeout(() => {
-                            $(".values", helpPaneId).text(nextStep.desciption);
+                            $(".values", helpPaneId).text(nextStep.description);
                             $(helpPaneId).text("You choosed:")
                         }, 0);
                     }
@@ -82,7 +88,7 @@ function registerSpeedDeal(helpPaneId, smartotekaFabric) {
                 pointer = actions[nextStep.type];
 
                 setTimeout(() => {
-                    $(".values", helpPaneId).html("<br>" + toHelp(pointer, (k) => k + "&nbsp;-&nbsp;" + pointer[k].desciption, "<br>"));
+                    $(".values", helpPaneId).html("<br>" + toHelp(pointer, (k) => k + "&nbsp;-&nbsp;" + pointer[k].description, "<br>"));
                 }, 0);
 
                 handler = pointer[nextStep.action].action;
@@ -132,3 +138,5 @@ function registerSpeedDeal(helpPaneId, smartotekaFabric) {
             }, 3000);
         });
 }
+
+window.getActions = getActions;

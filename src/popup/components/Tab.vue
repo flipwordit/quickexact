@@ -3,9 +3,9 @@
     <img class="favicon" :src="tab.favIconUrl"/>
     <div class="title">{{tab.title}}</div>
     <div class="url">{{url}}</div>
-    <div class="actions">
+    <!-- <div class="actions">
       <vue-feather type="x" stroke="silver" @click.stop="closeTab"/>
-    </div>
+    </div> -->
   </div>
 </template>
 

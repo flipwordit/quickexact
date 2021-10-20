@@ -15,20 +15,22 @@
       >
         <option disabled value="0">Select one</option>
       </select2>
-      <!-- <snippet /> -->
-      <div v-for="sr in searchResults" :key="sr.date">
-        <li>{{ sr.title }}</li>
+     
+      <div >
+         <Session v-for="session in searchResults" :key="session.date" :session="session" />
       </div>
+      
+       <!-- <snippet /> -->
     </main>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
 import Navbar from "@/popup/components/Navbar";
 import tabs from "@/popup/pages/tabs";
 
 import Snippet from "@/popup/components/Snippet";
+import Session from "@/popup/components/Session";
 import bookmarks from "@/popup/pages/bookmarks";
 import history from "./pages/history";
 import Select2 from "@/popup/components/Select2.vue";
@@ -41,6 +43,7 @@ export default {
   name: "Popup",
   components: {
     Snippet,
+    Session,
     tabs,
     bookmarks,
     Navbar,
@@ -63,14 +66,20 @@ export default {
 
     let that = this;
 
-    smartotekaFabric
+ smartotekaFabric
       .queriesProvider()
-      .getCheatSheets()
+      .getSessions()
       .then((sessions) => {
-        that.sessions = sessions.map((el) => {
-          return { date: el.date, title: el.content, tags: el.tags };
-        });
+        that.sessions = sessions;
       });
+    // smartotekaFabric
+    //   .queriesProvider()
+    //   .getCheatSheets()
+    //   .then((sessions) => {
+    //     that.sessions = sessions.map((el) => {
+    //       return { date: el.date, title: el.content, tags: el.tags };
+    //     });
+    //   });
 
     smartotekaFabric
       .queriesProvider()
