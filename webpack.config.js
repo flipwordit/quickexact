@@ -7,7 +7,6 @@ const { resolve, join } = require('path')
 // const argv = require('minimist')(process.argv.slice(2));
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const WindiCSS = require('windicss-webpack-plugin').default
 
 const SizePlugin = require('size-plugin')
 const ExtensionReloader = require('webpack-extension-reloader')
@@ -103,17 +102,6 @@ const config = {
   //   ],
   // },
   plugins: [
-    new WindiCSS({
-      attributify: true,
-      extract: {
-        include: [
-          'src/**/*.{vue,html}',
-        ],
-        // A common use case is scanning files from the root directory
-        // if you are excluding files, make sure you always include node_modules and .git
-        exclude: ['node_modules', '.git', 'dist'],
-      },
-    }),
     new CleanWebpackPlugin({
       cleanStaleWebpackAssets: false,
     }),

@@ -1,7 +1,7 @@
 <template>
   <div class="popup">
     <Navbar>
-      <input type="search" placeholder="Search" v-model="query" @input="fetchWindows"/>
+      <input ref="search" type="search" placeholder="Search" v-model="query" @input="fetchWindows"/>
       <div class="actions">
 
       </div>
@@ -56,13 +56,15 @@ export default {
     this.collectWindows()
     this.collectHistory()
     this.collectBookmarks()
+    this.bindListener()
+    this.$refs.search.focus()
   },
   computed: {
     ...mapGetters(['tabsCount', 'recordsCount']),
   },
   methods: {
     ...mapActions([
-      'collectWindows', 'collectHistory', 'collectBookmarks',
+      'collectWindows', 'collectHistory', 'collectBookmarks', 'bindListener',
     ]),
 
     fetchWindows() {

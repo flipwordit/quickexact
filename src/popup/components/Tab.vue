@@ -4,7 +4,7 @@
     <div class="title">{{tab.title}}</div>
     <div class="url">{{url}}</div>
     <div class="actions">
-      <vue-feather type="x" stroke="silver" @click.stop="closeTab"/>
+      <vue-feather type="x" stroke="#a9b3bc" @click.stop="closeTab"/>
     </div>
   </div>
 </template>
@@ -52,7 +52,7 @@ export default {
   transition: all 0.2s;
 
   &:hover {
-    background: hsl(210deg, 16%, 95%);
+    background: hsl(210deg, 50%, 98%);
     cursor: pointer;
   }
 
@@ -86,7 +86,8 @@ export default {
     grid-row: 1 / 3;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
+    padding-right: 0.25rem;
   }
 }
 </style>

@@ -64,12 +64,12 @@ export default {
 </script>
 
 <style>
-.list-item {
+/* .list-item {
   cursor: pointer;
   list-style-type: none;
   padding: 0.5rem;
   background: white;
-}
+} */
 ul {
   /* padding-left: 1em;
   line-height: 1.5em;

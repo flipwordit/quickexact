@@ -23,8 +23,11 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+@import "../../styles/mixins";
+
 .page {
+  @include scrollbar;
   overflow: scroll;
 }
 </style>

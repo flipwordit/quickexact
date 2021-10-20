@@ -3,13 +3,13 @@
     <div class="bar" @click.self="toggle">
       <div :style="{'background': pattern}" class="bg" @click.self="toggle"/>
       <div class="tab-count">{{tabs.length}}</div>
-      <div class="title" contenteditable @input="titleChange">{{name}}</div>
+      <div class="title" contenteditable @input="titleChange" spellcheck="false">{{name}}</div>
       <div class="actions">
-        <!-- <vue-feather type="anchor" stroke="slategrey" size="18"/> -->
-        <vue-feather type="minimize-2" stroke="slategrey" @click.stop="minimizeWindow" size="18"/>
+        <vue-feather type="anchor" stroke="#83a0af" size="18"/>
+        <vue-feather type="minimize-2" stroke="#83a0af" @click.stop="minimizeWindow" size="18"/>
       </div>
-      <div class="minimized">
-        <vue-feather type="arrow-up-right" stroke="slategrey" size="18"/>
+      <div v-if="minimized" class="minimized" @click="maximizeWindow">
+        <vue-feather type="arrow-up-right" stroke="#83a0af" size="18"/>
       </div>
     </div>
     <section :class="{'active': active}">
@@ -37,6 +37,7 @@ export default {
     return {
       active: false,
       pattern: '',
+      minimized: false,
     }
   },
   computed: {
@@ -44,6 +45,7 @@ export default {
       return this.meta.tabs
     },
     name() {
+      // eslint-disable-next-line max-len
       const hostRegex = /(?:([^:]*):\/\/)?(?:([^:@]*)(?::([^@]*))?@)?(?:([^/:]*)\.(?=[^./:]*\.[^./:]*))?([^./:]*)(?:\.([^/.:]*))?(?::([0-9]*))?(\/[^?#]*(?=.*?\/)\/)?([^?#]*)?(?:\?([^#]*))?(?:#(.*))?/
       const hostsObj = this.tabs.reduce((acc, tab) => {
         const match = tab.url.match(hostRegex)
@@ -88,6 +90,9 @@ export default {
     minimizeWindow() {
       tabsService.minimizeWindow(this.meta.id)
     },
+    maximizeWindow() {
+      tabsService.maximizeWindow(this.meta.id)
+    },
 
     chnageState() {
 
@@ -114,11 +119,11 @@ export default {
   .tab-count {
     position: absolute;
     left: 0;
-    padding: 8px;
-    width: 44px;
+    padding: .5rem;
+    width: 1.625rem;
     color: hsl(200deg, 22%, 60%);
     text-align: center;
-    border-right: 1px solid hsl(200deg, 30%, 90%);;
+    border-right: 1px solid hsl(200deg, 30%, 90%);
   }
 
   .bar {
@@ -156,6 +161,7 @@ export default {
     }
     .title {
       outline: none;
+      z-index: 100;
       font-weight: 500;
       cursor: crosshair;
       color: #5b7187
@@ -177,7 +183,7 @@ export default {
     border-style: solid;
     box-shadow: 0px 0px 5px hsl(205deg, 31%, 85%);
     // width: 0;
-    border-width: 23px;
+    border-width: 20px;
     border-color: rgb(238, 243, 247) rgb(238, 243, 247) #FFF #FFF;
     border-radius: 0 0 0 3px;
     transition: border-width .2s;

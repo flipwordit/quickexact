@@ -1,8 +1,9 @@
 import { createStore } from 'vuex'
 import { debounce } from 'lodash'
 import tabsService from '@/services/tabs'
-import historyService from '@/services/history'
 import bookmarksService from '@/services/boodmarks'
+
+import history from './history'
 
 const store = createStore({
   state() {
@@ -10,7 +11,6 @@ const store = createStore({
       windows: [],
       sessions: [],
       bookmarks: [],
-      records: [],
     }
   },
   getters: {
@@ -23,20 +23,20 @@ const store = createStore({
         return acc
       }, 0)
     },
-    recordsCount(state) {
-      return state.records.length
-    },
+
     getBookmarks: (state) => state.bookmarks,
-    getRecords: (state) => state.records,
+    getBookmarksCount: (state) => {
+      state.bookmarks.reduce(folder => {
+
+      })
+    },
     getWindows: (state) => state.windows,
   },
   mutations: {
     UPDATE_WINDOWS(state, payload) {
       state.windows = payload
     },
-    UPDATE_RECORDS(state, payload) {
-      state.records = payload
-    },
+
     UPDATE_BOOKMARKS(state, payload) {
       state.bookmarks = payload
     },
@@ -71,16 +71,15 @@ const store = createStore({
       // }
     },
     collectSessions() {},
-    async collectHistory({ commit }, query = '') {
-      console.log(query)
-      const records = await historyService.search(query)
-      commit('UPDATE_RECORDS', records)
-    },
+
     async collectBookmarks() {
       const bookmarks = await bookmarksService.getTree()
       console.log(bookmarks)
       this.commit('UPDATE_BOOKMARKS', bookmarks)
     },
+  },
+  modules: {
+    history,
   },
 })
 

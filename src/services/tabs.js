@@ -1,4 +1,12 @@
+import { fromEventPattern } from 'rxjs'
 import browser from 'webextension-polyfill'
+
+function eventStream(event) {
+  return fromEventPattern(
+    (handler) => event.addListener(handler),
+    (handler) => event.removeListener(handler),
+  )
+}
 
 export default {
   async getWindows() {
@@ -17,6 +25,9 @@ export default {
   async minimizeWindow(id) {
     browser.windows.update(id, { state: 'minimized' })
   },
+  async maximizeWindow(id) {
+    browser.windows.update(id, { state: 'maximized' })
+  },
 
   async drawAttention(id) {
     browser.windows.update(id, { drawAttention: true })
@@ -24,6 +35,10 @@ export default {
 
   async closeTab(id) {
     browser.tabs.remove(id)
+  },
+
+  get createStream() {
+    return eventStream(chrome.tabs.onCreated)
   },
 
 }

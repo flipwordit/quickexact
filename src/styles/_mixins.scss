@@ -1,0 +1,38 @@
+
+@mixin ellipsis {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin scrollbar {
+  &::-webkit-scrollbar {
+    width: 4px;               /* width of the entire scrollbar */
+  }
+//   &::-webkit-scrollbar-track {
+//   background: white;
+//   opacity: 0;       /* color of the tracking area */
+// }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(63, 104, 135);    /* color of the scroll thumb */
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    // background: transparent;
+    background: white;
+    opacity: 0;
+    border: 0px none #ffffff;
+    border-radius: 50px;
+  }
+  &::-webkit-scrollbar-track:hover {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-track:active {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}

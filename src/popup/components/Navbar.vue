@@ -6,72 +6,53 @@
       :autocomplete-items="filteredItems"
       @tags-changed="newTags => tags = newTags"
     /> -->
-    <vue-feather type="search" stroke="silver"/>
+    <vue-feather type="search" stroke="#83a0af"/>
     <slot />
-    <!-- <div class="actions">
-      <div class="action"><vue-feather type="plus" stroke="white" /></div>
-    </div> -->
+    <div class="actions">
+      <div class="action">
+        <vue-feather type="plus" stroke="#83a0af" />
+      </div>
+    </div>
   </nav>
 </template>
 
 <script>
-import VueTagsInput from '@johmun/vue-tags-input'
 
 export default {
-  components: {
-    // VueTagsInput,
-  },
-  data() {
-    return {
-      tag: '',
-      tags: [],
-      autocompleteItems: [{
-        text: 'Spain',
-      }, {
-        text: 'France',
-      }, {
-        text: 'USA',
-      }, {
-        text: 'Germany',
-      }, {
-        text: 'China',
-      }],
-    }
-  },
-  // watch: {
-  //   'tag': 'initItems',
-  // },
-  computed: {
-    filteredItems() {
-      return this.autocompleteItems.filter(i => i.text.toLowerCase().includes(this.tag.toLowerCase()))
-    },
-  },
-  methods: {
-    update(newTags) {
-      this.tags = newTags
-    },
-  },
+  name: 'Navbar',
 }
 
 </script>
 
 <style lang="scss">
   .nav {
-    height: 50px;
+    // height: 42px;
     display: flex;
-    padding: 0 20px;
+    padding: .25rem 1rem;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     font-size: 1.125rem;
-    box-shadow: 0 0 4px rgba($color: black, $alpha: .1);
+    border-bottom: 1px solid #dee8ed;
+    // box-shadow: 0 0 4px rgba($color: black, $alpha: .1);
+    ::-webkit-input-placeholder { /* Edge */
+      color: #83a0af;
+    }
+
+    :-ms-input-placeholder { /* Internet Explorer 10-11 */
+      color: #83a0af;
+    }
+
+    ::placeholder {
+      color: #83a0af;
+    }
 
    input {
      flex-grow: 1;
      border: none;
      font-size: 1.25rem;
      outline: none;
-     padding-left: 10px;
+     padding: 0.75rem 0.5rem 0.5rem 0.5rem;
      background: transparent;
     //  background: green;
      vertical-align: bottom;
@@ -80,7 +61,6 @@ export default {
     .action {
       font-size: 2rem;
       padding: 2px;
-      background: rgb(169, 255, 219);
       height: 35px;
       width: 35px;
       text-align: center;

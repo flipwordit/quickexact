@@ -1,14 +1,13 @@
 <template>
   <div class="card">
     <div class="header">
-      <div class="title">Directives
+      <div class="title">Vue.Directives
         <span class="version">v3</span>
       </div>
       <!-- <div class="reference">vuemastery</div> -->
-      <div class="dropdown" @click.self="toggleDropdown">
+      <div class="dropdown" @click.stop="toggleDropdown">
         <div class="btn" />
-        <transition name="grow">
-          <ul class="menu" v-if="showDropdown">
+        <ul class="menu" v-if="showDropdown" v-click-outside="toggleDropdown">
             <!-- <li>Edit Save</li> -->
             <li>src: <a href="vuemastery.com">vuemastery</a></li>
             <li>docs: <a href="vuejs.com">Directory search</a></li>
@@ -22,20 +21,11 @@
               </div>
             </li>
           </ul>
-        </transition>
       </div>
 
     </div>
     <div class="content">
-      <code>
-        <span>Element inserted/removed based on truthiness</span>
-        Two-way data binding
-
-        v-model.lazy="..."	<span>Syncs input after change event</span>
-        <hr />
-        v-model.number="..."	Always returns a number
-        v-model.trim="..."	Strips whitespace
-      </code>
+      <Markdown :source="source" />
     </div>
 
   </div>
@@ -47,6 +37,7 @@ export default {
   data() {
     return {
       showDropdown: false,
+      source: '# Hello World!  ## dkroifeoqieure',
     }
   },
   methods: {
@@ -64,20 +55,19 @@ export default {
 @import '../../styles/variables';
 
 $sky: #e6f6fe;
+$aqua:  #9dd5f1;
+
 .page {
   height: 50rem;
-  // background: oldlace;
 }
 .card {
-  // padding: 12px 16px;
   z-index: 10;
   line-height: 1.25rem;
   background: white;
   font-size: 1rem;
   transition: all 0.2s;
   border-radius: 5px;
-  margin: 0.5rem 0.5rem;
-  // box-shadow: 0 1px 2px rgba(0, 0, 0,  20%);
+  margin: 0.5rem;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
   text-align: left;
   color: $black;
@@ -85,7 +75,7 @@ $sky: #e6f6fe;
   overflow: visible;
 
   .header {
-    background: #e6f6fe;
+    background: $sky;
     font-size: 1.125rem;
     padding: 0 1rem;
     line-height: 1.125rem;
@@ -93,49 +83,24 @@ $sky: #e6f6fe;
     height: 2.5rem;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 
     .version {
-      // background: #9dd5f1;
-      // line-height: 1rem;
-      // padding: 1px 5px;
-      display: inline-block;
       font-size: 0.875rem;
-      // height: 1.5rem;
-      // background: yellow;
       line-height: 0.875rem;
       vertical-align: super;
-      // position:relative;
-      // margin-top: -3px;
-      color: #9dd5f1;
-      // border-radius: 50vmin;
-      // display: inline-block;
-      // color: white;
-      // text-align: center;
+      color: $aqua;
     }
     .title {
       line-height: 1.5rem;
-      // background: violet;
       vertical-align: middle;
       font-weight: 500;
       color: #194c66;
     }
 
-    .reference {
-      font-size: 1rem;
-      margin-top: auto;
-      font-style: italic;
-      font-weight: lighter;
-      align-items: baseline;
-      padding-bottom: 0.125rem;
-    }
-
     .dropdown {
-      // position: absolute;
-      // top: 7px;
-      // right: 7px;
       position: relative;
       border-radius: 50vmin;
-      padding: 5px;
       background: transparent;
       height: 1.5rem;
       width: 1.5rem;
@@ -145,12 +110,12 @@ $sky: #e6f6fe;
       cursor: pointer;
 
       &:hover{
-        background: darken(#e6f6fe, 5);
+        background: darken( $sky, 5);
 
-        .menu {
-          opacity: 1;
-          display: flex;
-        }
+        // .menu {
+        //   opacity: 1;
+        //   display: flex;
+        // }
       }
       .btn {
         width: 0;
@@ -168,17 +133,17 @@ $sky: #e6f6fe;
         flex-direction: column;
         width: 10rem;
         font-size: 0.95rem;
-        border: 1px solid #9dd5f1;
+        border: 1px solid $aqua;
         border-radius: 5px ;
         display: flex;
         li{
           padding: 0.5rem;
           transition: all 0.1s;
-          border-bottom:1px solid #e6f6fe;
+          border-bottom:1px solid $sky;
 
           a {
             font-style: italic;
-            color: darken(#9dd5f1,8);
+            color: $aqua;
             text-decoration: underline;
             text-underline-offset: 1px;
           }
@@ -194,12 +159,11 @@ $sky: #e6f6fe;
       .tag {
         text-transform: lowercase;
         font-weight: 500;
-        padding: 0 8px;
-        background: #9dd5f1 ;
+        padding: 0 0.5rem;
+        background: $aqua;
         color:white;
         border-radius: 50vmin;
-        margin-right: 3px;
-        margin-bottom: 3px;
+        margin: 2px;
       }
     }
 
@@ -209,26 +173,26 @@ $sky: #e6f6fe;
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
 
-    hr {
-      // box-shadow: 0 0 1px 1px #9dd5f1;
-      height: 1px;
-      border: none;
-    /* Set the hr color */
-      color: #e6f6fe; /* old IE */
-      background-color: #e6f6fe; /* Modern Browsers */
-    }
+    // hr {
+    //   // box-shadow: 0 0 1px 1px #9dd5f1;
+    //   height: 1px;
+    //   border: none;
+    // /* Set the hr color */
+    //   color: $sky; /* old IE */
+    //   background-color: $sky; /* Modern Browsers */
+    // }
   }
 
-  code {
-    font-family: $firacode;
+  // code {
+  //   font-family: $firacode;
 
-    span {
-      font-family: consolas, cursive;
-      font-style: italic;
-      font-size: 1rem;
-      // font-size: 1.25rem;
-      color: hsl(210deg, 10%, 70%);;
-    }
-  }
+  //   span {
+  //     font-family: consolas, cursive;
+  //     font-style: italic;
+  //     font-size: 1rem;
+  //     // font-size: 1.25rem;
+  //     color: hsl(210deg, 10%, 70%);;
+  //   }
+  // }
 }
 </style>
