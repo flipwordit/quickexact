@@ -103,9 +103,10 @@ function createTabsGrid(selector, queryProvider) {
 
                     let tabIds = getSelectedTabs(params).map(tab => tab.id);
 
-                    tabIds = tabIds.indexOf(params.node.data.id) < 0
+                    tabIds = params.node.data && tabIds.indexOf(params.node.data.id) < 0
                         ? [params.node.data.id]
                         : tabIds;
+
                     chrome.tabs.remove(tabIds);
                 },
             },
@@ -115,7 +116,7 @@ function createTabsGrid(selector, queryProvider) {
 
                     let tabs = getSelectedTabs(params);
 
-                    tabs = tabs.findIndex(el => el.id === params.node.data.id) < 0
+                    tabIds = params.node.data && tabIds.indexOf(params.node.data.id) < 0
                         ? [params.node.data]
                         : tabs;
 
@@ -127,7 +128,8 @@ function createTabsGrid(selector, queryProvider) {
                 name: 'Delete',
                 action: function () {
                     let tabs = getSelectedTabs(params);
-                    tabs = tabs.findIndex(tab => tab.id === params.node.data.id) < 0
+                    tabs = params.node.data &&
+                        tabs.findIndex(tab => tab.id === params.node.data.id) < 0
                         ? [params.node.data]
                         : tabs;
 

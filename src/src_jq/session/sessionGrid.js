@@ -101,6 +101,12 @@ function createSessionGrid(selector, externalFilter) {
           openTabsInNewWindow(params.node.data.tabs);
         }
       },
+      {
+        name: 'Close all and dublicates',
+        action: function () {
+          closeTabsByUrlIfOpen(params.node.data.tabs);
+        }
+      },
       'separator',
       {
         name: 'Replace current',

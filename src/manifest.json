@@ -26,27 +26,21 @@
     "chrome://favicon/"
   ],
   "commands": {
-    "_execute_action": {
+    "open-search": {
       "suggested_key": {
-        "windows": "Ctrl+Shift+S",
-        "mac": "Command+Shift+S"
+        "default": "Ctrl+Q"
       },
-      "description": "open Q&E search"
+      "description": "open Q&E search",
+      "action": {},
+      "global": true
     },
-    "usefull-tab": {
+    "add-tab-to-session": {
       "suggested_key": {
         "default": "Alt+T"
       },
-      "description": "mark active url to useful",
+      "description": "Add tab to selected session",
       "action": {},
       "comment": "TODO: check used short keys https://developer.chrome.com/docs/extensions/reference/commands/#verify-commands-registered"
-    },
-    "trace-search": {
-      "suggested_key": {
-        "default": "Ctrl+B"
-      },
-      "description": "begin or end trace search",
-      "action": {}
     }
   },
   "web_accessible_resources": [

@@ -183,7 +183,7 @@ function closeTabsByUrlIfOpen(tabsToClose) {
 
       let tabsToClose = getTabsToClose();
 
-      if (tabsToClose.length > 0) {
+      if (tabsToClose.length === 1) {
         chrome.windows.remove(tabsToClose.map(tab => tab.windowId)[0]);
       }
     });
