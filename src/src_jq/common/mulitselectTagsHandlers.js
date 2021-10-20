@@ -79,16 +79,21 @@ function registerFilterToGrid(grid) {
 }
 
 function getFilterByTags() {
-  window.filterTags = { count: 0 };
+  return getFilterByFilterTags((node) => node.data, window.filterTags || { count: 0 });
+}
+
+function getFilterByFilterTags(getData, filterTags) {
 
   return (node) => {
-    return !node.data
-      || !node.data.tags
-      || node.data.tags.filter(tag => window.filterTags[tag.id]).length === window.filterTags.count;
+    let data = getData(node);
+
+    return !data
+      || !data.tags
+      || data.tags.filter(tag => filterTags[tag.id]).length === filterTags.count;
   };
 }
 
-function generateAdditionalTagsFunction(grid) {
+function generateAdditionalTagsFunction(getRows) {
   function buildSearchArray(rows, selectedTags, nextLevel) {
     let arrayTagArrays = rows
       .filter(el => el.tags)
@@ -164,7 +169,7 @@ function generateAdditionalTagsFunction(grid) {
   }
 
   window.getAdditionalTags = function (selectedTags) {
-    let rows = grid.api.getFilteredRows();
+    let rows = getRows();
 
     let arrayToSearch = buildSearchArray(rows, selectedTags, true);
 
@@ -178,7 +183,7 @@ function generateAdditionalTagsFunction(grid) {
       return [];
     }
 
-    let rows = grid.api.getFilteredRows();
+    let rows = getRows();
 
     let arrayToSearch = buildSearchArray(rows, selectedTags);
 
@@ -202,3 +207,6 @@ function generateAdditionalTagsFunction(grid) {
 
   return generateAdditionalTags;
 }
+
+window.getFilterByFilterTags = getFilterByFilterTags;
+window.generateAdditionalTagsFunction = generateAdditionalTagsFunction;

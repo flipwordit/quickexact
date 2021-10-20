@@ -7,10 +7,14 @@
       </div> -->
     </Navbar>
     <main>
-      <p>Selected: {{ selected }}</p>
-       <select2 :options="options" v-model="selected">
-          <option disabled value="0">Select one</option>
-        </select2>
+      <!-- <p>Selected: {{ selected }}</p> -->
+      <select2
+        :options="options"
+        v-model="selected"
+        :searchResults="searchResults"
+      >
+        <option disabled value="0">Select one</option>
+      </select2>
       <!-- <snippet /> -->
       <div v-for="sr in searchResults" :key="sr.date">
         <li>{{ sr.title }}</li>
@@ -28,9 +32,10 @@ import Snippet from "@/popup/components/Snippet";
 import bookmarks from "@/popup/pages/bookmarks";
 import history from "./pages/history";
 import Select2 from "@/popup/components/Select2.vue";
-import Button from './components/Button.vue';
+import Button from "./components/Button.vue";
 
 require("@/src_jq/common/SmartotekaFabricLocalStorage.js");
+require("@/src_jq/common/commonFunctions.js");
 
 export default {
   name: "Popup",
@@ -47,12 +52,9 @@ export default {
     return {
       activeName: "sessions",
       query: "",
-      searchResults: [],
-      selected: 2,
-      options: [
-        { id: 1, text: "Hello" },
-        { id: 2, text: "World" },
-      ],
+      selected: [],
+      options: [],
+      sessions: [],
     };
   },
   beforeMount() {},
@@ -63,19 +65,39 @@ export default {
 
     smartotekaFabric
       .queriesProvider()
-      .getSessions()
+      .getCheatSheets()
       .then((sessions) => {
-        that.searchResults = sessions.map((el) => {
-          return { date: el.date, title: el.query };
+        that.sessions = sessions.map((el) => {
+          return { date: el.date, title: el.content, tags: el.tags };
         });
       });
 
-
-      smartotekaFabric.queriesProvider().getTags().then(tags => {
-        this.options=tags;
+    smartotekaFabric
+      .queriesProvider()
+      .getTags()
+      .then((tags) => {
+        this.options = tags;
       });
   },
-  computed: {},
+  computed: {
+    searchResults() {
+      console.log("searchResults");
+      let selectedTags = this.selected.map((el) => el.text);
+
+      //TODO: if(selectedTabs.length===0)Вывести топ 10 самых часто используемых
+      let filterTags = {};
+
+      let countTags = 0;
+      unique(selectedTags, (el) => el).map(
+        (tag) => (filterTags[tag] = ++countTags)
+      );
+      filterTags.count = countTags;
+
+      return (this.sessions || []).filter(
+        getFilterByFilterTags((el) => el, filterTags)
+      );
+    },
+  },
   methods: {
     handleClick(tab, event) {
       console.log(tab, event);

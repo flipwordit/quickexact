@@ -186,3 +186,6 @@ function redirectCurrentTab(url) {
   window.location.assign(url);
 }
 
+window.unique = unique;
+window.comparerCombine = comparerCombine;
+window.throttle = throttle;

@@ -346,7 +346,7 @@ $(function () {
   smartotekaFabric.queriesProvider().getTags().then(tags => {
     registerRestrictionMap();
 
-    let generateAdditionalTags = generateAdditionalTagsFunction(sessionGrid);
+    let generateAdditionalTags = generateAdditionalTagsFunction(() => sessionGrid.api.getFilteredRows());
 
     createMultiselectTags("#add-tags", tags, generateAdditionalTags);
     createMultiselectTags("#filter-tags", tags, generateAdditionalTags);

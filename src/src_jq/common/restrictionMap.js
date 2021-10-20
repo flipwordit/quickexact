@@ -32,3 +32,5 @@ function registerRestrictionMap() {
     window.restrictMap = {};
     restrictToMap(restrict, restrictMap);
 }
+
+window.registerRestrictionMap = registerRestrictionMap;

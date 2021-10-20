@@ -197,7 +197,7 @@ $(function () {
 
   smartotekaFabric.queriesProvider().getTags().then(tags => {
 
-    let generateAdditionalTags = generateAdditionalTagsFunction(cheatSheetsGrid);
+    let generateAdditionalTags = generateAdditionalTagsFunction(() => cheatSheetsGrid.api.getFilteredRows());
 
     createMultiselectTags("#add-tags", tags, generateAdditionalTags);
     createMultiselectTags("#filter-tags", tags, generateAdditionalTags);
