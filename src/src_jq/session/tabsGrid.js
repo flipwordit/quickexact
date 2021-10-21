@@ -57,7 +57,12 @@ function createTabsGrid(selector, queryProvider) {
             }
         },
         { field: "tags", width: 200, filter: 'agSetColumnFilter' },
-        { field: "windowId", headerName: "window", rowGroup: true, hide: true },
+        {
+            field: "windowId",
+            headerName: "window",
+            rowGroup: true,
+            hide: true
+        },
         //TODO: tabGroups available in version 3
         //{ field: "groupId", headerName: "window", rowGroup: true, hide: true }
     ];
@@ -160,6 +165,7 @@ function createTabsGrid(selector, queryProvider) {
             cellRendererParams: {
                 checkbox: true,
             },
+            headerCheckboxSelection:true
         },
         groupDefaultExpanded: true,
         groupSelectsChildren: true,
