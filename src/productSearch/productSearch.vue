@@ -1,18 +1,9 @@
 <template>
   <div class="popup">
-    <Navbar>
-      <!-- <input type="search" placeholder="Search" v-model="query" @input="fetchWindows"/>
-      <div class="actions">
-
-      </div> -->
-    </Navbar>
     <main>
-      <br />
       Product name:
-      <input id="productName" v-model="product" style="width:400px" />
-      <br /><br />
-      <button @click.self="openInNewWindow">Open in new window</button>
-      <button style="margin-left:150px" @click.self="open">Open</button>
+      <input id="productName" v-model="product" />
+      <button @click.self="find">Open in new window</button>
     </main>
   </div>
 </template>
@@ -28,21 +19,11 @@ import history from "./pages/history";
 import Select2 from "@/popup/components/Select2.vue";
 import Button from "./components/Button.vue";
 
-require("@/src_jq/common/SmartotekaFabricLocalStorage.js");
 require("@/src_jq/common/commonFunctions.js");
 
 export default {
-  name: "Search",
-  components: {
-    Snippet,
-    Session,
-    tabs,
-    bookmarks,
-    Navbar,
-    history,
-    Select2,
-    Button,
-  },
+  name: "ProductSearch",
+
   props: {
     product: String,
   },
@@ -50,22 +31,13 @@ export default {
     return {};
   },
   beforeMount() {},
-  mounted() {
-    setTimeout(() => $("#productName").focus(), 0);
-
-    var vm = this;
-    $("#productName").on("keypress", (e) => {
-      if (e.keyCode == 13) {
-        vm.openInNewWindow();
-      }
-    });
-  },
+  mounted() {},
   computed: {},
   methods: {
-    openInNewWindow() {
+    find() {
       let tabs = [
         {
-          url: "https://www.ozon.ru/search?from=OpenSearch&text=",
+          url: "https://www.ozon.ru/category/ruchki-18016/?from_global=true&text=",
         },
         { url: "https://www.mvideo.ru/product-list-page?q=" },
       ];
@@ -76,21 +48,6 @@ export default {
         return el;
       });
       openTabsInNewWindow(tabs);
-    },
-    open() {
-      let tabs = [
-        {
-          url: "https://www.ozon.ru/search?from=OpenSearch&text=",
-        },
-        { url: "https://www.mvideo.ru/product-list-page?q=" },
-      ];
-
-      tabs = tabs.map((el) => {
-        el.url = el.url + this.product;
-
-        return el;
-      });
-      openTabs(tabs);
     },
   },
 };

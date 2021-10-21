@@ -47,7 +47,8 @@
     "chrome://*"
   ],
   "browser_action": {
-    "default_title": "Smartoteka"
+    "default_title": "Smartoteka",
+    "default_popup": "popup/popup.html"
   },
   "content_security_policy": "img-src chrome://favicon2;",
   "content_scripts": [

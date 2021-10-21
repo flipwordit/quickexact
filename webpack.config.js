@@ -23,6 +23,7 @@ const config = {
   entry: {
     'background/background': './background/background.js',
     'popup/popup': './popup/popup.js',
+    'productSearch/productSearch': './productSearch/productSearch.js',
     'content/content': './content/content.js',
   },
   output: {
@@ -129,6 +130,7 @@ const config = {
       { from: 'src_jq', to: 'src_jq' },
       { from: 'fonts/**/*', to: 'fonts/[name].[ext]' },
       { from: 'popup/popup.html', to: 'popup/popup.html' },
+      { from: 'productSearch/productSearch.html', to: 'productSearch/productSearch.html' },
       {
         from: 'manifest.json',
         to: 'manifest.json',
@@ -183,7 +185,7 @@ module.exports = (env, argv) => {
         entries: {
         // The entries used for the content/background scripts or extension pages
           background: 'background/background',
-          extensionPage: ['popup/popup', 'options/options'],
+          extensionPage: ['productSearch/productSearch', 'options/options'],
         },
       }),
     )
