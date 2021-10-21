@@ -10,8 +10,7 @@
       <div
         id="speedDealHelp"
         style="font-size: 150%; font-weight: bold; display: none"
-      >
-      </div>
+      ></div>
 
       <!-- <p>Selected: {{ selected }}</p> -->
       <select2
@@ -89,18 +88,7 @@ export default {
       .queriesProvider()
       .getSessions()
       .then((sessions) => {
-        vm.sessions = sessions;
-
-        let allTags = [];
-
-        sessions.forEach(
-          (el) =>
-            (allTags = allTags
-              .concat(el.tags)
-              .concat([{ id: el.query, text: el.query }]))
-        );
-
-        this.options = unique(allTags, (el) => el.id);
+        vm.update(sessions);
       });
     // smartotekaFabric
     //   .queriesProvider()
@@ -117,6 +105,13 @@ export default {
     //   .then((tags) => {
     //     this.options = tags;
     //   });
+
+    chrome.storage.onChanged.addListener(function (changes, namespace) {
+      const sessionsChanges = changes["Sessions"];
+      if (sessionsChanges && sessionsChanges.newValue) {
+        vm.update(sessionsChanges.newValue);
+      }
+    });
 
     window.addEventListener(
       "keypress",
@@ -172,8 +167,19 @@ export default {
     },
   },
   methods: {
-    handleClick(tab, event) {
-      console.log(tab, event);
+    update(sessions) {
+      this.sessions = sessions;
+
+      let allTags = [];
+
+      sessions.forEach(
+        (el) =>
+          (allTags = allTags
+            .concat(el.tags)
+            .concat([{ id: el.query, text: el.query }]))
+      );
+
+      this.options = unique(allTags, (el) => el.id);
     },
   },
 };
