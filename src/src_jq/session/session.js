@@ -391,7 +391,14 @@ $(function () {
     let rowId = $(event.target).closest('.ag-row').attr('row-id');
 
     if (!rowId) {
-      console.log('not find row');
+      let session = createDefaultSession(tabs);
+
+      smartotekaFabric.KBManager()
+        .addSession(session)
+        .then(() => {
+          refreshSessionGrid();
+        });
+
       return;
     }
 

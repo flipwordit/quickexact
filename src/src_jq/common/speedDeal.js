@@ -30,6 +30,9 @@ function registerSpeedDeal(helpPaneId, smartotekaFabric) {
 
     $(helpPaneId).show();
 
+    $(helpPaneId).html(`You can press
+        <span class="values" style="color: green">hot key after configure it on settings page</span>`);
+
     function toHelp(step, keyMapper = (k) => k, delim = ",") {
         return Object
             .keys(step)
@@ -44,8 +47,20 @@ function registerSpeedDeal(helpPaneId, smartotekaFabric) {
 
             let firstHelp = toHelp(speedDealShortCut);
 
-            if (firstHelp)
-                $(".values", helpPaneId).text(firstHelp + " for spead deal during two seconds");
+            if (firstHelp) {
+                setTimeout(() => {
+                    $(".values", helpPaneId)
+                        .html("<br>" + toHelp(
+                            pointer,
+                            (k) => "<li action='" + k + "'>" + k + "&nbsp;-&nbsp;" + pointer[k].description + "</li>", ""));
+
+                    $('.values li', helpPaneId).click(function () {
+                        let action = $(this).attr('action');
+
+                        speedDealKeyPress({ key: action });
+                    });
+                }, 0);
+            }
 
             let pointer = speedDealShortCut;
 
@@ -68,7 +83,16 @@ function registerSpeedDeal(helpPaneId, smartotekaFabric) {
 
                 if (typeof (pointer) === "object" && !nextStep.action) {
                     setTimeout(() => {
-                        $(".values", helpPaneId).html("<br>" + toHelp(pointer, (k) => k + "&nbsp;-&nbsp;" + pointer[k].description, "<br>"));
+                        $(".values", helpPaneId)
+                            .html("<br>" + toHelp(
+                                pointer,
+                                (k) => "<li action='" + k + "'>" + k + "&nbsp;-&nbsp;" + pointer[k].description + "</li>", ""));
+
+                        $('.values li', helpPaneId).click(function () {
+                            let action = $(this).attr('action');
+
+                            speedDealKeyPress({ key: action });
+                        });
                     }, 0);
                 }
 
@@ -92,7 +116,16 @@ function registerSpeedDeal(helpPaneId, smartotekaFabric) {
                 pointer = actions[nextStep.type];
 
                 setTimeout(() => {
-                    $(".values", helpPaneId).html("<br>" + toHelp(pointer, (k) => k + "&nbsp;-&nbsp;" + pointer[k].description, "<br>"));
+                    $(".values", helpPaneId)
+                        .html("<br>" + toHelp(
+                            pointer,
+                            (k) => "<li action='" + k + "'>" + k + "&nbsp;-&nbsp;" + pointer[k].description + "</li>", ""));
+
+                    $('.values li', helpPaneId).click(function () {
+                        let action = $(this).attr('action');
+
+                        speedDealKeyPress({ key: action });
+                    });
                 }, 0);
 
                 handler = pointer[nextStep.action].action;
@@ -140,7 +173,7 @@ function registerSpeedDeal(helpPaneId, smartotekaFabric) {
                 () => {
                     $(document).unbind("keypress.speedDeal");
                     $(helpPaneId).hide();
-                }, 4000);
+                }, 5000);
 
             removeSpeaDealHandlers();
         });

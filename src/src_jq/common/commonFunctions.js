@@ -193,6 +193,19 @@ function redirectCurrentTab(url) {
   window.location.assign(url);
 }
 
+function createDefaultSession(tabs) {
+  let now = new Date();
+  let dateCreation = now.valueOf();
+
+  let session = {
+    date: dateCreation,
+    query: now.toLocaleString({ year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric" }),
+    tags: [],
+    tabs: tabs
+  };
+  return session;
+}
+
 window.unique = unique;
 window.comparerCombine = comparerCombine;
 window.throttle = throttle;
@@ -203,3 +216,5 @@ window.openTabsInNewWindow = openTabsInNewWindow;
 window.closeTabsByUrlIfOpen = closeTabsByUrlIfOpen;
 window.redirectCurrentTab = redirectCurrentTab;
 window.getActiveTab = getActiveTab;
+
+window.createDefaultSession = createDefaultSession;

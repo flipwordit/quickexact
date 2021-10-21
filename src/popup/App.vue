@@ -11,10 +11,6 @@
         id="speedDealHelp"
         style="font-size: 150%; font-weight: bold; display: none"
       >
-        You can press
-        <span class="values" style="color: green"
-          >hot key after configure it on settings page</span
-        >&nbsp;
       </div>
 
       <!-- <p>Selected: {{ selected }}</p> -->

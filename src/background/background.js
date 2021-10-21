@@ -52,19 +52,52 @@ chrome.commands.onCommand.addListener(async (command) => {
   switch (command) {
     case 'search':
       openPopup()
-      // let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-
-      // Current tab is this extension
-      // TODO: relace to find if current extension open in tabs and make it active
-      // Do we need many tabs with smartoteka? Many windows?
-      if (tab.url === 'chrome-extension://fkfammijpebbgdjblnmkkmobgenppkda/popup.html') {
-        chrome.tabs.sendMessage(tab.id, 'clear', function (response) {
-          console.log(response)
-        })
-      } else {
-        chrome.tabs.create({ url: 'popup.html' })
-      }
       break
+    case "add-tab-to-session": {
+      getActiveTab()
+        .then(activeTab => {
+
+          smartotekaFabric.queriesProvider()
+            .getSelectSession()
+            .then(session => {
+              if (session) {
+                session.tabs.push(activeTab);
+
+                smartotekaFabric.KBManager().updateSession(session)
+                  .then(() => {
+                    chrome.tabs.sendMessage(
+                      activeTab.id,
+                      {
+                        message: "Added to '" + session.query + "'"
+                      },
+                      function (response) {
+                        console.log(response.success);
+                      });
+                  });
+              }
+              else {
+
+                let session = createDefaultSession([activeTab]);
+
+                smartotekaFabric.KBManager()
+                  .addSession(session)
+                  .then(() => {
+                    smartotekaFabric.KBManager().setSelectSession(session.date);
+
+                    chrome.tabs.sendMessage(
+                      activeTab.id,
+                      {
+                        message: "Added to '" + session.query + "'"
+                      },
+                      function (response) {
+                        console.log(response.success);
+                      });
+                  });
+              }
+            })
+        });
+      break;
+    }
     default: {
       console.log(command)
     }
