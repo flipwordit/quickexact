@@ -419,15 +419,21 @@ $(function () {
 
   registerFilterToGrid(sessionGrid);
 
-  $(document).keydown(function(e) {
+  $(document).keydown(function (e) {
     if (e.ctrlKey) {
-        if (e.keyCode == 65 || e.keyCode == 97) { // 'A' or 'a'
-            
-            e.preventDefault();
-            tabsGrid.api.selectAll();
-            return false;
-        }
+      if (e.keyCode == 65 || e.keyCode == 97) { // 'A' or 'a'
+
+        if (
+          document.activeElement.type === "textarea" ||
+          document.activeElement.type === "text"
+        )
+          return;
+
+        e.preventDefault();
+        tabsGrid.api.selectAll();
+        return false;
+      }
     }
-});
+  });
 })
 

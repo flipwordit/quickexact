@@ -53,7 +53,7 @@ export default {
     },
     options: function (options) {
       console.log("options");
-
+      let modelValue = this.selectList().val()
       this.selectList().empty();
 
       createMultiselectTags(
@@ -61,6 +61,7 @@ export default {
         options,
         generateAdditionalTagsFunction(() => this.searchResults)
       );
+      this.selectList().val(modelValue).trigger("change");
     },
   },
   destroyed: function () {
@@ -93,9 +94,9 @@ export default {
     clearAllFilters() {
       this.selectList().val(null).trigger("change");
     },
-    selectList(){
+    selectList() {
       return $("select", this.$el);
-    }
+    },
   },
 };
 </script>
