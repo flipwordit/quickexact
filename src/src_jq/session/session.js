@@ -418,5 +418,16 @@ $(function () {
   }
 
   registerFilterToGrid(sessionGrid);
+
+  $(document).keydown(function(e) {
+    if (e.ctrlKey) {
+        if (e.keyCode == 65 || e.keyCode == 97) { // 'A' or 'a'
+            
+            e.preventDefault();
+            tabsGrid.api.selectAll();
+            return false;
+        }
+    }
+});
 })
 
