@@ -1,6 +1,5 @@
 <template>
   <span style="display: inline-block; width: 95%">
-    Query:
     <select>
       <slot></slot>
     </select>

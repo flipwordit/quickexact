@@ -9,7 +9,7 @@ import ElementPlus from 'element-plus'
 import VueFeather from 'vue-feather'
 import store from '@/store'
 
-import App from './App'
+import App from './Search'
 
 const app = createApp(App)
 app.use(store)

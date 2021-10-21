@@ -7,10 +7,7 @@
       </div> -->
     </Navbar>
     <main>
-      <div
-        id="speedDealHelp"
-        style="font-size: 150%; font-weight: bold; display: none"
-      ></div>
+      <div id="speedDealHelp"></div>
 
       <!-- <p>Selected: {{ selected }}</p> -->
       <select2
@@ -49,7 +46,7 @@ require("@/src_jq/common/SmartotekaFabricLocalStorage.js");
 require("@/src_jq/common/commonFunctions.js");
 
 export default {
-  name: "Popup",
+  name: "Search",
   components: {
     Snippet,
     Session,
@@ -186,6 +183,15 @@ export default {
 </script>
 
 <style lang="scss">
+#speedDealHelp {
+  font-size: 150%;
+  font-weight: bold;
+  display: none;
+
+  .values {
+    color: green;
+  }
+}
 .el-tabs__header {
   margin: 0;
 }
