@@ -2267,13 +2267,17 @@ S2.define('select2/selection/search',[
     }
   };
 
-  Search.prototype.handleSearch = function () {
+  Search.prototype.handleSearch = function (f, evt) {
     this.resizeSearch();
 
     if (!this._keyUpPrevented) {
       var input = this.$search.val();
       let separators = this.options.options.tokenSeparators;
-      if (separators && separators.findIndex(s => input.indexOf(s) >= 0) >= 0) {
+      if (evt
+        && evt.originalEvent
+        && evt.originalEvent.inputType === "insertFromPaste"
+        && separators
+        && separators.findIndex(s => input.indexOf(s) >= 0) >= 0) {
         input += separators[0];
       }
 
