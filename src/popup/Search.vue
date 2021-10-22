@@ -153,7 +153,10 @@ export default {
         (tag) => (filterTags[tag] = ++countTags)
       );
       filterTags.count = countTags;
-      let filterByTags = getFilterByFilterTags((el) => el, filterTags);
+      let filterByTags = getFilterByFilterTags(
+        (el) => el,
+        () => filterTags
+      );
 
       return (this.sessions || []).filter(
         (session) => filterTags[session.query] || filterByTags(session)

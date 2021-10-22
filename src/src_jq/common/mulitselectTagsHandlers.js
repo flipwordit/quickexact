@@ -79,17 +79,17 @@ function registerFilterToGrid(grid) {
 }
 
 function getFilterByTags() {
-  return getFilterByFilterTags((node) => node.data, window.filterTags || { count: 0 });
+  return getFilterByFilterTags((node) => node.data, () => window.filterTags || { count: 0 });
 }
 
-function getFilterByFilterTags(getData, filterTags) {
+function getFilterByFilterTags(getData, getFilterTags) {
 
   return (node) => {
     let data = getData(node);
 
     return !data
       || !data.tags
-      || data.tags.filter(tag => filterTags[tag.id]).length === filterTags.count;
+      || data.tags.filter(tag => getFilterTags()[tag.id]).length === getFilterTags().count;
   };
 }
 
