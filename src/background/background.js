@@ -15,36 +15,57 @@
 // TODO move to separate module
 import storage from '@/utils/storage'
 
-async function openPopup() {
-  let popup = await storage.get('popup')
-  if (popup) {
+async function getOrCreatePopup(url, width, height) {
+  let activateTab = async (tab) => {
+    let value = {};
+    value[url] = tab.id;
+    await storage.set(value)
+  };
 
-    chrome.windows.update(popup, { focused: true },
-      (openWindow) => {
-        getActiveTab().then((tab) => {
-          chrome.tabs.sendMessage(tab.id, "clear", function (response) {
-            console.log(response);
-          });
-        });
-      });
-  } else {
+  let create = () =>
     chrome.windows.create(
       {
-        url: chrome.runtime.getURL('popup/popup.html#/'),
+        url: chrome.runtime.getURL(url),
         type: 'popup',
         focused: true,
-        height: 1000,
-        width: 500,
+        height: height,
+        width: width,
         top: 0,
         left: 0,
         // alwaysOnTop: true,
       },
-      async (evt) => {
-        await storage.set({ popup: evt.id })
-      },
-    )
-    // focus current open window
+      activateTab,
+    );
+
+  let popup = await storage.get(url)
+  if (popup) {
+
+    chrome.windows.update(popup, { focused: true },
+      (openWindow) => {
+        if (openWindow) {
+
+
+          getActiveTab().then((tab) => {
+            chrome.tabs.sendMessage(tab.id, "clear", function (response) {
+              console.log(response);
+            });
+          });
+          return;
+        }
+
+        create();
+      });
+  } else {
+    create();
   }
+}
+
+async function openPopup() {
+  await getOrCreatePopup('popup/popup.html#/', 500, 1000);
+}
+
+async function openShopsPopup() {
+  await getOrCreatePopup('shops/popup.html#/', 750, 250);
 }
 
 chrome.commands.onCommand.addListener(async (command) => {
@@ -52,6 +73,9 @@ chrome.commands.onCommand.addListener(async (command) => {
   switch (command) {
     case 'search':
       openPopup()
+      break
+    case 'shops':
+      openShopsPopup()
       break
     case "add-tab-to-session": {
       getActiveTab()

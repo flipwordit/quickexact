@@ -7,7 +7,7 @@ const { resolve, join } = require('path')
 // const argv = require('minimist')(process.argv.slice(2));
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const WindiCSS = require('windicss-webpack-plugin').default
+const WindiCSS = require('windicss-webpack-plugin')
 
 const SizePlugin = require('size-plugin')
 const ExtensionReloader = require('webpack-extension-reloader')
@@ -23,6 +23,7 @@ const config = {
   entry: {
     'background/background': './background/background.js',
     'popup/popup': './popup/popup.js',
+    'shops/popup': './shops/popup.js',
     'content/content': './content/content.js',
   },
   output: {
@@ -129,6 +130,7 @@ const config = {
       { from: 'src_jq', to: 'src_jq' },
       { from: 'fonts/**/*', to: 'fonts/[name].[ext]' },
       { from: 'popup/popup.html', to: 'popup/popup.html' },
+      { from: 'shops/popup.html', to: 'shops/popup.html' },
       {
         from: 'manifest.json',
         to: 'manifest.json',
@@ -183,7 +185,7 @@ module.exports = (env, argv) => {
         entries: {
         // The entries used for the content/background scripts or extension pages
           background: 'background/background',
-          extensionPage: ['popup/popup', 'options/options'],
+          extensionPage: ['shops/popup', 'options/options'],
         },
       }),
     )

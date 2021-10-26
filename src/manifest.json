@@ -22,15 +22,23 @@
     "unlimitedStorage",
     "commands",
     "history",
-    "chrome://favicon2/",
-    "chrome://favicon/"
+    "chrome://favicon/",
+    "clipboardRead"
   ],
   "commands": {
-    "open-search": {
+    "search": {
       "suggested_key": {
         "default": "Ctrl+Q"
       },
       "description": "open Q&E search",
+      "action": {},
+      "global": true
+    },
+    "shops": {
+      "suggested_key": {
+        "default": "Ctrl+1"
+      },
+      "description": "open online-shops",
       "action": {},
       "global": true
     },
