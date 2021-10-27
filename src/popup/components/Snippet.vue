@@ -1,23 +1,19 @@
 <template>
   <div class="card">
     <div class="header">
-      <div class="title">Vue.Directives
-        <span class="version">v3</span>
+      <div class="title">{{cheat.title}}
+        <span class="version">{{cheat.version}}</span>
       </div>
       <!-- <div class="reference">vuemastery</div> -->
       <div class="dropdown" @click.stop="toggleDropdown">
         <div class="btn" />
         <ul class="menu" v-if="showDropdown" v-click-outside="toggleDropdown">
             <!-- <li>Edit Save</li> -->
-            <li>src: <a href="vuemastery.com">vuemastery</a></li>
-            <li>docs: <a href="vuejs.com">Directory search</a></li>
+            <li>src: <a :href="cheat.src" target="blank">{{cheat.src}}</a></li>
+            <li>docs: <a :href="cheat.reference">{{cheat.reference}}</a></li>
             <li>
               <div class="tags">
-                <div class="tag">tag1</div>
-                <div class="tag">tag2</div>
-                <div class="tag">tag3</div>
-                <div class="tag">tag69492</div>
-                <div class="tag">tagio</div>
+                <div class="tag" v-for="(tag, index) in cheat.tags" :key="index">{{tag}}</div>
               </div>
             </li>
           </ul>
@@ -25,19 +21,25 @@
 
     </div>
     <div class="content">
-      <Markdown :source="source" />
+      <Md :source="cheat.content" />
     </div>
 
   </div>
 </template>
 
 <script>
+import Md from './Md'
+import cheat from '@/data/cheat.json'
+
 export default {
   name: 'Snippet',
+  components: {
+    Md,
+  },
   data() {
     return {
       showDropdown: false,
-      source: '# Hello World!  ## dkroifeoqieure',
+      cheat,
     }
   },
   methods: {

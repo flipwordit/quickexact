@@ -1,0 +1,16 @@
+{
+  "uid": "1",
+  "author": "vuemastery",
+  "src": "https://vuemastery.com",
+  "version": "v3",
+  "reference": "https://docs.vue.js",
+  "title": "Vue bindings",
+  "content": "```<a v-bind:href='url'>...</a>```  *Shorthand syntax*`<a :href='url'>...</a>` True or false will add or remove attribute `<button :disabled='isButtonDisabled`>...` If isActive is truthy, the class ‘active’ will appear `<div :class='{ active: isActive}'>...`}'>`",
+  "tags": [
+    "Vue3",
+    "Directives",
+    "JS",
+    "frontend",
+    "en"
+  ]
+}
