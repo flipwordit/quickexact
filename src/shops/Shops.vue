@@ -1,7 +1,6 @@
 <template>
   <div class="popup">
-    <Navbar>
-    </Navbar>
+    <Navbar> </Navbar>
     <main>
       <br />
       Product name:
@@ -49,12 +48,7 @@ export default {
   computed: {},
   methods: {
     openInNewWindow() {
-      let tabs = [
-        {
-          url: "https://www.ozon.ru/search?from=OpenSearch&text=",
-        },
-        { url: "https://www.mvideo.ru/product-list-page?q=" },
-      ];
+      let tabs = this.getTabs();
 
       tabs = tabs.map((el) => {
         el.url = el.url + this.product;
@@ -64,12 +58,7 @@ export default {
       openTabsInNewWindow(tabs);
     },
     open() {
-      let tabs = [
-        {
-          url: "https://www.ozon.ru/search?from=OpenSearch&text=",
-        },
-        { url: "https://www.mvideo.ru/product-list-page?q=" },
-      ];
+      let tabs = this.getTabs();
 
       tabs = tabs.map((el) => {
         el.url = el.url + this.product;
@@ -77,6 +66,25 @@ export default {
         return el;
       });
       openTabs(tabs);
+    },
+    getTabs() {
+      return [
+        {
+          url: "https://www.mvideo.ru/product-list-page?q=",
+        },
+        {
+          url: "https://www.eldorado.ru/search/catalog.php?q=",
+        },
+        {
+          url: "https://www.dns-shop.ru/search/?q=",
+        },
+        {
+          url: "https://www.citilink.ru/search/?text=",
+        },
+        {
+          url: "https://www.ozon.ru/search?from=OpenSearch&text=",
+        },
+      ];
     },
   },
 };
