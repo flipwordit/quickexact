@@ -1,6 +1,4 @@
-let smartotekaFabric =
-  //new SmartotekaFabricDGraph("https://blue-surf-390018.us-east-1.aws.cloud.dgraph.io/")
-  new SmartotekaFabricLocalStorage();
+let smartotekaFabric = getSmartotekaFabric();
 
 
 function getTags(url, title) {

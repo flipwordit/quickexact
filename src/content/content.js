@@ -1,8 +1,6 @@
 // import $ from 'jquery'
-// import SmartotekaFabricDGraph from '~/logic/SmartotekaFabricDgraph'
-// import SmartotekaFabricLocalStorage from '~/logic/SmartotekaFabricLocalStorage'
 
-// let smartotekaFabric = new SmartotekaFabricDGraph('http://localhost:8080/query?timeout=20s')
+// let smartotekaFabric = getSmartotekaFabric()
 // let queryProvider = smartotekaFabric.queriesProvider()
 
 // if (location.host === 'www.google.com') {

@@ -206,6 +206,12 @@ function createDefaultSession(tabs) {
   return session;
 }
 
+function getSmartotekaFabric() {
+  return new SmartotekaFabricLocalStorage();
+  //new SmartotekaFabricDGraph("https://blue-surf-390018.us-east-1.aws.cloud.dgraph.io/")
+}
+
+window.getSmartotekaFabric = getSmartotekaFabric;
 window.unique = unique;
 window.comparerCombine = comparerCombine;
 window.throttle = throttle;

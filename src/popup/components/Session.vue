@@ -1,16 +1,12 @@
 <template>
   <div class="card">
     <div class="header">
-      <div class="title">{{ session.query }}</div>
+      <div class="title" @click.self="toggleTabs">{{ session.query }}</div>
       <!-- <div class="reference">vuemastery</div> -->
-      <div class="dropdown" @click.self="toggleTabs">
-        Tabs
-        <div class="btn" />
-        <!-- TODO: расширить область нажатия!!! -->
-      </div>
-      <div class="dropdown" @click.self="toggleTags">
+      <div class="dropdown card-tags" @click.self="toggleTags">
         Tags
         <div class="btn" />
+        <!-- TODO: расширить область нажатия!!! -->
       </div>
       <div class="dropdown" @click.self="toggleActions">
         Act
@@ -132,6 +128,11 @@ $sky: #e6f6fe;
   color: $black;
   font-family: $roboto;
   overflow: visible;
+
+  .card-tags {
+    margin-left: auto;
+    margin-right: 30px;
+  }
 
   .header {
     background: #e6f6fe;

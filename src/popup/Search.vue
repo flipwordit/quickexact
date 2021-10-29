@@ -163,7 +163,7 @@ export default {
       );
     },
     smartotekaFabric() {
-      return new SmartotekaFabricLocalStorage();
+      return getSmartotekaFabric();
     },
   },
   methods: {

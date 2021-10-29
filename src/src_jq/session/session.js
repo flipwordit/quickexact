@@ -1,13 +1,6 @@
-let smartotekaFabric =
-  //new SmartotekaFabricDGraph("https://blue-surf-390018.us-east-1.aws.cloud.dgraph.io/")
-  new SmartotekaFabricLocalStorage();
-
-
-//TODO: make close all without tabs current session.
+let smartotekaFabric = getSmartotekaFabric();
 
 $(function () {
-
-
   $("#sessionGrid").on("dragover", function (event) {
     gridDragOver(event.originalEvent);
   });
@@ -70,7 +63,6 @@ $(function () {
     let session = getSelectedSession();
 
     if (!window.historyBlock) {
-      console.log("push " + session.date);
       history.pushState({ sessionId: session.date }, "Session - " + session.query, "?id=" + session.date)
     }
 
