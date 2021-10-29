@@ -2,7 +2,6 @@ import { createStore } from 'vuex'
 import { debounce } from 'lodash'
 import tabsService from '@/services/tabs'
 import historyService from '@/services/history'
-import bookmarksService from '@/services/boodmarks'
 
 const store = createStore({
   state() {
@@ -77,9 +76,9 @@ const store = createStore({
       commit('UPDATE_RECORDS', records)
     },
     async collectBookmarks() {
-      const bookmarks = await bookmarksService.getTree()
-      console.log(bookmarks)
-      this.commit('UPDATE_BOOKMARKS', bookmarks)
+      // const bookmarks = await bookmarksService.getTree()
+      // console.log(bookmarks)
+      // this.commit('UPDATE_BOOKMARKS', bookmarks)
     },
   },
 })

@@ -33,14 +33,10 @@
 
 <script>
 import Navbar from "@/popup/components/Navbar";
-import tabs from "@/popup/pages/tabs";
 
 import Snippet from "@/popup/components/Snippet";
 import Session from "@/popup/components/Session";
-import bookmarks from "@/popup/pages/bookmarks";
-import history from "./pages/history";
 import Select2 from "@/popup/components/Select2.vue";
-import Button from "./components/Button.vue";
 
 require("@/src_jq/common/SmartotekaFabricLocalStorage.js");
 require("@/src_jq/common/commonFunctions.js");
@@ -50,12 +46,8 @@ export default {
   components: {
     Snippet,
     Session,
-    tabs,
-    bookmarks,
     Navbar,
-    history,
     Select2,
-    Button,
   },
   data() {
     return {
