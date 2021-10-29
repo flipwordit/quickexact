@@ -116,7 +116,7 @@ function createTabsGrid(selector, queryProvider) {
                 },
             },
             {
-                name: 'Close all if open',
+                name: 'Close all dublicates',
                 action: function () {
 
                     let tabs = getSelectedTabs(params);

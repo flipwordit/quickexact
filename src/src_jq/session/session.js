@@ -45,8 +45,34 @@ $(function () {
     return smartotekaFabric.KBManager().deleteSession(session);
   };
 
+  function setSelectedSession(sessionId) {
+    let node = sessionId
+      ? sessionGrid.api.getRowNode(sessionId)
+      : null;
+    if (!node) {
+      node = sessionGrid.api.getDisplayedRowAtIndex(0);
+    }
+    node.setSelected(true);
+  }
+
+  let historyUnblock = throttle(() => window.historyBlock = false, 100);
+  window.onpopstate = function (event) {
+    if (event && event.state && event.state.sessionId) {
+      console.log("pop " + event.state.sessionId);
+      window.historyBlock = true;
+      setSelectedSession(event.state.sessionId);
+
+      historyUnblock();
+    }
+  }
+
   sessionGrid.onSelectionChanged = function () {
     let session = getSelectedSession();
+
+    if (!window.historyBlock) {
+      console.log("push " + session.date);
+      history.pushState({ sessionId: session.date }, "Session - " + session.query, "?id=" + session.date)
+    }
 
     refreshTabsGrid(session.query === "Current" ? null : session.tabs);
 
@@ -106,6 +132,13 @@ $(function () {
     });
   }
 
+  function getSessionIdFromUrl() {
+    let url = new URL(window.location.href);
+    let sessionId = url.searchParams.get("id");
+
+    return sessionId;
+  }
+
   function refreshSessionGrid() {
     smartotekaFabric.queriesProvider().getSessions()
       .then(sessions => {
@@ -114,16 +147,16 @@ $(function () {
         sessions.unshift({ date: new Date().valueOf(), query: "Current", tabs: [] });
         sessionGrid.api.setRowData(sessions);
 
+        let sessionId = getSessionIdFromUrl();
+
+        if (sessionId) {
+          setSelectedSession(sessionId);
+          return;
+        }
         smartotekaFabric.queriesProvider()
           .getSelectSessionId()
           .then(sessionId => {
-            let node = sessionId
-              ? sessionGrid.api.getRowNode(sessionId)
-              : null;
-            if (!node) {
-              node = sessionGrid.api.getDisplayedRowAtIndex(0);
-            }
-            node.setSelected(true);
+            setSelectedSession(sessionId);
           });
       });
   }

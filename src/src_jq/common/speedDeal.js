@@ -6,19 +6,27 @@ function getActions() {
                     key: "o",
                     type: "changeHandler",
                     description: "Open in current window",
-                    action: openTabs
+                    action: (s) => openTabs(s.tabs)
                 },
                 {
                     key: "n",
                     type: "changeHandler",
                     description: "Open in new window",
-                    action: openTabsInNewWindow
+                    action: (s) => openTabsInNewWindow(s.tabs)
                 },
                 {
                     key: "c",
                     type: "changeHandler",
                     description: "Close tabs and dublicates",
-                    action: closeTabsByUrlIfOpen
+                    action: (s) => closeTabsByUrlIfOpen(s.tabs)
+                },
+                {
+                    key: "e",
+                    type: "changeHandler",
+                    description: "Edit",
+                    action: (s) => {
+                        openTabs([{ url: "../src_jq/session/session.html?id=" + s.date }]);
+                    }
                 }
             ],
             // cheatsheets: {
@@ -124,7 +132,7 @@ function registerSpeedDeal(helpPaneId, smartotekaFabric) {
 
                                         if (session) {
                                             console.log("Run operation" + new Date())
-                                            handler(session.tabs);
+                                            handler(session);
                                         }
                                         else {
                                             alert("session not found!")

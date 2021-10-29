@@ -21,7 +21,7 @@
             <li
               v-for="action of actions"
               :key="action.description"
-              @click.self="action.action(session.tabs)"
+              @click.self="action.action(session)"
             >
               {{ action.description }}
             </li>
