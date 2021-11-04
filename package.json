@@ -10,7 +10,7 @@
     "build:prod": "cross-env NODE_ENV=production webpack --hide-modules",
     "build": "cross-env NODE_ENV=development webpack --hide-modules",
     "dev": "webpack --mode development --env NODE_ENV=development --watch --hide-modules",
-    "test": "mocha test"
+    "test": "vue-cli-service test:unit src/**/*.spec.js"
   },
   "dependencies": {
     "@johmun/vue-tags-input": "^2.1.0",
@@ -43,6 +43,7 @@
     "@babel/runtime-corejs3": "^7.15.4",
     "@types/chrome": "0.0.93",
     "@vue/compiler-sfc": "^3.2.11",
+    "@vue/test-utils": "^1.2.2",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.2",
     "chai": "^4.3.4",

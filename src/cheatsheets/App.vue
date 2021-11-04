@@ -1,11 +1,6 @@
 <template>
   <div class="popup">
-    <Navbar>
-      <!-- <input type="search" placeholder="Search" v-model="query" @input="fetchWindows"/>
-      <div class="actions">
-
-      </div> -->
-    </Navbar>
+    <Navbar> </Navbar>
     <main>
       <div id="speedDealHelp"></div>
 
@@ -19,14 +14,19 @@
       </select2>
 
       <div>
-        <Session
-          v-for="session in searchResults"
-          :key="session.date"
-          :session="session"
+        <!-- //TOdO: create!!!! -->
+        <CheatSheetGroup
+          v-for="group in groups"
+          :key="group.id"
+          :group="group"
+        />
+
+        <CheatSheet
+          v-for="cheatsheet in searchResults"
+          :key="cheatsheet.date"
+          :cheatsheet="cheatsheet"
         />
       </div>
-
-      <!-- <snippet /> -->
     </main>
   </div>
 </template>
@@ -34,25 +34,24 @@
 <script>
 import Navbar from "@/popup/components/Navbar";
 
-import Snippet from "@/popup/components/Snippet";
-import Session from "@/popup/components/Session";
+import CheatSheet from "./components/CheatSheet";
+import CheatSheetGroup from "./components/CheatSheetGroup";
 import Select2 from "@/common/Select2.vue";
 
 require("@/src_jq/common/SmartotekaFabricLocalStorage.js");
 require("@/src_jq/common/commonFunctions.js");
+require("@/src_jq/common/cheatSheetsManage.js");
 
 export default {
-  name: "Search",
+  name: "App",
   components: {
-    Snippet,
-    Session,
+    CheatSheet,
+    CheatSheetGroup,
     Navbar,
     Select2,
   },
   data() {
     return {
-      activeName: "sessions",
-      query: "",
       selected: [],
       options: [],
       sessions: [],
@@ -62,45 +61,31 @@ export default {
   mounted() {
     let vm = this;
 
-    chrome.runtime.onMessage.addListener(function (
-      request,
-      sender,
-      sendResponse
-    ) {
-      if (request === "clear") sendResponse("Cool clear!");
-
-      registerSpeedDeal("#speedDealHelp", vm.smartotekaFabric);
-    });
-    registerSpeedDeal("#speedDealHelp", vm.smartotekaFabric);
-
     this.smartotekaFabric
       .queriesProvider()
-      .getSessions()
-      .then((sessions) => {
-        vm.update(sessions);
+      .getCheatSheets()
+      .then((cheatsheets) => {
+        cheatsheets.forEach((ch) => {
+          let tags = ch.tags;
+
+          ch.tags = tags.sort((a, b) => {
+            let aId = restrictMap[a.text];
+            let bId = restrictMap[b.text];
+
+            return aId === undefined
+              ? bId === undefined
+                ? a.id.localeCompare(b.id)
+                : 1
+              : bId === undefined
+              ? -1
+              : aId.localeCompare(bId);
+          });
+        });
+
+        let groups = cheatsheetsGroup(cheatsheets);
+
+        vm.update(cheatsheets, groups);
       });
-    // smartotekaFabric
-    //   .queriesProvider()
-    //   .getCheatSheets()
-    //   .then((sessions) => {
-    //     vm.sessions = sessions.map((el) => {
-    //       return { date: el.date, title: el.content, tags: el.tags };
-    //     });
-    //   });
-
-    // this.smartotekaFabric
-    //   .queriesProvider()
-    //   .getTags()
-    //   .then((tags) => {
-    //     this.options = tags;
-    //   });
-
-    chrome.storage.onChanged.addListener(function (changes, namespace) {
-      const sessionsChanges = changes["Sessions"];
-      if (sessionsChanges && sessionsChanges.newValue) {
-        vm.update(sessionsChanges.newValue);
-      }
-    });
 
     window.addEventListener(
       "keypress",
@@ -120,11 +105,6 @@ export default {
           case "f":
             {
               setTimeout(() => $(".select2-search__field").focus(), 0);
-            }
-            break;
-          case "c":
-            {
-              registerSpeedDeal("#speedDealHelp", vm.smartotekaFabric);
             }
             break;
         }
@@ -159,8 +139,9 @@ export default {
     },
   },
   methods: {
-    update(sessions) {
+    update(sessions, groups) {
       this.sessions = sessions;
+      this.groups = groups;
 
       let allTags = [];
 

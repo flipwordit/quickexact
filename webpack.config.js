@@ -24,6 +24,7 @@ const config = {
     'background/background': './background/background.js',
     'popup/popup': './popup/popup.js',
     'shops/popup': './shops/popup.js',
+    'cheatsheets/script': './cheatsheets/script.js',
     'content/content': './content/content.js',
   },
   output: {
@@ -131,6 +132,7 @@ const config = {
       { from: 'fonts/**/*', to: 'fonts/[name].[ext]' },
       { from: 'popup/popup.html', to: 'popup/popup.html' },
       { from: 'shops/popup.html', to: 'shops/popup.html' },
+      { from: 'cheatsheets/page.html', to: 'cheatsheets/page.html' },
       {
         from: 'manifest.json',
         to: 'manifest.json',
@@ -185,7 +187,7 @@ module.exports = (env, argv) => {
         entries: {
         // The entries used for the content/background scripts or extension pages
           background: 'background/background',
-          extensionPage: ['shops/popup', 'options/options'],
+          extensionPage: ['shops/popup'],
         },
       }),
     )

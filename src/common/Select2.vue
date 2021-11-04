@@ -100,5 +100,5 @@ export default {
 };
 </script>
 <style>
-@import "/src_jq/libraries/select2.min.css";
+@import "../src_jq/libraries/select2.min.css";
 </style>

@@ -69,9 +69,15 @@ $(function () {
       $('#add-tags').trigger('change');
 
       addUpdateHandler = (cheatSheet) => {
-        cheatSheets.forEach(el =>
+        let removedTags = commonTags.filter(ct => cheatSheet.tags.findIndex(t => t.id === ct.id) === -1);
+
+
+        cheatSheets.forEach(el => {
+          el.tags = el.tags.filter(ct => removedTags.findIndex(t => t.id === ct.id) === -1);
+
           el.tags = mergeArraysById(el.tags, cheatSheet.tags, el => el.text)
-            .sort((a, b) => a.text.localeCompare(b.text)));
+            .sort((a, b) => a.text.localeCompare(b.text));
+        });
 
         console.log(cheatSheets);
 
