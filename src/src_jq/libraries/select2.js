@@ -1483,7 +1483,7 @@ S2.define('select2/selection/base',[
     this.container = container;
 
     this.$selection.on('focus', function (evt) {
-      self.trigger('focus', evt);
+      //self.trigger('focus', evt);
     });
 
     this.$selection.on('blur', function (evt) {
@@ -1730,7 +1730,7 @@ S2.define('select2/selection/multiple',[
   './base',
   '../utils'
 ], function ($, BaseSelection, Utils) {
-  function MultipleSelection ($element, options) {
+  function MultipleSelection($element, options) {
     MultipleSelection.__super__.constructor.apply(this, arguments);
   }
 
@@ -1813,11 +1813,11 @@ S2.define('select2/selection/multiple',[
   MultipleSelection.prototype.selectionContainer = function () {
     var $container = $(
       '<li class="select2-selection__choice">' +
-        '<button type="button" class="select2-selection__choice__remove" ' +
-        'tabindex="-1">' +
-          '<span aria-hidden="true">&times;</span>' +
-        '</button>' +
-        '<span class="select2-selection__choice__display"></span>' +
+      '<button type="button" class="select2-selection__choice__remove" ' +
+      'tabindex="-1">' +
+      '<span aria-hidden="true">&times;</span>' +
+      '</button>' +
+      '<span class="select2-selection__choice__display"></span>' +
       '</li>'
     );
 
@@ -1841,7 +1841,7 @@ S2.define('select2/selection/multiple',[
 
       var $selection = this.selectionContainer();
 
-      if(this.options.options.dragAndDropTags){
+      if (this.options.options.dragAndDropTags) {
         $($selection).attr("draggable", true);
       }
       var formatted = this.display(selection, $selection);
@@ -1880,6 +1880,43 @@ S2.define('select2/selection/multiple',[
     var $rendered = this.$selection.find('.select2-selection__rendered');
 
     $rendered.append($selections);
+
+    let selectionsElements = $(".select2-selection__choice", $rendered);
+
+    selectionsElements.on("dragstart", function (event) {
+      let pos = $('li', $(event.currentTarget).parent()).index(event.currentTarget);
+
+      event.originalEvent.dataTransfer.setData(
+        'text',
+        pos
+      );
+    });
+
+    selectionsElements.on("dragover", function (event) {
+      event.preventDefault();
+      return true;
+    });
+
+    selectionsElements.on("dragleave", function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    });
+
+    let that=this;
+    selectionsElements.on("drop", function (event) {
+
+      let fromPos = event.originalEvent.dataTransfer.getData('text');
+      let toPos = $('li', $(event.currentTarget).parent()).index(event.currentTarget);
+
+      data.splice(toPos, 0, data.splice(fromPos, 1)[0]);
+
+      data.forEach((v, i) => v.index = i);
+
+      // let el = $('li', $(event.currentTarget).parent()).get(fromPos);
+      // $(event.currentTarget).insertBefore(el);
+
+      that.update(data);
+    });
   };
 
   return MultipleSelection;

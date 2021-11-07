@@ -17,6 +17,8 @@ $(function () {
 
       $('#add-content').val(selectedCheatSheet.content);
       $('#add-tags').val(selectedCheatSheet.tags.map(el => el.id));
+      //Store order tags
+      $('#add-tags').select2('data').forEach(v => v.index = selectedCheatSheet.tags.findIndex(t => t.id === v.id));
       $('#add-tags').trigger('change');
 
       function clearAddBlockState() {
@@ -66,6 +68,8 @@ $(function () {
       let commonTags = joinArrays(cheatSheets.map(el => el.tags), el => el.text);
 
       $('#add-tags').val(commonTags.map(el => el.id));
+      //Store order
+      $('#add-tags').select2('data').forEach(v => v.index = commonTags.findIndex(t => t.id === v.id));
       $('#add-tags').trigger('change');
 
       addUpdateHandler = (cheatSheet) => {
@@ -75,8 +79,7 @@ $(function () {
         cheatSheets.forEach(el => {
           el.tags = el.tags.filter(ct => removedTags.findIndex(t => t.id === ct.id) === -1);
 
-          el.tags = mergeArraysById(el.tags, cheatSheet.tags, el => el.text)
-            .sort((a, b) => a.text.localeCompare(b.text));
+          el.tags = mergeArraysById(cheatSheet.tags, el.tags, el => el.text);
         });
 
         console.log(cheatSheets);
@@ -173,8 +176,7 @@ $(function () {
       });
 
     let tagsToCheatSheet = selectedTags
-      .map(el => { return { id: el.id, text: el.text }; })
-      .sort((a, b) => a.text.localeCompare(b.text));
+      .map(el => { return { id: el.id, text: el.text }; });
 
     let cheatsheet = {
       date: dateCreation,
