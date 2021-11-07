@@ -2,10 +2,11 @@ function createMultiselectTags(selector, tags, helpTags) {
 
   let multilist = $(selector);
 
-  let select2List=multilist.select2({
+  let select2List = multilist.select2({
     width: '100%',
     multiple: true,
     tags: true,
+    dragAndDropTags: true,
     tokenSeparators: [","],
     placeholder: "Click here and start typing to search.",
     data: tags,

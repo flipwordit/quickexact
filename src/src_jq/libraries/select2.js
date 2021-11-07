@@ -1840,6 +1840,10 @@ S2.define('select2/selection/multiple',[
       var selection = data[d];
 
       var $selection = this.selectionContainer();
+
+      if(this.options.options.dragAndDropTags){
+        $($selection).attr("draggable", true);
+      }
       var formatted = this.display(selection, $selection);
 
       var selectionId = selectionIdPrefix + Utils.generateChars(4) + '-';
@@ -3322,7 +3326,7 @@ S2.define('select2/data/select',[
   '../utils',
   'jquery'
 ], function (BaseAdapter, Utils, $) {
-  function SelectAdapter ($element, options) {
+  function SelectAdapter($element, options) {
     this.$element = $element;
     this.options = options;
 
@@ -3339,7 +3343,7 @@ S2.define('select2/data/select',[
       function (selectedElement) {
         return self.item($(selectedElement));
       }
-    );
+    ).sort((a, b) => a.index - b.index);
 
     callback(data);
   };
@@ -3347,6 +3351,7 @@ S2.define('select2/data/select',[
   SelectAdapter.prototype.select = function (data) {
     var self = this;
 
+    data.index = this.$element[0].querySelectorAll(':checked').length;
     data.selected = true;
 
     // If data.element is a DOM node, use it instead
