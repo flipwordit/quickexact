@@ -21,11 +21,11 @@
           :group="group"
         />
 
-        <CheatSheet
+        <!-- <CheatSheet
           v-for="cheatsheet in searchResults"
           :key="cheatsheet.date"
           :cheatsheet="cheatsheet"
-        />
+        /> -->
       </div>
     </main>
   </div>
@@ -67,21 +67,23 @@ export default {
       .then((cheatsheets) => {
         cheatsheets.forEach((ch) => {
           let tags = ch.tags;
+          ch.joinTags = (tags || []).map((el) => el.id).join(",") + "0";
+          // ch.tags = tags.sort((a, b) => {
+          //   let aId = restrictMap[a.text];
+          //   let bId = restrictMap[b.text];
 
-          ch.tags = tags.sort((a, b) => {
-            let aId = restrictMap[a.text];
-            let bId = restrictMap[b.text];
-
-            return aId === undefined
-              ? bId === undefined
-                ? a.id.localeCompare(b.id)
-                : 1
-              : bId === undefined
-              ? -1
-              : aId.localeCompare(bId);
-          });
+          //   return aId === undefined
+          //     ? bId === undefined
+          //       ? a.id.localeCompare(b.id)
+          //       : 1
+          //     : bId === undefined
+          //     ? -1
+          //     : aId.localeCompare(bId);
+          // });
         });
-
+        cheatsheets = cheatsheets.sort((a, b) =>
+          a.joinTags.localeCompare(b.joinTags)
+        );
         let groups = cheatsheetsGroup(cheatsheets);
 
         vm.update(cheatsheets, groups);

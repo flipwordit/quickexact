@@ -6,12 +6,21 @@
         <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
       </div>
       Content:
-    <div class="content">
-      
-        <CheatSheetGroup v-for="group in group.groups" :key="group.id" :group="group"></CheatSheetGroup>
-<CheatSheet v-for="cheatsheet in group.items" :key="cheatsheet.id" :cheatsheet="cheatsheet"></CheatSheet>
+      <div class="content">
+        <CheatSheet
+          v-for="cheatsheet in group.items"
+          :key="cheatsheet.id"
+          :cheatsheet="cheatsheet"
+          :commonTagsCount="group.commonTagsCount"
+        ></CheatSheet>
+        Groups:
+        <CheatSheetGroup
+          v-for="group in group.groups"
+          :key="group.id"
+          :group="group"
+        ></CheatSheetGroup>
+      </div>
     </div>
-  </div>
   </div>
 </template>
 
@@ -29,13 +38,12 @@ export default {
       default: () => {},
     },
   },
-  data() {
-  },
+  data() {},
   computed: {
     tags() {
       return this.group.commonTagsCount === -1
         ? []
-        : this.group.items[0].tags.splice(0, this.group.commonTagsCount);
+        : this.group.items[0].tags.slice(0, this.group.commonTagsCount);
     },
   },
 };
@@ -44,7 +52,7 @@ export default {
 <style lang="scss" scoped>
 @import "../../styles/variables";
 
-.content{
+.content {
   margin-left: 15px;
 }
 $sky: #e6f6fe;

@@ -2,11 +2,7 @@
   <div class="card">
     <div class="header">
       <div class="title">
-         <span
-          v-for="tag in cheatsheet.tags"
-          :key="tag.id"
-        >{{tag.text}}&nbsp;</span>
-        
+        <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
       </div>
       <!-- <div class="reference">vuemastery</div> -->
       <div class="dropdown" @click.self="toggleDropdown">
@@ -28,44 +24,51 @@
           </ul>
         </transition>
       </div>
-
     </div>
     <div class="content">
       <code>
-        {{cheatsheet.content}}
+        {{ cheatsheet.content }}
       </code>
     </div>
-
   </div>
 </template>
 
 <script>
 export default {
-  name: 'CheatSheet',
+  name: "CheatSheet",
   props: {
     cheatsheet: {
       type: Object,
       default: () => {},
     },
+    commonTagsCount: {
+      type: Number,
+      default: () => 0,
+    },
   },
   data() {
     return {
       showDropdown: false,
-    }
+    };
+  },
+  computed: {
+    tags() {
+      return this.cheatsheet.tags.slice(this.commonTagsCount);
+    },
   },
   methods: {
     toggleDropdown() {
-      this.showDropdown = !this.showDropdown
+      this.showDropdown = !this.showDropdown;
     },
     clickAway() {
-      this.showDropdown = false
+      this.showDropdown = false;
     },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/variables';
+@import "../../styles/variables";
 
 $sky: #e6f6fe;
 .page {
@@ -148,7 +151,7 @@ $sky: #e6f6fe;
       align-items: center;
       cursor: pointer;
 
-      &:hover{
+      &:hover {
         background: darken(#e6f6fe, 5);
 
         .menu {
@@ -173,22 +176,21 @@ $sky: #e6f6fe;
         width: 10rem;
         font-size: 0.95rem;
         border: 1px solid #9dd5f1;
-        border-radius: 5px ;
+        border-radius: 5px;
         display: flex;
-        li{
+        li {
           padding: 0.5rem;
           transition: all 0.1s;
-          border-bottom:1px solid #e6f6fe;
+          border-bottom: 1px solid #e6f6fe;
 
           a {
             font-style: italic;
-            color: darken(#9dd5f1,8);
+            color: darken(#9dd5f1, 8);
             text-decoration: underline;
             text-underline-offset: 1px;
           }
         }
       }
-
     }
 
     .tags {
@@ -199,14 +201,13 @@ $sky: #e6f6fe;
         text-transform: lowercase;
         font-weight: 500;
         padding: 0 8px;
-        background: #9dd5f1 ;
-        color:white;
+        background: #9dd5f1;
+        color: white;
         border-radius: 50vmin;
         margin-right: 3px;
         margin-bottom: 3px;
       }
     }
-
   }
 
   .content {
@@ -217,7 +218,7 @@ $sky: #e6f6fe;
       // box-shadow: 0 0 1px 1px #9dd5f1;
       height: 1px;
       border: none;
-    /* Set the hr color */
+      /* Set the hr color */
       color: #e6f6fe; /* old IE */
       background-color: #e6f6fe; /* Modern Browsers */
     }
@@ -231,7 +232,7 @@ $sky: #e6f6fe;
       font-style: italic;
       font-size: 1rem;
       // font-size: 1.25rem;
-      color: hsl(210deg, 10%, 70%);;
+      color: hsl(210deg, 10%, 70%);
     }
   }
 }

@@ -23,18 +23,18 @@ function createCheatSheetsGrid(selector, externalFilter) {
 
                 let texts = (params.data.tags || []).map(el => el.text);
 
-                texts = texts.sort((a, b) => {
-                    let aId = restrictMap[a];
-                    let bId = restrictMap[b];
+                // texts = texts.sort((a, b) => {
+                //     let aId = restrictMap[a];
+                //     let bId = restrictMap[b];
 
-                    return aId === undefined
-                        ? bId === undefined
-                            ? a.localeCompare(b)
-                            : 1
-                        : bId === undefined
-                            ? -1
-                            : aId.localeCompare(bId);
-                });
+                //     return aId === undefined
+                //         ? bId === undefined
+                //             ? a.localeCompare(b)
+                //             : 1
+                //         : bId === undefined
+                //             ? -1
+                //             : aId.localeCompare(bId);
+                // });
 
                 return texts;
             },
