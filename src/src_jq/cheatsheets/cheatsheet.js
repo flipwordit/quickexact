@@ -16,10 +16,8 @@ $(function () {
       let selectedCheatSheet = cheatSheets[0];
 
       $('#add-content').val(selectedCheatSheet.content);
-      $('#add-tags').val(selectedCheatSheet.tags.map(el => el.id));
-      //Store order tags
-      $('#add-tags').select2('data').forEach(v => v.index = selectedCheatSheet.tags.findIndex(t => t.id === v.id));
-      $('#add-tags').trigger('change');
+
+      select2UpdateTags('#add-tags', selectedCheatSheet.tags);
 
       function clearAddBlockState() {
         $('#add-content').val(null);
@@ -67,10 +65,7 @@ $(function () {
 
       let commonTags = joinArrays(cheatSheets.map(el => el.tags), el => el.text);
 
-      $('#add-tags').val(commonTags.map(el => el.id));
-      //Store order
-      $('#add-tags').select2('data').forEach(v => v.index = commonTags.findIndex(t => t.id === v.id));
-      $('#add-tags').trigger('change');
+      select2UpdateTags('#add-tags', commonTags);
 
       addUpdateHandler = (cheatSheet) => {
         let removedTags = commonTags.filter(ct => cheatSheet.tags.findIndex(t => t.id === ct.id) === -1);
@@ -172,7 +167,7 @@ $(function () {
           $('#add-tags').append(newOption)
         });
 
-        $('#add-tags').val(null).trigger('change');
+        select2ClearTags('#add-tags');
       });
 
     let tagsToCheatSheet = selectedTags

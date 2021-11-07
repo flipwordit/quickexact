@@ -1,7 +1,24 @@
+function select2UpdateTags(selector, tags) {
+  const select2 = $(selector);
+  select2.val(tags.map(el => el.id));
+  //Store order
+  select2
+    .select2('data')
+    .forEach(v => {
+      v.index = tags.findIndex(t => t.id === v.id);
+      v.text = tags[v.index].text;
+    });
+
+  select2.trigger('change');
+}
+
+function select2ClearTags(selector) {
+  const select2 = $(selector);
+  select2.val(null).trigger('change')
+}
+
 $('#clear-filter-tags-btn').click(_ => {
-  $('#filter-tags')
-    .val(null)
-    .trigger('change');
+  select2ClearTags('#filter-tags');
 });
 
 setTimeout(() => {
@@ -16,15 +33,11 @@ setTimeout(() => {
         {
           if ($(document.activeElement).attr('aria-describedby') === 'select2-add-tags-container') {
             e.preventDefault();
-            $('#add-tags')
-              .val(null)
-              .trigger('change');
+            select2ClearTags('#add-tags');
           }
           else {
             e.preventDefault();
-            $('#filter-tags')
-              .val(null)
-              .trigger('change');
+            select2ClearTags('#filter-tags');
           }
         } break;
     }

@@ -91,7 +91,7 @@ $(function () {
     $("#query-or-title").show();
     $("#add-query").val(null);
     $("#add-btn").text("Save");
-    $("#add-tags").val(null).trigger('change');
+    select2ClearTags("#add-tags");
     $("#add-btn").attr("mode", "saveSession");
   });
 
@@ -104,7 +104,7 @@ $(function () {
     $("#query-or-title").show();
     $("#add-query").val(session.query);
     $("#add-btn").text("Update");
-    $("#add-tags").val(session.tags.map(el => el.id)).trigger('change');
+    select2UpdateTags('#add-tags', session.tags);
     $("#add-btn").attr("mode", "updateSession");
   });
 
@@ -313,7 +313,7 @@ $(function () {
           $('#add-tags').append(newOption)
         });
 
-        $('#add-tags').val(null).trigger('change');
+        select2ClearTags('#add-tags');
       });
 
     let currentSession = getSelectedSession();
