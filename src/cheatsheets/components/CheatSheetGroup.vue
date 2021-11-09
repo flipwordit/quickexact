@@ -222,7 +222,7 @@ $sky: #e6f6fe;
 //       font-size: 1rem;
 //       // font-size: 1.25rem;
 //       color: hsl(210deg, 10%, 70%);
-//     }
- // }
+     }
+  }
 }
 </style>

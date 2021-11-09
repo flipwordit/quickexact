@@ -185,7 +185,7 @@ module.exports = (env, argv) => {
         port: 9591,
         // manifest: resolve(__dirname, 'src', 'manifest.json'),
         entries: {
-        // The entries used for the content/background scripts or extension pages
+          // The entries used for the content/background scripts or extension pages
           background: 'background/background',
           extensionPage: ['shops/popup'],
         },

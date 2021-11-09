@@ -211,6 +211,10 @@ function getSmartotekaFabric() {
   //new SmartotekaFabricDGraph("https://blue-surf-390018.us-east-1.aws.cloud.dgraph.io/")
 }
 
+if (typeof window === 'undefined') {
+  global.window = {}
+}
+
 window.getSmartotekaFabric = getSmartotekaFabric;
 window.unique = unique;
 window.comparerCombine = comparerCombine;
