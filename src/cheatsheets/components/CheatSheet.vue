@@ -1,34 +1,23 @@
 <template>
   <div class="card">
-    <div class="header">
-      <div class="title">
-        <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
+    <div class="content">
+      <div class="code">
+        <code>
+          {{ cheatsheet.content }}
+        </code>
       </div>
-      <!-- <div class="reference">vuemastery</div> -->
       <div class="dropdown" @click.self="toggleDropdown">
         <div class="btn" />
         <transition name="grow">
           <ul class="menu" v-if="showDropdown">
-            <!-- <li>Edit Save</li> -->
-            <li>src: <a href="vuemastery.com">vuemastery</a></li>
-            <li>docs: <a href="vuejs.com">Directory search</a></li>
             <li>
               <div class="tags">
-                <div class="tag">tag1</div>
-                <div class="tag">tag2</div>
-                <div class="tag">tag3</div>
-                <div class="tag">tag69492</div>
-                <div class="tag">tagio</div>
+                <div v-for="tag in tags" :key="tag.id" class="tag">{{ tag.text }}</div>
               </div>
             </li>
           </ul>
         </transition>
       </div>
-    </div>
-    <div class="content">
-      <code>
-        {{ cheatsheet.content }}
-      </code>
     </div>
   </div>
 </template>
@@ -135,6 +124,23 @@ $sky: #e6f6fe;
       align-items: baseline;
       padding-bottom: 0.125rem;
     }
+  }
+
+  .content {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+ 
+    .code{
+      float: left;
+    }
+    hr {
+      // box-shadow: 0 0 1px 1px #9dd5f1;
+      height: 1px;
+      border: none;
+      /* Set the hr color */
+      color: #e6f6fe; /* old IE */
+      background-color: #e6f6fe; /* Modern Browsers */
+    }
 
     .dropdown {
       // position: absolute;
@@ -207,20 +213,6 @@ $sky: #e6f6fe;
         margin-right: 3px;
         margin-bottom: 3px;
       }
-    }
-  }
-
-  .content {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-
-    hr {
-      // box-shadow: 0 0 1px 1px #9dd5f1;
-      height: 1px;
-      border: none;
-      /* Set the hr color */
-      color: #e6f6fe; /* old IE */
-      background-color: #e6f6fe; /* Modern Browsers */
     }
   }
 

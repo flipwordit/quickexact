@@ -5,21 +5,21 @@
         Tags:
         <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
       </div>
-      Content:
-      <div class="content">
-        <CheatSheet
-          v-for="cheatsheet in group.items"
-          :key="cheatsheet.id"
-          :cheatsheet="cheatsheet"
-          :commonTagsCount="group.commonTagsCount"
-        ></CheatSheet>
-        Groups:
-        <CheatSheetGroup
-          v-for="group in group.groups"
-          :key="group.id"
-          :group="group"
-        ></CheatSheetGroup>
-      </div>
+    </div>
+    <div v-if="recursive" class="content">
+      <CheatSheet
+        v-for="cheatsheet in group.items.slice(2)"
+        :key="cheatsheet.id"
+        :cheatsheet="cheatsheet"
+        :commonTagsCount="group.commonTagsCount"
+      ></CheatSheet>
+      <div v-if="group.items.length > 2">...</div>
+      <CheatSheetGroup
+        v-for="group in group.groups"
+        :key="group.id"
+        :group="group"
+        :recursive="false"
+      ></CheatSheetGroup>
     </div>
   </div>
 </template>
@@ -36,6 +36,10 @@ export default {
     group: {
       type: Object,
       default: () => {},
+    },
+    recursive: {
+      type: Boolean,
+      default: () => true,
     },
   },
   data() {},
@@ -56,11 +60,11 @@ export default {
   margin-left: 15px;
 }
 $sky: #e6f6fe;
-// .page {
+ .page {
 //   // height: 50rem;
-//   // background: oldlace;
+ background: oldlace;
 // }
-// .card {
+ .card {
 //   // padding: 12px 16px;
 //   z-index: 10;
 //   line-height: 1.25rem;
@@ -76,15 +80,15 @@ $sky: #e6f6fe;
 //   font-family: $roboto;
 //   overflow: visible;
 
-//   .header {
-//     background: #e6f6fe;
-//     font-size: 1.125rem;
-//     padding: 0 1rem;
-//     line-height: 1.125rem;
-//     display: flex;
-//     height: 2.5rem;
-//     justify-content: space-between;
-//     align-items: center;
+  .header {
+    background: #e6f6fe;
+    font-size: 1.125rem;
+    padding: 0 1rem;
+    line-height: 1.125rem;
+    display: flex;
+    height: 2.5rem;
+    justify-content: space-between;
+    align-items: center;
 
 //     .version {
 //       // background: #9dd5f1;
@@ -104,13 +108,13 @@ $sky: #e6f6fe;
 //       // color: white;
 //       // text-align: center;
 //     }
-//     .title {
-//       line-height: 1.5rem;
-//       // background: violet;
-//       vertical-align: middle;
-//       font-weight: 500;
-//       color: #194c66;
-//     }
+    .title {
+      line-height: 1.5rem;
+      // background: violet;
+      vertical-align: middle;
+      font-weight: 500;
+      color: #194c66;
+    }
 
 //     .reference {
 //       font-size: 1rem;
@@ -219,6 +223,6 @@ $sky: #e6f6fe;
 //       // font-size: 1.25rem;
 //       color: hsl(210deg, 10%, 70%);
 //     }
-//   }
-// }
+ // }
+}
 </style>
