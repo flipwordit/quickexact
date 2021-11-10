@@ -7,7 +7,7 @@ const { resolve, join } = require('path')
 // const argv = require('minimist')(process.argv.slice(2));
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const WindiCSS = require('windicss-webpack-plugin').default
+const WindiCSS = require('windicss-webpack-plugin')
 
 const SizePlugin = require('size-plugin')
 const ExtensionReloader = require('webpack-extension-reloader')

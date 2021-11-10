@@ -4,6 +4,15 @@ function cheatsheetsGroup(cheatsheets) {
         return [];
     }
 
+    cheatsheets.forEach(ch => {
+        let tags = ch.tags;
+        ch.joinTags = (tags || []).map(el => el.id).join(",") + ",,";
+    });
+
+    cheatsheets = cheatsheets.sort((a, b) =>
+        a.joinTags.localeCompare(b.joinTags)
+    );
+
     function compareTags(tags1, tags2) {
         let i = 0;
         for (; i < tags1.length && i < tags2.length; i++) {
@@ -22,6 +31,9 @@ function cheatsheetsGroup(cheatsheets) {
         groups: [],
         parent: null,
     };
+
+    let firstEmptyGroup = null;
+
     let groups = [prevGroup];
 
     for (let i = 1; i < cheatsheets.length; i++) {
@@ -31,12 +43,16 @@ function cheatsheetsGroup(cheatsheets) {
 
         if (
             prevGroup.commonTagsCount === commonTagsCount ||
-            (prevGroup.commonTagsCount === -1 && commonTagsCount > 0)
+            (prevGroup.commonTagsCount === -1)
         ) {
             prevGroup.items.push(current);
 
             if (prevGroup.commonTagsCount === -1) {
                 prevGroup.commonTagsCount = commonTagsCount;
+
+                if (commonTagsCount === 0) {
+                    firstEmptyGroup = prevGroup;
+                }
             }
         } else {
             if (prevGroup.commonTagsCount < commonTagsCount) {
@@ -50,13 +66,25 @@ function cheatsheetsGroup(cheatsheets) {
                     parent: prevGroup,
                 };
 
-                prevGroup.groups.push(currentGroup);
+                if (prevGroup.commonTagsCount === 0) {
+                    groups.push(currentGroup);
+                }
+                else {
+                    prevGroup.groups.push(currentGroup);
+                }
+
                 prevGroup = currentGroup;
             } else {
-                let dif = prevGroup.commonTagsCount - commonTagsCount;
 
-                for (let j = 0; j < dif && prevGroup; j++) {
-                    prevGroup = prevGroup.parent;
+                if (commonTagsCount === 0) {
+                    prevGroup = firstEmptyGroup;
+                }
+                else {
+                    let dif = prevGroup.commonTagsCount - commonTagsCount;
+
+                    for (let j = 0; j < dif && prevGroup; j++) {
+                        prevGroup = prevGroup.parent;
+                    }
                 }
 
                 if (prevGroup) {
