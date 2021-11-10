@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="cheatsheet">
     <div class="content">
       <div class="code">
         <code>
@@ -64,7 +64,7 @@ $sky: #e6f6fe;
   height: 50rem;
   // background: oldlace;
 }
-.card {
+.cheatsheet {
   // padding: 12px 16px;
   z-index: 10;
   line-height: 1.25rem;

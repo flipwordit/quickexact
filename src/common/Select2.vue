@@ -12,8 +12,11 @@
 </template>
 
 <script>
-require("@/src_jq/libraries/jquery-3.6.0.min.js");
+import $ from "jquery";
+window.$ = $;
+
 require("@/src_jq/libraries/select2.js");
+
 require("@/src_jq/libraries/fuse.js");
 require("@/src_jq/common/multiselectTags.js");
 require("@/src_jq/common/mulitselectTagsHandlers.js");
@@ -52,7 +55,7 @@ export default {
     },
     options: function (options) {
       console.log("options");
-      let modelValue = this.selectList().val()
+      let modelValue = this.selectList().val();
       this.selectList().empty();
 
       createMultiselectTags(

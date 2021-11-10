@@ -150,14 +150,14 @@ describe('Cheatsheets group', () => {
 
   it('join 3. 1 and 2 equal 1 tag, 2 and 3 equal 2 tags', () => {
     let cheatsheets = [{
-      "content": "",
+      "content": "1",
       "date": 1,
       "tags": [{
         "id": "1",
         "text": "1"
       }]
     }, {
-      "content": "",
+      "content": "1 2",
       "date": 2,
       "tags": [{
         "id": "1",
@@ -168,7 +168,7 @@ describe('Cheatsheets group', () => {
         "text": "2"
       }]
     }, {
-      "content": "",
+      "content": "1 2",
       "date": 3,
       "tags": [{
         "id": "1",
@@ -238,14 +238,16 @@ describe('Cheatsheets group', () => {
 
 
     expect(groups.length).to.eq(2)
-    expect(groups[0].commonTagsCount).to.eq(1)
+    expect(groups[0].commonTagsCount).to.eq(0)
     expect(groups[0].items.length).to.eq(1)
-
-    expect(groups[0].groups.length).to.eq(1)
-    expect(groups[0].groups[0].items.length).to.eq(2)
-
-    expect(groups[1].commonTagsCount).to.eq(-1)
+    
+    expect(groups[1].commonTagsCount).to.eq(1)
     expect(groups[1].items.length).to.eq(1)
+
+    expect(groups[1].groups.length).to.eq(1)
+    expect(groups[1].groups[0].items.length).to.eq(2)
+
+    
   })
 
   it('2 not queal should union to group', () => {
@@ -310,5 +312,130 @@ describe('Cheatsheets group', () => {
     expect(groups[1].items.length).to.eq(1)
     expect(groups[1].groups.length).to.eq(1)
     expect(groups[1].groups[0].items.length).to.eq(2)
+  })
+
+
+  it('Should be Chrome/api, shortcut', () => {
+    let cheatsheets = [{
+      "content": "Chrome api 1",
+      "date": 0,
+      "tags": [{
+        "id": "Chrome",
+        "text": "Chrome"
+      },
+      {
+        "id": "Api",
+        "text": "Api"
+      }]
+    },
+    {
+      "content": "Chrome api 2",
+      "date": 0,
+      "tags": [{
+        "id": "Chrome",
+        "text": "Chrome"
+      },
+      {
+        "id": "Api",
+        "text": "Api"
+      }]
+    },
+    {
+      "content": "Chrome shortcut",
+      "date": 1,
+      "tags": [{
+        "id": "Chrome",
+        "text": "Chrome"
+      },
+      {
+        "id": "shortcut",
+        "text": "shortcut"
+      }]
+    }];
+
+    let groups = global.window.cheatsheetsGroup(cheatsheets);
+
+    console.log(JSON.stringify(groups, null, 2));
+
+    expect(groups.length).to.eq(1)
+    expect(groups[0].commonTagsCount).to.eq(1)
+    expect(groups[0].items.length).to.eq(1)
+    expect(groups[0].groups[0].items.length).to.eq(2)
+  })
+
+  it('Should be {not equal:{}, Chrome:{api:{tab:{}}, shortcut:{}}}', () => {
+    let cheatsheets = [{
+      "content": "Chrome api 1",
+      "date": 0,
+      "tags": [{
+        "id": "a not equal",
+        "text": "a not equal"
+      }]
+    },
+    {
+      "content": "Chrome api 1",
+      "date": 0,
+      "tags": [{
+        "id": "Chrome",
+        "text": "Chrome"
+      },
+      {
+        "id": "Api",
+        "text": "Api"
+      }]
+    },
+
+    {
+      "content": "Chrome api tab 1",
+      "date": 0,
+      "tags": [{
+        "id": "Chrome",
+        "text": "Chrome"
+      },
+      {
+        "id": "Api",
+        "text": "Api"
+      },
+      {
+        "id": "tab",
+        "text": "tab"
+      }]
+    },
+    {
+      "content": "Chrome api tab 2",
+      "date": 0,
+      "tags": [{
+        "id": "Chrome",
+        "text": "Chrome"
+      },
+      {
+        "id": "Api",
+        "text": "Api"
+      },
+      {
+        "id": "tab",
+        "text": "tab"
+      }]
+    },
+    {
+      "content": "Chrome shortcut",
+      "date": 1,
+      "tags": [{
+        "id": "Chrome",
+        "text": "Chrome"
+      },
+      {
+        "id": "shortcut",
+        "text": "shortcut"
+      }]
+    }];
+
+    let groups = global.window.cheatsheetsGroup(cheatsheets);
+
+
+    expect(groups.length).to.eq(2)
+    expect(groups[1].commonTagsCount).to.eq(1)
+    expect(groups[1].items.length).to.eq(1)
+    expect(groups[1].groups[0].items.length).to.eq(1)
   })
 })

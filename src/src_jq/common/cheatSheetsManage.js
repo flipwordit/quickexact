@@ -27,12 +27,12 @@ function cheatsheetsGroup(cheatsheets) {
     let prevGroup = {
         id: ++id,
         items: [prev],
-        commonTagsCount: -1,
+        commonTagsCount: 0,
         groups: [],
         parent: null,
     };
 
-    let firstEmptyGroup = null;
+    let firstEmptyGroup = prevGroup;
 
     let groups = [prevGroup];
 
@@ -41,23 +41,31 @@ function cheatsheetsGroup(cheatsheets) {
 
         let commonTagsCount = compareTags(current.tags, prev.tags);
 
-        if (
-            prevGroup.commonTagsCount === commonTagsCount ||
-            (prevGroup.commonTagsCount === -1)
-        ) {
+        if (prevGroup.commonTagsCount === commonTagsCount) {
             prevGroup.items.push(current);
-
-            if (prevGroup.commonTagsCount === -1) {
-                prevGroup.commonTagsCount = commonTagsCount;
-
-                if (commonTagsCount === 0) {
-                    firstEmptyGroup = prevGroup;
-                }
-            }
         } else {
             if (prevGroup.commonTagsCount < commonTagsCount) {
                 prevGroup.items.pop();
 
+                let diff = commonTagsCount - prevGroup.commonTagsCount;
+                for (let i = 1; i < diff; i++) {
+                    let currentGroup = {
+                        id: ++id,
+                        items: [],
+                        commonTagsCount: prevGroup.commonTagsCount + i,
+                        groups: [],
+                        parent: prevGroup,
+                    };
+
+                    if (prevGroup.commonTagsCount === 0) {
+                        groups.push(currentGroup);
+                    }
+                    else {
+                        prevGroup.groups.push(currentGroup);
+                    }
+
+                    prevGroup = currentGroup;
+                }
                 let currentGroup = {
                     id: ++id,
                     items: [prev, current],
@@ -75,25 +83,25 @@ function cheatsheetsGroup(cheatsheets) {
 
                 prevGroup = currentGroup;
             } else {
-
                 if (commonTagsCount === 0) {
                     prevGroup = firstEmptyGroup;
                 }
                 else {
                     let dif = prevGroup.commonTagsCount - commonTagsCount;
 
-                    for (let j = 0; j < dif && prevGroup; j++) {
+                    for (let j = 0; j < dif; j++) {
                         prevGroup = prevGroup.parent;
                     }
                 }
 
                 if (prevGroup) {
                     prevGroup.items.push(current);
-                } else {
+                }
+                else {
                     let currentGroup = {
                         id: ++id,
                         items: [current],
-                        commonTagsCount: -1,
+                        commonTagsCount: commonTagsCount,
                         groups: [],
                         parent: null,
                     };
@@ -107,6 +115,23 @@ function cheatsheetsGroup(cheatsheets) {
         prev = current;
     }
 
+    function clearGroups(groups) {
+        for (let i = 0; i < groups.length; i++) {
+            let group = groups[i];
+            group.parent = null;
+
+            while (group.items.length == 0 && group.groups.length === 1) {
+                group = group.groups[0];
+            }
+
+            groups[i] = group;
+
+            clearGroups(group.groups);
+        }
+    }
+    clearGroups(groups);
+
+    groups = groups.filter(el => el.items.length !== 0 || el.groups.length !== 0);
     return groups;
 }
 

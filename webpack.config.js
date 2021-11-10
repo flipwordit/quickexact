@@ -7,7 +7,7 @@ const { resolve, join } = require('path')
 // const argv = require('minimist')(process.argv.slice(2));
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const WindiCSS = require('windicss-webpack-plugin')
+const WindiCSS = require('windicss-webpack-plugin').default
 
 const SizePlugin = require('size-plugin')
 const ExtensionReloader = require('webpack-extension-reloader')
@@ -182,7 +182,7 @@ module.exports = (env, argv) => {
     config.plugins.push(
       new ExtensionReloader({
         reloadPage: true,
-        port: 9591,
+        port: 9592,
         // manifest: resolve(__dirname, 'src', 'manifest.json'),
         entries: {
           // The entries used for the content/background scripts or extension pages
