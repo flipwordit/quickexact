@@ -19,6 +19,7 @@
           v-for="group in groups"
           :key="group.id"
           :group="group"
+          :showAll="groups.length === 1 || searchResults.length < 12"
         />
 
         <!-- <CheatSheet
@@ -65,28 +66,7 @@ export default {
       .queriesProvider()
       .getCheatSheets()
       .then((cheatsheets) => {
-        cheatsheets.forEach((ch) => {
-          let tags = ch.tags;
-          ch.joinTags = (tags || []).map((el) => el.id).join(",") + "0";
-          // ch.tags = tags.sort((a, b) => {
-          //   let aId = restrictMap[a.text];
-          //   let bId = restrictMap[b.text];
-
-          //   return aId === undefined
-          //     ? bId === undefined
-          //       ? a.id.localeCompare(b.id)
-          //       : 1
-          //     : bId === undefined
-          //     ? -1
-          //     : aId.localeCompare(bId);
-          // });
-        });
-        cheatsheets = cheatsheets.sort((a, b) =>
-          a.joinTags.localeCompare(b.joinTags)
-        );
-        let groups = cheatsheetsGroup(cheatsheets);
-
-        vm.update(cheatsheets, groups);
+        vm.update(cheatsheets);
       });
 
     window.addEventListener(
@@ -115,6 +95,12 @@ export default {
     );
   },
   computed: {
+    groups() {
+      let cheatsheets = this.searchResults;
+      let result = cheatsheetsGroup(cheatsheets);
+
+      return result;
+    },
     searchResults() {
       console.log("searchResults");
       let selectedTags = this.selected.map((el) => el.text);
@@ -141,9 +127,8 @@ export default {
     },
   },
   methods: {
-    update(sessions, groups) {
+    update(sessions) {
       this.sessions = sessions;
-      this.groups = groups;
 
       let allTags = [];
 

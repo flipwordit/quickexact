@@ -6,21 +6,31 @@
         <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
       </div>
     </div>
-    <div  class="content">
+    <div class="content">
       <CheatSheet
-        v-for="cheatsheet in group.items.slice(0, 2)"
+        v-for="cheatsheet in showAll ? group.items : group.items.slice(0, 2)"
         :key="cheatsheet.id"
         :cheatsheet="cheatsheet"
         :commonTagsCount="group.commonTagsCount"
       ></CheatSheet>
-      <div v-if="group.items.length > 2||!recursive&&group.groups.length>0">...</div>
-      <div v-if="recursive">
+      <div
+        v-if="
+          !showAll &&
+          (group.items.length > 2 || !recursive && group.groups.length > 0)
+        "
+        @click.self="showAll = !showAll"
+      >
+        ...
+      </div>
+      <div v-if="showAll" @click.self="showAll = !showAll">/*</div>
+      <div v-if="recursive || showAll">
         <CheatSheetGroup
-        v-for="group in group.groups"
-        :key="group.id"
-        :group="group"
-        :recursive="true"
-      ></CheatSheetGroup>
+          v-for="group in group.groups"
+          :key="group.id"
+          :group="group"
+          :recursive="false"
+        ></CheatSheetGroup>
+        <div v-if="showAll" @click.self="showAll = !showAll">*/</div>
       </div>
     </div>
   </div>
@@ -43,8 +53,14 @@ export default {
       type: Boolean,
       default: () => true,
     },
+    showAll: {
+      type: Boolean,
+      default: () => true,
+    },
   },
-  data() {},
+  data() {
+    return {  };
+  },
   computed: {
     tags() {
       return this.group.commonTagsCount === -1

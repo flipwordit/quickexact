@@ -17,7 +17,8 @@ window.$ = $;
 
 require("@/src_jq/libraries/select2.js");
 
-require("@/src_jq/libraries/fuse.js");
+window.Fuse = require("@/src_jq/libraries/fuse.js");
+
 require("@/src_jq/common/multiselectTags.js");
 require("@/src_jq/common/mulitselectTagsHandlers.js");
 require("@/src_jq/common/restrictionMap.js");
