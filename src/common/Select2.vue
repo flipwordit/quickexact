@@ -38,14 +38,27 @@ export default {
 
     let sendUpdateEvent = throttle(() => vm.sendUpdateEvent(), 100);
 
-    createMultiselectTags(
+    let list = createMultiselectTags(
       this.selectList(),
       vm.$props.options,
-      generateAdditionalTagsFunction(() => this.searchResults)
-    )
-      .val(vm.$props.modelValue)
-      .trigger("change")
-      .on("change", sendUpdateEvent);
+      generateAdditionalTagsFunction(() => this.searchResults || [])
+    );
+
+    function select2UpdateTags(selector, tags) {
+      const select2 = $(selector);
+      select2.val(tags.map((el) => el.id));
+      //Store order
+      select2.select2("data").forEach((v) => {
+        v.index = tags.findIndex((t) => t.id === v.id);
+        v.text = tags[v.index].text;
+      });
+
+      select2.trigger("change");
+    }
+
+    select2UpdateTags(list, vm.$props.modelValue);
+
+    list.on("change", sendUpdateEvent);
   },
   watch: {
     modelValue: function (value) {

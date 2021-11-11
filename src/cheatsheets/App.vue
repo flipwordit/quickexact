@@ -10,7 +10,6 @@
         v-model="selected"
         :searchResults="searchResults"
       >
-        <option disabled value="0">Select one</option>
       </select2>
 
       <div>
@@ -20,6 +19,8 @@
           :key="group.id"
           :group="group"
           :showAll="groups.length === 1 || searchResults.length < 12"
+          :allTags="options"
+          v-on:update-cheatsheet="updateCheatSheet($event)"
         />
 
         <!-- <CheatSheet
@@ -141,6 +142,9 @@ export default {
 
       this.options = unique(allTags, (el) => el.id);
     },
+    updateCheatSheet(cheatsheet){
+      this.smartotekaFabric.KBManager().updateCheatSheets([cheatsheet]);
+    }
   },
 };
 </script>

@@ -1483,6 +1483,7 @@ S2.define('select2/selection/base',[
     this.container = container;
 
     this.$selection.on('focus', function (evt) {
+      //bug if it is not commented focus reset drag and drop
       //self.trigger('focus', evt);
     });
 
@@ -1902,7 +1903,7 @@ S2.define('select2/selection/multiple',[
       event.stopPropagation();
     });
 
-    let that=this;
+    let that = this;
     selectionsElements.on("drop", function (event) {
 
       let fromPos = event.originalEvent.dataTransfer.getData('text');
@@ -1912,10 +1913,8 @@ S2.define('select2/selection/multiple',[
 
       data.forEach((v, i) => v.index = i);
 
-      // let el = $('li', $(event.currentTarget).parent()).get(fromPos);
-      // $(event.currentTarget).insertBefore(el);
-
       that.update(data);
+      that.$element.trigger('input').trigger('change');
     });
   };
 

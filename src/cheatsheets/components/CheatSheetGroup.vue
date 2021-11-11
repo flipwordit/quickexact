@@ -2,7 +2,6 @@
   <div class="card">
     <div class="header">
       <div class="title">
-        Tags:
         <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
       </div>
     </div>
@@ -12,11 +11,13 @@
         :key="cheatsheet.id"
         :cheatsheet="cheatsheet"
         :commonTagsCount="group.commonTagsCount"
+        :allTags="allTags"
+        v-on:update-cheatsheet="$emit('update-cheatsheet', $event)"
       ></CheatSheet>
       <div
         v-if="
           !showAll &&
-          (group.items.length > 2 || !recursive && group.groups.length > 0)
+          (group.items.length > 2 || (!recursive && group.groups.length > 0))
         "
         @click.self="showAll = !showAll"
       >
@@ -29,6 +30,7 @@
           :key="group.id"
           :group="group"
           :recursive="false"
+          :allTags="allTags"
         ></CheatSheetGroup>
         <div v-if="showAll" @click.self="showAll = !showAll">*/</div>
       </div>
@@ -57,9 +59,13 @@ export default {
       type: Boolean,
       default: () => true,
     },
+    allTags: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
-    return {  };
+    return {};
   },
   computed: {
     tags() {

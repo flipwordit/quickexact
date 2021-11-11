@@ -6,14 +6,21 @@
           {{ cheatsheet.content }}
         </code>
       </div>
+      <div class="tags">
+        <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
+      </div>
       <div class="dropdown" @click.self="toggleDropdown">
         <div class="btn" />
         <transition name="grow">
           <ul class="menu" v-if="showDropdown">
             <li>
               <div class="tags">
-                <div v-for="tag in tags" :key="tag.id" class="tag">{{ tag.text }}</div>
+                <select2 :options="allTags" v-model="editTags"> </select2>
               </div>
+            </li>
+            <li>
+              <div @click.self="saveTags">Save</div>
+              <div @click.self="toggleDropdown">Close</div>
             </li>
           </ul>
         </transition>
@@ -23,8 +30,13 @@
 </template>
 
 <script>
+import Select2 from "@/common/Select2.vue";
+
 export default {
   name: "CheatSheet",
+  components: {
+    Select2,
+  },
   props: {
     cheatsheet: {
       type: Object,
@@ -34,14 +46,24 @@ export default {
       type: Number,
       default: () => 0,
     },
+    allTags: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
       showDropdown: false,
+      editTags: [],
     };
+  },
+  mounted: function () {
+    
   },
   computed: {
     tags() {
+      this.editTags = this.cheatsheet.tags.slice(0);
+      
       return this.cheatsheet.tags.slice(this.commonTagsCount);
     },
   },
@@ -51,6 +73,21 @@ export default {
     },
     clickAway() {
       this.showDropdown = false;
+    },
+    saveTags() {
+      let tags = this.editTags.map((el) => {
+        return { id: el.id, text: el.text };
+      });
+
+      this.cheatsheet.tags = this.editTags.slice(0);
+      let saveCheatSheet = {
+        content: this.cheatsheet.content,
+        date: this.cheatsheet.date,
+        tags: tags,
+      };
+      this.$emit("update-cheatsheet", saveCheatSheet);
+
+      this.toggleDropdown();
     },
   },
 };
@@ -126,11 +163,15 @@ $sky: #e6f6fe;
     }
   }
 
+  .tags {
+    font-size: 0.875rem;
+    color: #9dd5f1;
+  }
   .content {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
- 
-    .code{
+
+    .code {
       float: left;
     }
     hr {
@@ -174,6 +215,8 @@ $sky: #e6f6fe;
       }
 
       .menu {
+        min-width: 400px;
+        min-height: 2em;
         position: absolute;
         top: 9px;
         right: 11px;
