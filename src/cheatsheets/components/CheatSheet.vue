@@ -5,6 +5,7 @@
         <code>
           {{ cheatsheet.content }}
         </code>
+        <div class="viewer" ></div>
       </div>
       <div class="tags">
         <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
@@ -30,12 +31,16 @@
 </template>
 
 <script>
+import "@toast-ui/editor/dist/toastui-editor.css"; // Editor's Style
+
+import Editor from "@toast-ui/editor";
 import Select2 from "@/common/Select2.vue";
 
 export default {
   name: "CheatSheet",
   components: {
     Select2,
+    Editor,
   },
   props: {
     cheatsheet: {
@@ -55,15 +60,27 @@ export default {
     return {
       showDropdown: false,
       editTags: [],
+      editorOptions: {
+        usageStatistics: false,
+      },
     };
   },
   mounted: function () {
-    
+    const editor = Editor.factory({
+      el: $(".viewer", this.$el)[0],
+      // height: "500px",
+      // initialEditType: "markdown",
+      // previewStyle: "vertical",
+      viewer:true,
+      initialValue:this.cheatsheet.content
+    });
+
+    // editor.getHTML();
   },
   computed: {
     tags() {
       this.editTags = this.cheatsheet.tags.slice(0);
-      
+
       return this.cheatsheet.tags.slice(this.commonTagsCount);
     },
   },
