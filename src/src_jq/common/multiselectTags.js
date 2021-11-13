@@ -66,19 +66,24 @@ function createMultiselectTags(selector, tags, helpTags) {
     },
     matcher: (term, text) => {
       if (!term.term) {
+        let tags = $(selector).select2('data').map(el => el.text);
 
-        if (multilist.lastSearch !== term.term) {
-          multilist.lastSearch = term.term;
-          let tags = $(selector).select2('data').map(el => el.text);
+        let currentState = tags.join(',') + ',' + term.term;
+        if (multilist.lastSearch !== currentState) {
+
           if (tags.length > 0) {
             multilist.searchedRows = window.getAdditionalTags(tags).map(el => { return { item: { id: el } }; });
           }
+
+          multilist.lastSearch = currentState;
         }
       }
       else if (multilist.lastSearch !== term.term) {
-        multilist.lastSearch = term.term;
         initFuzzySearch.call(this, term);
+        multilist.lastSearch = term.term;
       }
+
+
 
       let find = (multilist.searchedRows || []).find(el => el.item.id === text.id);
       if (find) {

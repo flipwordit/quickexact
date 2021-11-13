@@ -106,15 +106,12 @@ const config = {
   // },
   plugins: [
     new WindiCSS({
-      attributify: true,
-      extract: {
-        include: [
-          'src/**/*.{vue,html}',
-        ],
-        // A common use case is scanning files from the root directory
-        // if you are excluding files, make sure you always include node_modules and .git
+      scan: {
+        // dirs: [ '.' ],
+        // exclude: [ 'dist', 'node_modules' ]
+        include: [ resolve(__dirname, 'src/**/*.{vue,html}')],
         exclude: ['node_modules', '.git', 'dist'],
-      },
+      }
     }),
     new CleanWebpackPlugin({
       cleanStaleWebpackAssets: false,
@@ -187,7 +184,7 @@ module.exports = (env, argv) => {
         entries: {
           // The entries used for the content/background scripts or extension pages
           background: 'background/background',
-          extensionPage: ['shops/popup'],
+          extensionPage: ['shops/popup',"popup/popup","cheatsheets/script"],
         },
       }),
     )
