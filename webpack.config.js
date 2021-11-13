@@ -7,7 +7,7 @@ const { resolve, join } = require('path')
 // const argv = require('minimist')(process.argv.slice(2));
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const WindiCSS = require('windicss-webpack-plugin').default
+const WindiCSS = require('windicss-webpack-plugin')
 
 const SizePlugin = require('size-plugin')
 const ExtensionReloader = require('webpack-extension-reloader')
@@ -24,7 +24,7 @@ const config = {
     'background/background': './background/background.js',
     'popup/popup': './popup/popup.js',
     'shops/popup': './shops/popup.js',
-    'cheatsheets/script': './cheatsheets/script.js',
+    'src_jq/cheatsheets/cheatsheet': './src_jq/cheatsheets/cheatsheet.js',
     'content/content': './content/content.js',
   },
   output: {
@@ -109,9 +109,9 @@ const config = {
       scan: {
         // dirs: [ '.' ],
         // exclude: [ 'dist', 'node_modules' ]
-        include: [ resolve(__dirname, 'src/**/*.{vue,html}')],
+        include: [resolve(__dirname, 'src/**/*.{vue,html}')],
         exclude: ['node_modules', '.git', 'dist'],
-      }
+      },
     }),
     new CleanWebpackPlugin({
       cleanStaleWebpackAssets: false,
@@ -184,7 +184,7 @@ module.exports = (env, argv) => {
         entries: {
           // The entries used for the content/background scripts or extension pages
           background: 'background/background',
-          extensionPage: ['shops/popup',"popup/popup","cheatsheets/script"],
+          extensionPage: ['shops/popup', 'popup/popup', 'cheatsheets'],
         },
       }),
     )
