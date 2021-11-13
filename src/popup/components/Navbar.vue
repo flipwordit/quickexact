@@ -35,6 +35,10 @@ export default {
           url: '../src_jq/cheatsheets/cheatsheet.html',
           title: 'cheat sheets',
         },
+        {
+          url: '../cheatsheets/page.html',
+          title: 'cheat sheets(New)',
+        },
       ],
       tag: '',
       tags: [],

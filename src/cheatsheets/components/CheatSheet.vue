@@ -2,9 +2,6 @@
   <div class="cheatsheet">
     <div class="content">
       <div class="code">
-        <code>
-          {{ cheatsheet.content }}
-        </code>
         <div class="viewer" ></div>
       </div>
       <div class="tags">
