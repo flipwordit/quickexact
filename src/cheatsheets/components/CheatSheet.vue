@@ -2,7 +2,18 @@
   <div class="cheatsheet">
     <div class="content">
       <div class="code">
-        <div class="viewer" ></div>
+        <Editor ref="editor" v-if="editMode" :initialValue="cheatsheet.content" />
+        <Viewer v-if="!editMode" :initialValue="cheatsheet.content" />
+        <div>
+          <!-- <img src="/images/layers.svg" @click="copyContent" /> -->
+          <!--TODO: отображение копирования по наведению мыши на блок кода в правом верхнем углу-->
+
+          <img src="/images/edit.svg" @click="toEditMode" v-if="!editMode" />
+          <!--TODO: отображение по наведению мыши на блок-->
+          <img src="/images/save.svg" @click="save" v-if="editMode" />
+          <img src="/images/x.svg" @click="cancel" v-if="editMode" />
+          
+        </div>
       </div>
       <div class="tags">
         <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
@@ -30,7 +41,8 @@
 <script>
 import "@toast-ui/editor/dist/toastui-editor.css"; // Editor's Style
 
-import Editor from "@toast-ui/editor";
+import Viewer from "./Viewer.vue";
+import Editor from "./Editor.vue";
 import Select2 from "@/common/Select2.vue";
 
 export default {
@@ -38,6 +50,7 @@ export default {
   components: {
     Select2,
     Editor,
+    Viewer
   },
   props: {
     cheatsheet: {
@@ -60,19 +73,10 @@ export default {
       editorOptions: {
         usageStatistics: false,
       },
+      editMode: false,
     };
   },
   mounted: function () {
-    const editor = Editor.factory({
-      el: $(".viewer", this.$el)[0],
-      // height: "500px",
-      // initialEditType: "markdown",
-      // previewStyle: "vertical",
-      viewer:true,
-      initialValue:this.cheatsheet.content
-    });
-
-    // editor.getHTML();
   },
   computed: {
     tags() {
@@ -82,6 +86,40 @@ export default {
     },
   },
   methods: {
+    toEditMode() {
+      this.editMode = true;
+    },
+    save() {
+      this.editMode = false;
+
+      let tags = this.cheatsheet.tags.map((el) => {
+        return { id: el.id, text: el.text };
+      });
+
+      this.cheatsheet.content = this.$refs.editor.editor.getMarkdown();
+
+      let saveCheatSheet = {
+        content: this.cheatsheet.content,
+        date: this.cheatsheet.date,
+        tags: tags,
+      };
+
+      this.$emit("update-cheatsheet", saveCheatSheet);
+    },
+    cancel() {
+      this.editMode = false;
+    },
+    copyContent() {
+      var text = this.cheatsheet.content;
+      navigator.clipboard.writeText(text).then(
+        function () {
+          console.log("Async: Copying to clipboard was successful!");
+        },
+        function (err) {
+          console.error("Async: Could not copy text: ", err);
+        }
+      );
+    },
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
     },

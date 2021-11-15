@@ -25,13 +25,13 @@
       </div>
       <div v-if="showAll" @click.self="showAll = !showAll">/*</div>
       <div v-if="recursive || showAll">
-        <CheatSheetGroup
+        <!-- <CheatSheetGroup
           v-for="group in group.groups"
           :key="group.id"
           :group="group"
           :recursive="false"
           :allTags="allTags"
-        ></CheatSheetGroup>
+        ></CheatSheetGroup> -->
         <div v-if="showAll" @click.self="showAll = !showAll">*/</div>
       </div>
     </div>
