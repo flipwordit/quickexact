@@ -21,8 +21,9 @@ window.Fuse = require("@/src_jq/libraries/fuse.js");
 
 require("@/src_jq/common/multiselectTags.js");
 require("@/src_jq/common/mulitselectTagsHandlers.js");
-require("@/src_jq/common/restrictionMap.js");
 require("@/src_jq/common/rateTags.js");
+
+import registerRestrictionMap from '@/src_jq/common/restrictionMap'
 
 export default {
   name: "select2",

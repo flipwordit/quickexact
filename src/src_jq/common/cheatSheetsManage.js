@@ -1,4 +1,4 @@
-function cheatsheetsGroup(cheatsheets) {
+export function cheatsheetsGroup(cheatsheets) {
 
     if (cheatsheets.length === 0) {
         return [];
@@ -135,4 +135,4 @@ function cheatsheetsGroup(cheatsheets) {
     return groups;
 }
 
-window.cheatsheetsGroup = cheatsheetsGroup;
+//window.cheatsheetsGroup = cheatsheetsGroup;

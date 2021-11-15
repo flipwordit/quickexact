@@ -40,9 +40,9 @@ import CheatSheet from "./components/CheatSheet";
 import CheatSheetGroup from "./components/CheatSheetGroup";
 import Select2 from "@/common/Select2.vue";
 
-require("@/src_jq/common/SmartotekaFabricLocalStorage.js");
-require("@/src_jq/common/commonFunctions.js");
-require("@/src_jq/common/cheatSheetsManage.js");
+import { unique, getSmartotekaFabric } from '@/src_jq/common/commonFunctions'
+import { cheatsheetsGroup } from '@/src_jq/common/cheatSheetsManage.js'
+import registerRestrictionMap from '@/src_jq/common/restrictionMap'
 
 export default {
   name: "App",
