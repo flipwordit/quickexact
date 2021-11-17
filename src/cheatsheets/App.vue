@@ -42,7 +42,6 @@ import Select2 from "@/common/Select2.vue";
 
 import { unique, getSmartotekaFabric } from '@/src_jq/common/commonFunctions'
 import { cheatsheetsGroup } from '@/src_jq/common/cheatSheetsManage.js'
-import registerRestrictionMap from '@/src_jq/common/restrictionMap'
 
 export default {
   name: "App",

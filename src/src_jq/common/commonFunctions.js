@@ -1,23 +1,5 @@
 import SmartotekaFabricLocalStorage from '@/src_jq/common/SmartotekaFabricLocalStorage'
 
-export function comparer(a, b) {
-  return a < b
-    ? -1 : (a > b
-      ? 1
-      : 0)
-}
-let comparerFunc = (get) => (a, b) => comparer(get(a), get(b))
-
-let comparerCombine = (comparators) => (a, b) => {
-  for (let i = 0; i < comparators.length; i++) {
-    let result = comparerFunc(comparators[i])(a, b)
-
-    if (result != 0) return result
-  }
-
-  return 0
-}
-
 export function throttle(func, ms) {
   let savedArgs
   let savedThis

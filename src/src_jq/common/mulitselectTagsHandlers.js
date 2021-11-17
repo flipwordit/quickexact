@@ -1,4 +1,42 @@
-function select2UpdateTags(selector, tags) {
+import {orderByRate, takeByRate} from "@/src_jq/common/rateTags"
+import {unique} from "@/src_jq/common/commonFunctions"
+import $ from "jquery";
+window.$ = $;
+
+export function getFilterByTags() {
+  return getFilterByFilterTags((node) => node.data, () => window.filterTags || { count: 0 });
+}
+
+export function getFilterByFilterTags(getData, getFilterTags) {
+
+  return (node) => {
+    let data = getData(node);
+
+    return !data
+      || !data.tags
+      || data.tags.filter(tag => getFilterTags()[tag.id]).length === getFilterTags().count;
+  };
+}
+
+export function registerFilterToGrid(grid) {
+  $('#filter-tags').on('change', function (e) {
+    window.filterTags = { count: 0 };
+
+    let filterTags = $('#filter-tags')
+      .select2('data')
+      .map(el => el.text);
+
+    let countTags = 0;
+    unique(filterTags, el => el)
+      .map(tag => window.filterTags[tag] = ++countTags);
+
+    window.filterTags.count = countTags;
+
+    grid.api.onFilterChanged();
+  });
+}
+
+export function select2UpdateTags(selector, tags) {
   const select2 = $(selector);
   select2.val(tags.map(el => el.id));
   //Store order
@@ -71,40 +109,6 @@ $(document).keypress(function (e) {
       } break;
   }
 });
-
-
-function registerFilterToGrid(grid) {
-  $('#filter-tags').on('change', function (e) {
-    window.filterTags = { count: 0 };
-
-    let filterTags = $('#filter-tags')
-      .select2('data')
-      .map(el => el.text);
-
-    let countTags = 0;
-    unique(filterTags, el => el)
-      .map(tag => window.filterTags[tag] = ++countTags);
-
-    window.filterTags.count = countTags;
-
-    grid.api.onFilterChanged();
-  });
-}
-
-function getFilterByTags() {
-  return getFilterByFilterTags((node) => node.data, () => window.filterTags || { count: 0 });
-}
-
-function getFilterByFilterTags(getData, getFilterTags) {
-
-  return (node) => {
-    let data = getData(node);
-
-    return !data
-      || !data.tags
-      || data.tags.filter(tag => getFilterTags()[tag.id]).length === getFilterTags().count;
-  };
-}
 
 function generateAdditionalTagsFunction(getRows) {
   function buildSearchArray(rows, selectedTags, nextLevel) {

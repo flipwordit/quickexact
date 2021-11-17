@@ -1,4 +1,22 @@
-function orderByRate(array, term) {
+export function comparer(a, b) {
+  return a < b
+    ? -1 : (a > b
+      ? 1
+      : 0)
+}
+let comparerFunc = (get) => (a, b) => comparer(get(a), get(b))
+
+let comparerCombine = (comparators) => (a, b) => {
+  for (let i = 0; i < comparators.length; i++) {
+    let result = comparerFunc(comparators[i])(a, b)
+
+    if (result != 0) return result
+  }
+
+  return 0
+}
+
+export function orderByRate(array, term) {
   const fuse = new Fuse(array, {
     includeScore: true,
     useExtendedSearch: true,
@@ -28,7 +46,7 @@ function orderByRate(array, term) {
   return result;
 }
 
-function takeByRate(array) {
+export function takeByRate(array) {
   let take = [];
   //TOdO: как отобрать наиболее значимые? Что это значит?
 
@@ -54,6 +72,3 @@ function takeByRate(array) {
 
   return take;
 }
-
-window.orderByRate = orderByRate;
-window.takeByRate = takeByRate;

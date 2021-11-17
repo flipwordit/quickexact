@@ -1,3 +1,6 @@
+import {throttle} from "@/src_jq/common/commonFunctions"
+import {openTabsInNewWindow, openTabs, closeTabsByUrlIfOpen } from "@/src_jq/common/commonFunctions"
+
 export function getActions() {
   if (!window.actions) {
     window.actions = {

@@ -20,8 +20,8 @@ require("@/src_jq/libraries/select2.js");
 window.Fuse = require("@/src_jq/libraries/fuse.js");
 
 require("@/src_jq/common/multiselectTags.js");
-require("@/src_jq/common/mulitselectTagsHandlers.js");
-require("@/src_jq/common/rateTags.js");
+import {select2UpdateTags} from "@/src_jq/common/mulitselectTagsHandlers"
+import {unique, throttle} from "@/src_jq/common/commonFunctions"
 
 import registerRestrictionMap from '@/src_jq/common/restrictionMap'
 
@@ -44,18 +44,6 @@ export default {
       vm.$props.options,
       generateAdditionalTagsFunction(() => this.searchResults || [])
     );
-
-    function select2UpdateTags(selector, tags) {
-      const select2 = $(selector);
-      select2.val(tags.map((el) => el.id));
-      //Store order
-      select2.select2("data").forEach((v) => {
-        v.index = tags.findIndex((t) => t.id === v.id);
-        v.text = tags[v.index].text;
-      });
-
-      select2.trigger("change");
-    }
 
     select2UpdateTags(list, vm.$props.modelValue);
 

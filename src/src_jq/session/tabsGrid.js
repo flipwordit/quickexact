@@ -1,4 +1,6 @@
-function createTabsGrid(selector, queryProvider) {
+import {openTabsInNewWindow, openTabs, closeTabsByUrlIfOpen } from "@/src_jq/common/commonFunctions"
+
+export default function createTabsGrid(selector) {
 
     //TODO: tabGroups available in version 3
     // let tagsGroup = new Promise(resolve => {

@@ -26,6 +26,9 @@ const config = {
     'popup/popup': './popup/popup.js',
     'shops/popup': './shops/popup.js',
     'src_jq/cheatsheets/cheatsheet': './src_jq/cheatsheets/cheatsheet.js',
+    'src_jq/session/session': './src_jq/session/session.js',
+    'src_jq/history/history': './src_jq/history/history.js',
+    'src_jq/settings/settings': './src_jq/settings/settings.js',
     'cheatsheets/script': './cheatsheets/script.js',
     'content/content': './content/content.js',
   },
@@ -186,7 +189,16 @@ module.exports = (env, argv) => {
         entries: {
           // The entries used for the content/background scripts or extension pages
           background: 'background/background',
-          extensionPage: ['shops/popup', 'popup/popup', 'cheatsheets', "cheatsheets/script"],
+          extensionPage: [
+            'shops/popup',
+            'popup/popup',
+            'cheatsheets',
+            "cheatsheets/script",
+            "src_jq/history/history",
+            "src_jq/session/session",
+            "src_jq/cheatsheets/cheatsheet",
+            'src_jq/settings/settings'
+          ],
         },
       }),
     )

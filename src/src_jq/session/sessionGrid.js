@@ -1,4 +1,6 @@
-function createSessionGrid(selector, externalFilter) {
+import {openTabsInNewWindow, openTabs, closeTabsByUrlIfOpen } from "@/src_jq/common/commonFunctions"
+
+export default function createSessionGrid(selector, externalFilter) {
   const sessionGridColumns = [
     {
       field: "date",

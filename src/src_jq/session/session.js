@@ -1,5 +1,9 @@
+
+import { getSmartotekaFabric, throttle } from '@/src_jq/common/commonFunctions'
+import createSessionGrid from './sessionGrid'
+import createTabsGrid from './tabsGrid'
 import registerRestrictionMap from '@/src_jq/common/restrictionMap'
-import { getSmartotekaFabric } from '@/src_jq/common/commonFunctions'
+import { getFilterByTags, registerFilterToGrid } from '@/src_jq/common/mulitselectTagsHandlers'
 
 let smartotekaFabric = getSmartotekaFabric()
 
@@ -151,7 +155,7 @@ $(function () {
 
   refreshSessionGrid()
 
-  let tabsGrid = createTabsGrid('#tabsGrid', queryProvider)
+  let tabsGrid = createTabsGrid('#tabsGrid')
 
   tabsGrid.onRowDragEnd = (event) => {
     let overNode = event.overNode
