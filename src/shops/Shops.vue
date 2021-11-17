@@ -15,8 +15,7 @@
 <script>
 import Navbar from "@/popup/components/Navbar";
 
-require("@/src_jq/common/SmartotekaFabricLocalStorage.js");
-require("@/src_jq/common/commonFunctions.js");
+import {openTabsInNewWindow, openTabs } from "@/src_jq/common/commonFunctions"
 
 export default {
   name: "Shops",

@@ -39,8 +39,7 @@
 <script>
 import Tab from "./Tab";
 
-require("@/src_jq/common/speedDeal.js");
-require("@/src_jq/common/commonFunctions.js");
+import {getActions} from "@/src_jq/common/speedDeal.js"
 
 export default {
   name: "Session",
