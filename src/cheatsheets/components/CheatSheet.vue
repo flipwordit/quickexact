@@ -17,28 +17,24 @@
           v-if="editMode"
           :initialValue="cheatsheet.content"
         />
-        <Viewer v-if="!editMode" :initialValue="cheatsheet.content" />
-        <div class="edit-buttons" v-if="editMode">
-          <img src="/images/save.svg" class="save" @click="save" />
-          <img src="/images/x.svg" class="close" @click="cancel" />
-        </div>
+        <Viewer v-if="!editMode" :initialValue="content" :content="content"/>
       </div>
-      <div class="tags">
+      <div class="tags" v-if="!editMode">
         <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
+      </div>
+      <div class="tags" v-if="editMode">
+        <select2 :options="allTags" v-model="editTags"> </select2>
+      </div>
+      <div class="edit-buttons" v-if="editMode">
+        <img src="/images/save.svg" class="save" @click="save" />
+        <img src="/images/x.svg" class="close" @click="cancel" />
       </div>
       <div class="dropdown">
         <div class="btn" @click.self="toggleDropdown" />
         <transition name="grow">
-          <div class="menu" v-if="showDropdown" v-click-outside="closeDropdown">
-            <div class="tags">
-              <select2 :options="allTags" v-model="editTags"> </select2>
-            </div>
-
-            <div class="edit-buttons">
-              <img src="/images/save.svg" class="save" @click="saveTags" />
-              <img src="/images/x.svg" class="close" @click="toggleDropdown" />
-            </div>
-          </div>
+          <ul class="menu" v-if="showDropdown" v-click-outside="closeDropdown">
+            <li @click="removeCheatSheet">Remove</li>
+          </ul>
         </transition>
       </div>
     </div>
@@ -88,11 +84,11 @@ export default {
         usageStatistics: false,
       },
       active: false,
-      editMode:false
+      editMode: false,
     };
   },
-  beforeMount:function(){
-    this.editMode=this.edit
+  beforeMount: function () {
+    this.editMode = this.edit;
   },
   mounted: function () {
     this.addButtonsToCodeBlocks();
@@ -103,6 +99,9 @@ export default {
 
       return this.cheatsheet.tags.slice(this.commonTagsCount);
     },
+    content(){
+      return this.cheatsheet.content;
+    }
   },
   methods: {
     addButtonsToCodeBlocks() {
@@ -144,13 +143,18 @@ export default {
     toEditMode() {
       this.editMode = true;
     },
+    removeCheatSheet() {
+      this.closeDropdown();
+      this.$emit("remove-cheatsheet", this.cheatsheet);
+    },
     save() {
       this.editMode = false;
       this.active = false;
-      let tags = this.cheatsheet.tags.map((el) => {
+      let tags = this.editTags.map((el) => {
         return { id: el.id, text: el.text };
       });
 
+      this.cheatsheet.tags = this.editTags.slice(0);
       this.cheatsheet.content = this.$refs.editor.editor.getMarkdown();
 
       let saveCheatSheet = {
@@ -164,6 +168,7 @@ export default {
     cancel() {
       this.editMode = false;
       this.active = false;
+      this.updateEditTags();
     },
     copyContent() {
       var text = this.cheatsheet.content;
@@ -178,31 +183,12 @@ export default {
     },
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
-
-      if (this.showDropdown) {
-        this.updateEditTags();
-      }
     },
     closeDropdown() {
       this.showDropdown = false;
     },
     clickAway() {
       this.showDropdown = false;
-    },
-    saveTags() {
-      let tags = this.editTags.map((el) => {
-        return { id: el.id, text: el.text };
-      });
-
-      this.cheatsheet.tags = this.editTags.slice(0);
-      let saveCheatSheet = {
-        content: this.cheatsheet.content,
-        date: this.cheatsheet.date,
-        tags: tags,
-      };
-      this.$emit("update-cheatsheet", saveCheatSheet);
-
-      this.toggleDropdown();
     },
   },
 };

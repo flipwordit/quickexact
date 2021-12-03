@@ -22,7 +22,7 @@
         <CheatSheet
           v-if="newCheatSheet"
           :cheatsheet="newCheatSheet"
-          :allTags="allTags"
+          :allTags="options"
           v-on:update-cheatsheet="saveNewCheatSheet"
           :edit="true"
         ></CheatSheet>
@@ -34,6 +34,7 @@
           :showAll="groups.length === 1 || searchResults.length < 12"
           :allTags="options"
           v-on:update-cheatsheet="updateCheatSheet($event)"
+          v-on:remove-cheatsheet="removeCheatSheet($event)"
         />
 
         <!-- <CheatSheet
@@ -176,8 +177,16 @@ export default {
       this.options = unique(allTags, (el) => el.id);
     },
     updateCheatSheet(cheatsheet) {
-      this.smartotekaFabric.KBManager().updateCheatSheets([cheatsheet]);
-      //this.update();
+      this.smartotekaFabric.KBManager().updateCheatSheets([cheatsheet])
+      .then(()=>this.update());
+    },
+    removeCheatSheet(cheatsheet) {
+      if (confirm("Are you sure?")) {
+        this.smartotekaFabric
+          .KBManager()
+          .deleteCheatSheet(cheatsheet)
+          .then(() => this.update());
+      }
     },
   },
 };

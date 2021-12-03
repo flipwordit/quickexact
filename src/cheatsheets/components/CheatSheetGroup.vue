@@ -5,13 +5,8 @@
       <div class="title">
         <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
       </div>
-      <img
-        class="add"
-        src="/images/plus-square.svg"
-        @click="addCheatSheet"
-       
-      />
-       <!-- v-if="group.items.findIndex((el) => el.isNew) < 0" -->
+      <img class="add" src="/images/plus-square.svg" @click="addCheatSheet" />
+      <!-- v-if="group.items.findIndex((el) => el.isNew) < 0" -->
     </div>
     <div class="content">
       <CheatSheet
@@ -21,6 +16,7 @@
         :commonTagsCount="group.commonTagsCount"
         :allTags="allTags"
         v-on:update-cheatsheet="$emit('update-cheatsheet', $event)"
+        v-on:remove-cheatsheet="$emit('remove-cheatsheet', $event)"
       ></CheatSheet>
       <div
         v-if="
@@ -48,11 +44,11 @@
 
 <script>
 import CheatSheet from "./CheatSheet";
-import {reactive} from 'vue';
+import { reactive } from "vue";
 
 export default {
   name: "CheatSheetGroup",
-  emits: ["update-cheatsheet"],
+  emits: ["update-cheatsheet", "remove-cheatsheet"],
   components: {
     CheatSheet,
   },
@@ -86,7 +82,7 @@ export default {
   },
   methods: {
     addCheatSheet() {
-      alert("заглушка")
+      alert("заглушка");
     },
   },
 };
