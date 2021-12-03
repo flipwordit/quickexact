@@ -1,4 +1,5 @@
 import registerRestrictionMap from '@/src_jq/common/restrictionMap'
+import { FuzzyFilter } from '@/src_jq/common/ag-grid-components/FuzzyFilter'
 
 export default function createCheatSheetsGrid(selector, externalFilter) {
   registerRestrictionMap()

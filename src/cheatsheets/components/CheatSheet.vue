@@ -1,18 +1,30 @@
 <template>
   <div class="cheatsheet">
     <div class="content">
-      <div class="code">
-        <Editor ref="editor" v-if="editMode" :initialValue="cheatsheet.content" />
+      <div
+        class="code"
+        @mouseenter="active = true"
+        @mouseleave="active = false"
+      >
+        <img
+          class="edit"
+          src="/images/edit.svg"
+          @click="toEditMode"
+          v-if="active"
+        />
+        <Editor
+          ref="editor"
+          v-if="editMode"
+          :initialValue="cheatsheet.content"
+        />
         <Viewer v-if="!editMode" :initialValue="cheatsheet.content" />
-        <div>
+        <div class="edit-buttons" v-if="editMode" >
           <!-- <img src="/images/layers.svg" @click="copyContent" /> -->
           <!--TODO: отображение копирования по наведению мыши на блок кода в правом верхнем углу-->
 
-          <img src="/images/edit.svg" @click="toEditMode" v-if="!editMode" />
           <!--TODO: отображение по наведению мыши на блок-->
-          <img src="/images/save.svg" @click="save" v-if="editMode" />
-          <img src="/images/x.svg" @click="cancel" v-if="editMode" />
-          
+          <img src="/images/save.svg" class="save" @click="save" />
+          <img src="/images/x.svg" class="close" @click="cancel" />
         </div>
       </div>
       <div class="tags">
@@ -21,7 +33,7 @@
       <div class="dropdown" @click.self="toggleDropdown">
         <div class="btn" />
         <transition name="grow">
-          <ul class="menu" v-if="showDropdown">
+          <ul class="menu" v-if="showDropdown" v-click-outside="closeDropdown">
             <li>
               <div class="tags">
                 <select2 :options="allTags" v-model="editTags"> </select2>
@@ -50,7 +62,7 @@ export default {
   components: {
     Select2,
     Editor,
-    Viewer
+    Viewer,
   },
   props: {
     cheatsheet: {
@@ -74,24 +86,27 @@ export default {
         usageStatistics: false,
       },
       editMode: false,
+      active: false,
     };
   },
-  mounted: function () {
-  },
+  mounted: function () {},
   computed: {
     tags() {
-      this.editTags = this.cheatsheet.tags.slice(0);
+      this.updateEditTags();
 
       return this.cheatsheet.tags.slice(this.commonTagsCount);
     },
   },
   methods: {
+    updateEditTags(){
+      this.editTags = this.cheatsheet.tags.slice(0);
+    },
     toEditMode() {
       this.editMode = true;
     },
     save() {
       this.editMode = false;
-
+      this.active = false;
       let tags = this.cheatsheet.tags.map((el) => {
         return { id: el.id, text: el.text };
       });
@@ -108,6 +123,7 @@ export default {
     },
     cancel() {
       this.editMode = false;
+      this.active = false;
     },
     copyContent() {
       var text = this.cheatsheet.content;
@@ -122,6 +138,13 @@ export default {
     },
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
+
+      if(this.showDropdown){
+        this.updateEditTags();
+      }
+    },
+    closeDropdown() {
+      this.showDropdown = false;
     },
     clickAway() {
       this.showDropdown = false;
@@ -149,14 +172,12 @@ export default {
 @import "../../styles/variables";
 
 $sky: #e6f6fe;
-.page {
-  height: 50rem;
-  // background: oldlace;
-}
+
 .cheatsheet {
+  float: left;
   // padding: 12px 16px;
   z-index: 10;
-  line-height: 1.25rem;
+  //line-height: 1.25rem;
   background: white;
   font-size: 1rem;
   transition: all 0.2s;
@@ -220,11 +241,33 @@ $sky: #e6f6fe;
     color: #9dd5f1;
   }
   .content {
+    position: relative;
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
 
     .code {
-      float: left;
+      position: relative;
+
+      .edit {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+      }
+    }
+
+    .edit-buttons{
+      height: 20px;
+      position: relative;
+
+      .close{
+        position: absolute;
+        right: 5px;
+      }
+
+      .save{
+        position: absolute;
+        right: 40px;
+      }
     }
     hr {
       // box-shadow: 0 0 1px 1px #9dd5f1;
@@ -236,15 +279,15 @@ $sky: #e6f6fe;
     }
 
     .dropdown {
-      // position: absolute;
-      // top: 7px;
-      // right: 7px;
-      position: relative;
-      border-radius: 50vmin;
+      position: absolute;
+      right: 5px;
+      top: 5px;
+
       padding: 5px;
       background: transparent;
-      height: 1.5rem;
-      width: 1.5rem;
+      // border-radius: 50vmin; Increase click area
+      // height: 1.5rem;
+      // width: 1.5rem;
       display: flex;
       justify-content: center;
       align-items: center;

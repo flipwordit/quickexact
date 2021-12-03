@@ -1,4 +1,5 @@
 <template>
+  <br>
   <div class="card">
     <div class="header">
       <div class="title">
@@ -36,6 +37,7 @@
       </div>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -43,6 +45,7 @@ import CheatSheet from "./CheatSheet";
 
 export default {
   name: "CheatSheetGroup",
+  emits:["update-cheatsheet"],
   components: {
     CheatSheet,
   },
@@ -89,6 +92,7 @@ $sky: #e6f6fe;
   background: oldlace;
   // }
   .card {
+    clear: both;
     //   // padding: 12px 16px;
     //   z-index: 10;
     //   line-height: 1.25rem;

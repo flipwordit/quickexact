@@ -1,4 +1,5 @@
 import {openTabsInNewWindow, openTabs, closeTabsByUrlIfOpen } from "@/src_jq/common/commonFunctions"
+import { FuzzyFilter } from '@/src_jq/common/ag-grid-components/FuzzyFilter'
 
 export default function createTabsGrid(selector) {
 

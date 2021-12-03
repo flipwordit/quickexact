@@ -1,7 +1,11 @@
-import {orderByRate, takeByRate} from "@/src_jq/common/rateTags"
-import {unique} from "@/src_jq/common/commonFunctions"
-import $ from "jquery";
-window.$ = $;
+import { orderByRate, takeByRate } from "@/src_jq/common/rateTags"
+import { unique } from "@/src_jq/common/commonFunctions"
+
+if (!window.$) {
+  window.$ = require("jquery");
+}
+var $ = window.$;
+
 
 export function getFilterByTags() {
   return getFilterByFilterTags((node) => node.data, () => window.filterTags || { count: 0 });
@@ -50,7 +54,7 @@ export function select2UpdateTags(selector, tags) {
   select2.trigger('change');
 }
 
-function select2ClearTags(selector) {
+export function select2ClearTags(selector) {
   const select2 = $(selector);
   select2.val(null).trigger('change')
 }

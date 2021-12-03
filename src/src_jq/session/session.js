@@ -1,9 +1,9 @@
 
-import { getSmartotekaFabric, throttle } from '@/src_jq/common/commonFunctions'
+import { getSmartotekaFabric, throttle, getAllTabs, createDefaultSession } from '@/src_jq/common/commonFunctions'
 import createSessionGrid from './sessionGrid'
 import createTabsGrid from './tabsGrid'
 import registerRestrictionMap from '@/src_jq/common/restrictionMap'
-import { getFilterByTags, registerFilterToGrid } from '@/src_jq/common/mulitselectTagsHandlers'
+import { getFilterByTags, registerFilterToGrid, select2ClearTags, select2UpdateTags } from '@/src_jq/common/mulitselectTagsHandlers'
 
 let smartotekaFabric = getSmartotekaFabric()
 

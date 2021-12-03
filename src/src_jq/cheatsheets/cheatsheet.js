@@ -1,6 +1,6 @@
 import createCheatSheetsGrid from './cheatsheetGrid'
-import { getSmartotekaFabric} from '@/src_jq/common/commonFunctions'
-import { getFilterByTags, registerFilterToGrid } from '@/src_jq/common/mulitselectTagsHandlers'
+import { getSmartotekaFabric, unique } from '@/src_jq/common/commonFunctions'
+import { getFilterByTags, registerFilterToGrid, select2ClearTags, select2UpdateTags  } from '@/src_jq/common/mulitselectTagsHandlers'
 
 let smartotekaFabric = getSmartotekaFabric()
 

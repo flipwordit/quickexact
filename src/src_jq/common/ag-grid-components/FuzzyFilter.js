@@ -1,5 +1,6 @@
+import {  throttle } from '@/src_jq/common/commonFunctions'
 
-class FuzzyFilter {
+export class FuzzyFilter {
   init(params) {
     this.valueGetter = params.valueGetter;
     this.filterText = null;
