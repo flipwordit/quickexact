@@ -1,10 +1,17 @@
 <template>
-  <br>
+  <br />
   <div class="card">
     <div class="header">
       <div class="title">
         <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
       </div>
+      <img
+        class="add"
+        src="/images/plus-square.svg"
+        @click="addCheatSheet"
+       
+      />
+       <!-- v-if="group.items.findIndex((el) => el.isNew) < 0" -->
     </div>
     <div class="content">
       <CheatSheet
@@ -37,15 +44,15 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
 import CheatSheet from "./CheatSheet";
+import {reactive} from 'vue';
 
 export default {
   name: "CheatSheetGroup",
-  emits:["update-cheatsheet"],
+  emits: ["update-cheatsheet"],
   components: {
     CheatSheet,
   },
@@ -77,6 +84,11 @@ export default {
         : this.group.items[0].tags.slice(0, this.group.commonTagsCount);
     },
   },
+  methods: {
+    addCheatSheet() {
+      alert("заглушка")
+    },
+  },
 };
 </script>
 
@@ -93,20 +105,6 @@ $sky: #e6f6fe;
   // }
   .card {
     clear: both;
-    //   // padding: 12px 16px;
-    //   z-index: 10;
-    //   line-height: 1.25rem;
-    //   background: white;
-    //   font-size: 1rem;
-    //   transition: all 0.2s;
-    //   border-radius: 5px;
-    //   margin: 0.5rem 0.5rem;
-    //   // box-shadow: 0 1px 2px rgba(0, 0, 0,  20%);
-    //   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
-    //   text-align: left;
-    //   color: $black;
-    //   font-family: $roboto;
-    //   overflow: visible;
 
     .header {
       background: #e6f6fe;
@@ -118,24 +116,11 @@ $sky: #e6f6fe;
       justify-content: space-between;
       align-items: center;
 
-      //     .version {
-      //       // background: #9dd5f1;
-      //       // line-height: 1rem;
-      //       // padding: 1px 5px;
-      //       display: inline-block;
-      //       font-size: 0.875rem;
-      //       // height: 1.5rem;
-      //       // background: yellow;
-      //       line-height: 0.875rem;
-      //       vertical-align: super;
-      //       // position:relative;
-      //       // margin-top: -3px;
-      //       color: #9dd5f1;
-      //       // border-radius: 50vmin;
-      //       // display: inline-block;
-      //       // color: white;
-      //       // text-align: center;
-      //     }
+      .add {
+        filter: alpha(Opacity=50);
+        opacity: 0.5;
+      }
+
       .title {
         line-height: 1.5rem;
         // background: violet;
@@ -143,15 +128,6 @@ $sky: #e6f6fe;
         font-weight: 500;
         color: #194c66;
       }
-
-      //     .reference {
-      //       font-size: 1rem;
-      //       margin-top: auto;
-      //       font-style: italic;
-      //       font-weight: lighter;
-      //       align-items: baseline;
-      //       padding-bottom: 0.125rem;
-      //     }
 
       //     .dropdown {
       //       // position: absolute;

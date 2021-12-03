@@ -1,28 +1,24 @@
 <template>
   <div class="cheatsheet">
-    <div class="content">
-      <div
-        class="code"
-        @mouseenter="active = true"
-        @mouseleave="active = false"
-      >
-        <img
-          class="edit"
-          src="/images/edit.svg"
-          @click="toEditMode"
-          v-if="active"
-        />
+    <div
+      class="content"
+      @mouseenter="active = true"
+      @mouseleave="active = false"
+    >
+      <img
+        class="edit"
+        src="/images/edit.svg"
+        @click="toEditMode"
+        v-if="active && !editMode"
+      />
+      <div class="code">
         <Editor
           ref="editor"
           v-if="editMode"
           :initialValue="cheatsheet.content"
         />
         <Viewer v-if="!editMode" :initialValue="cheatsheet.content" />
-        <div class="edit-buttons" v-if="editMode" >
-          <!-- <img src="/images/layers.svg" @click="copyContent" /> -->
-          <!--TODO: отображение копирования по наведению мыши на блок кода в правом верхнем углу-->
-
-          <!--TODO: отображение по наведению мыши на блок-->
+        <div class="edit-buttons" v-if="editMode">
           <img src="/images/save.svg" class="save" @click="save" />
           <img src="/images/x.svg" class="close" @click="cancel" />
         </div>
@@ -30,20 +26,19 @@
       <div class="tags">
         <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
       </div>
-      <div class="dropdown" @click.self="toggleDropdown">
-        <div class="btn" />
+      <div class="dropdown">
+        <div class="btn" @click.self="toggleDropdown" />
         <transition name="grow">
-          <ul class="menu" v-if="showDropdown" v-click-outside="closeDropdown">
-            <li>
-              <div class="tags">
-                <select2 :options="allTags" v-model="editTags"> </select2>
-              </div>
-            </li>
-            <li>
-              <div @click.self="saveTags">Save</div>
-              <div @click.self="toggleDropdown">Close</div>
-            </li>
-          </ul>
+          <div class="menu" v-if="showDropdown" v-click-outside="closeDropdown">
+            <div class="tags">
+              <select2 :options="allTags" v-model="editTags"> </select2>
+            </div>
+
+            <div class="edit-buttons">
+              <img src="/images/save.svg" class="save" @click="saveTags" />
+              <img src="/images/x.svg" class="close" @click="toggleDropdown" />
+            </div>
+          </div>
         </transition>
       </div>
     </div>
@@ -56,6 +51,8 @@ import "@toast-ui/editor/dist/toastui-editor.css"; // Editor's Style
 import Viewer from "./Viewer.vue";
 import Editor from "./Editor.vue";
 import Select2 from "@/common/Select2.vue";
+import $ from "jquery";
+window.$ = $;
 
 export default {
   name: "CheatSheet",
@@ -77,6 +74,11 @@ export default {
       type: Array,
       default: () => [],
     },
+    edit: {
+      type: Boolean,
+      defautl: () => false,
+      writable: true,
+    },
   },
   data() {
     return {
@@ -85,11 +87,16 @@ export default {
       editorOptions: {
         usageStatistics: false,
       },
-      editMode: false,
       active: false,
+      editMode:false
     };
   },
-  mounted: function () {},
+  beforeMount:function(){
+    this.editMode=this.edit
+  },
+  mounted: function () {
+    this.addButtonsToCodeBlocks();
+  },
   computed: {
     tags() {
       this.updateEditTags();
@@ -98,7 +105,40 @@ export default {
     },
   },
   methods: {
-    updateEditTags(){
+    addButtonsToCodeBlocks() {
+      $(".code code img", this.$el).remove();
+      var codeEls = $(".code code", this.$el).parent();
+
+      codeEls.append(
+        '<img class="copy" style="display:none" src="/images/copy.svg" data-v-2d0b1742="">'
+      );
+      codeEls.css("position", "relative");
+
+      codeEls.on("mouseleave", function () {
+        $("img", this).hide();
+      });
+      codeEls.on("mouseenter", function () {
+        $("img", this).show();
+      });
+
+      $("img.copy", codeEls).on("click", function () {
+        var text = $(this).parent().text();
+
+        if (!navigator.clipboard) {
+          fallbackCopyTextToClipboard(text);
+          return;
+        }
+        navigator.clipboard.writeText(text).then(
+          function () {
+            console.log("Async: Copying to clipboard was successful!");
+          },
+          function (err) {
+            console.error("Async: Could not copy text: ", err);
+          }
+        );
+      });
+    },
+    updateEditTags() {
       this.editTags = this.cheatsheet.tags.slice(0);
     },
     toEditMode() {
@@ -139,7 +179,7 @@ export default {
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
 
-      if(this.showDropdown){
+      if (this.showDropdown) {
         this.updateEditTags();
       }
     },
@@ -245,26 +285,37 @@ $sky: #e6f6fe;
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
 
-    .code {
-      position: relative;
-
-      .edit {
-        position: absolute;
-        top: 0px;
-        right: 0px;
-      }
+    .edit {
+      position: absolute;
+      top: 25px;
+      right: 5px;
+      filter: alpha(Opacity=50);
+      opacity: 0.5;
     }
 
-    .edit-buttons{
-      height: 20px;
+    .copy {
+      position: absolute;
+      right: 0px;
+      top: 0px;
+      filter: alpha(Opacity=50);
+      opacity: 0.5;
+    }
+
+    .code {
+      position: relative;
+      margin-right: 20px;
+    }
+
+    .edit-buttons {
+      height: 30px;
       position: relative;
 
-      .close{
+      .close {
         position: absolute;
         right: 5px;
       }
 
-      .save{
+      .save {
         position: absolute;
         right: 40px;
       }
@@ -299,11 +350,12 @@ $sky: #e6f6fe;
         .menu {
           opacity: 1;
           display: flex;
+          z-index: 1;
         }
       }
       .btn {
-        width: 0;
-        height: 0;
+        width: 10px;
+        height: 10px;
         border-left: 6px solid transparent;
         border-right: 6px solid transparent;
         border-top: 6px solid #9dd5f1;
@@ -314,7 +366,7 @@ $sky: #e6f6fe;
         min-height: 2em;
         position: absolute;
         top: 9px;
-        right: 11px;
+        left: 11px;
         background: white;
         flex-direction: column;
         width: 10rem;

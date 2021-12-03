@@ -13,7 +13,20 @@
       </select2>
 
       <div>
-        <!-- //TOdO: create!!!! -->
+        <img
+          class="add"
+          src="/images/plus-square.svg"
+          @click="addCheatSheet"
+          v-if="!newCheatSheet"
+        />
+        <CheatSheet
+          v-if="newCheatSheet"
+          :cheatsheet="newCheatSheet"
+          :allTags="allTags"
+          v-on:update-cheatsheet="saveNewCheatSheet"
+          :edit="true"
+        ></CheatSheet>
+
         <CheatSheetGroup
           v-for="group in groups"
           :key="group.id"
@@ -40,8 +53,8 @@ import CheatSheet from "./components/CheatSheet";
 import CheatSheetGroup from "./components/CheatSheetGroup";
 import Select2 from "@/common/Select2.vue";
 
-import { unique, getSmartotekaFabric } from '@/src_jq/common/commonFunctions'
-import { cheatsheetsGroup } from '@/src_jq/common/cheatSheetsManage.js'
+import { unique, getSmartotekaFabric } from "@/src_jq/common/commonFunctions";
+import { cheatsheetsGroup } from "@/src_jq/common/cheatSheetsManage.js";
 
 export default {
   name: "App",
@@ -56,18 +69,14 @@ export default {
       selected: [],
       options: [],
       sessions: [],
+      newCheatSheet: null,
     };
   },
   beforeMount() {},
   mounted() {
     let vm = this;
 
-    this.smartotekaFabric
-      .queriesProvider()
-      .getCheatSheets()
-      .then((cheatsheets) => {
-        vm.update(cheatsheets);
-      });
+    this.update();
 
     window.addEventListener(
       "keypress",
@@ -127,7 +136,32 @@ export default {
     },
   },
   methods: {
-    update(sessions) {
+    addCheatSheet() {
+      this.newCheatSheet = {
+        date: new Date().valueOf(),
+        content: "",
+        tags: [],
+      };
+    },
+    saveNewCheatSheet(cheatsheet) {
+      this.smartotekaFabric
+        .KBManager()
+        .addCheatSheet(cheatsheet)
+        .then(() => {
+          this.newCheatSheet = null;
+
+          this.update();
+        });
+    },
+    update() {
+      this.smartotekaFabric
+        .queriesProvider()
+        .getCheatSheets()
+        .then((cheatsheets) => {
+          this.updateCheatSheets(cheatsheets);
+        });
+    },
+    updateCheatSheets(sessions) {
       this.sessions = sessions;
 
       let allTags = [];
@@ -141,9 +175,10 @@ export default {
 
       this.options = unique(allTags, (el) => el.id);
     },
-    updateCheatSheet(cheatsheet){
+    updateCheatSheet(cheatsheet) {
       this.smartotekaFabric.KBManager().updateCheatSheets([cheatsheet]);
-    }
+      //this.update();
+    },
   },
 };
 </script>

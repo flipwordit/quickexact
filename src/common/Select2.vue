@@ -3,7 +3,13 @@
     <select>
       <slot></slot>
     </select>
-    <span style="display: inline-block"
+    <span
+      style="
+        display: inline-block;
+        position: absolute;
+        display: inline-block;
+        margin: 5px 5px;
+      "
       ><button id="clear-filter-tags-btn" @click.self="clearAllFilters">
         X
       </button></span
@@ -20,10 +26,10 @@ require("@/src_jq/libraries/select2.js");
 window.Fuse = require("@/src_jq/libraries/fuse.js");
 
 require("@/src_jq/common/multiselectTags.js");
-import {select2UpdateTags} from "@/src_jq/common/mulitselectTagsHandlers"
-import {unique, throttle} from "@/src_jq/common/commonFunctions"
+import { select2UpdateTags } from "@/src_jq/common/mulitselectTagsHandlers";
+import { unique, throttle } from "@/src_jq/common/commonFunctions";
 
-import registerRestrictionMap from '@/src_jq/common/restrictionMap'
+import registerRestrictionMap from "@/src_jq/common/restrictionMap";
 
 export default {
   name: "select2",
