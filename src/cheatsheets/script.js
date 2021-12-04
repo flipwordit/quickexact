@@ -17,21 +17,20 @@ app.use(store)
 app.use(ElementPlus)
 app.component(VueFeather.name, VueFeather)
 
-
-app.directive("click-outside", {
+app.directive('click-outside', {
   beforeMount: (el, binding) => {
     el.clickOutsideEvent = event => {
       // here I check that click was outside the el and his children
-      if (!(el == event.target || el.contains(event.target))) {
+      if (!(el === event.target || el.contains(event.target))) {
         // and if it did, call method provided in attribute value
-        binding.value();
+        binding.value()
       }
-    };
-    setTimeout(()=>document.addEventListener("click", el.clickOutsideEvent), 100);
+    }
+    setTimeout(() => document.addEventListener('click', el.clickOutsideEvent), 100)
   },
   unmounted: el => {
-    document.removeEventListener("click", el.clickOutsideEvent);
+    document.removeEventListener('click', el.clickOutsideEvent)
   },
-});
+})
 
 app.mount('#app')

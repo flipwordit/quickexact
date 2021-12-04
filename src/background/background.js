@@ -14,7 +14,7 @@
 
 // TODO move to separate module
 import storage from '@/utils/storage'
-import { getActiveTab } from '@/src_jq/common/commonFunctions'
+import { getActiveTab, createDefaultSession, getSmartotekaFabric } from '@/src_jq/common/commonFunctions'
 
 async function getOrCreatePopup(url, width, height) {
   let activateTab = async (tab) => {
@@ -77,6 +77,7 @@ chrome.commands.onCommand.addListener(async (command) => {
     case 'add-tab-to-session': {
       getActiveTab()
         .then(activeTab => {
+          let smartotekaFabric = getSmartotekaFabric()
           smartotekaFabric.queriesProvider()
             .getSelectSession()
             .then(session => {
@@ -96,7 +97,7 @@ chrome.commands.onCommand.addListener(async (command) => {
                     )
                   })
               } else {
-                let session = createDefaultSession([activeTab])
+                session = createDefaultSession([activeTab])
 
                 smartotekaFabric.KBManager()
                   .addSession(session)

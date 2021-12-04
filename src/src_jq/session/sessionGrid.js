@@ -1,16 +1,15 @@
-import {openTabsInNewWindow, openTabs, closeTabsByUrlIfOpen } from "@/src_jq/common/commonFunctions"
-import { FuzzyFilter } from '@/src_jq/common/ag-grid-components/FuzzyFilter'
+import { openTabsInNewWindow, openTabs, closeTabsByUrlIfOpen } from '@/src_jq/common/commonFunctions'
+import FuzzyFilter from '@/src_jq/common/ag-grid-components/FuzzyFilter'
 
 export default function createSessionGrid(selector, externalFilter) {
   const sessionGridColumns = [
     {
-      field: "date",
+      field: 'date',
       width: 110,
       filter: 'agDateColumnFilter',
       sort: 'desc',
       cellRenderer: params => {
-        if (!params.data)
-          return params.data;
+        if (!params.data) { return params.data }
 
         let formattedDate = Intl.DateTimeFormat(undefined, {
           year: 'numeric',
@@ -18,49 +17,46 @@ export default function createSessionGrid(selector, externalFilter) {
           day: 'numeric',
           hour: 'numeric',
           minute: 'numeric',
-          second: 'numeric'
+          second: 'numeric',
         })
-          .format(params.data.date);
+          .format(params.data.date)
 
-        return formattedDate.replace(" ", "<br>");
-      }
+        return formattedDate.replace(' ', '<br>')
+      },
     },
     {
-      field: "query",
+      field: 'query',
       width: 200,
-      filter: "fuzzyFilter"
+      filter: 'fuzzyFilter',
     },
     {
-      headerName: "tabs count",
-      field: "tabs",
+      headerName: 'tabs count',
+      field: 'tabs',
       width: 100,
-      filter: "usefulTypeFilter",
+      filter: 'usefulTypeFilter',
       valueGetter: params => {
-        if (!params.data)
-          return params.data;
+        if (!params.data) { return params.data }
 
-        return params.data.tabs.length;
-      }
+        return params.data.tabs.length
+      },
     },
     {
-      field: "tags",
+      field: 'tags',
       width: 200,
       filter: 'agSetColumnFilter',
       valueGetter: params => {
-        if (!params.data)
-          return params.data;
-
-        return (params.data.tags || []).map(el => el.text);
-      },
-      valueFormatter: params => {
-        if (!params.data)
-          return params.data;
+        if (!params.data) { return params.data }
 
         return (params.data.tags || []).map(el => el.text)
-          .join(', ');
-      }
-    }
-  ];
+      },
+      valueFormatter: params => {
+        if (!params.data) { return params.data }
+
+        return (params.data.tags || []).map(el => el.text)
+          .join(', ')
+      },
+    },
+  ]
 
   const sessionGridOptions = {
     defaultColDef: {
@@ -76,68 +72,60 @@ export default function createSessionGrid(selector, externalFilter) {
       fuzzyFilter: FuzzyFilter,
       loadingRenderer: function (params) {
         if (params.value !== undefined) {
-          return params.value;
-        } else {
-          return '<img src="https://www.ag-grid.com/example-assets/loading.gif">';
+          return params.value
         }
+        return '<img src="https://www.ag-grid.com/example-assets/loading.gif">'
       },
     },
     rowSelection: 'single',
     getContextMenuItems: getContextMenuItems,
     isExternalFilterPresent: () => externalFilter,
     doesExternalFilterPass: (node) => !externalFilter || externalFilter(node),
-  };
-
-
+  }
 
   function getContextMenuItems(params) {
     return [
       {
         name: 'Open in current window',
         action: function () {
-          openTabs(params.node.data.tabs);
-        }
+          openTabs(params.node.data.tabs)
+        },
       },
       {
         name: 'Open in new window',
         action: function () {
-          openTabsInNewWindow(params.node.data.tabs);
-        }
+          openTabsInNewWindow(params.node.data.tabs)
+        },
       },
       {
         name: 'Close all and dublicates',
         action: function () {
-          closeTabsByUrlIfOpen(params.node.data.tabs);
-        }
+          closeTabsByUrlIfOpen(params.node.data.tabs)
+        },
       },
       'separator',
       {
         name: 'Replace current',
         action: function () {
           sessionGridOptions.onReplacing(params.node.data)
-            .then((tabs) =>
-              params.node.setDataValue('tabs', tabs)
-            );
-        }
+            .then((tabs) => params.node.setDataValue('tabs', tabs))
+        },
       },
       'separator',
       {
         name: 'Delete',
         action: function () {
           sessionGridOptions.onDeleting(params.node.data)
-            .then(() =>
-              sessionGridOptions.api.applyTransaction({
-                remove: [params.node.data]
-              })
-            );
-        }
+            .then(() => sessionGridOptions.api.applyTransaction({
+              remove: [params.node.data],
+            }))
+        },
       },
-    ];
-
+    ]
   }
 
-  const sessionGridDiv = document.querySelector(selector);
-  new agGrid.Grid(sessionGridDiv, sessionGridOptions);
+  const sessionGridDiv = document.querySelector(selector)
+  new agGrid.Grid(sessionGridDiv, sessionGridOptions)
 
-  return agGridExtendApi(sessionGridOptions);
+  return agGridExtendApi(sessionGridOptions)
 }

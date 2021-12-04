@@ -2,7 +2,6 @@ import {
   throttle, openTabsInNewWindow,
   openTabs, closeTabsByUrlIfOpen,
   secondRunImmediately,
-  redirectCurrentTab,
 } from '@/src_jq/common/commonFunctions'
 
 export function getActions() {
@@ -152,10 +151,10 @@ export function registerSpeedDeal(helpPaneId, smartotekaFabric) {
               }
             }
 
-            keyDownHandler = secondRunImmediately(mainHandler, 1500)
+            keyDownHandler = secondRunImmediately(mainHandler, 2000)
             keyDownHandler()
 
-            pointer = actions.session
+            pointer = actions.cheatsheets
             setSpeedDealHelp(helpPaneId, pointer)
 
             break
@@ -184,7 +183,7 @@ export function registerSpeedDeal(helpPaneId, smartotekaFabric) {
                 })
             }
 
-            keyDownHandler = secondRunImmediately(mainHandler, 1500)
+            keyDownHandler = secondRunImmediately(mainHandler, 2000)
             keyDownHandler()
 
             pointer = actions.session

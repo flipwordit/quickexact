@@ -11,20 +11,21 @@
         @click="toEditMode"
         v-if="active && !editMode"
       />
-      <div class="code">
-        <Editor
-          ref="editor"
-          v-if="editMode"
-          :initialValue="cheatsheet.content"
-        />
-        <Viewer v-if="!editMode" :initialValue="content" :content="content"/>
-      </div>
       <div class="tags" v-if="!editMode">
         <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
       </div>
       <div class="tags" v-if="editMode">
         <select2 :options="allTags" v-model="editTags"> </select2>
       </div>
+      <div class="code">
+        <Editor
+          ref="editor"
+          v-if="editMode"
+          :initialValue="cheatsheet.content"
+        />
+        <Viewer v-if="!editMode" :initialValue="content" :content="content" />
+      </div>
+
       <div class="edit-buttons" v-if="editMode">
         <img src="/images/save.svg" class="save" @click="save" />
         <img src="/images/x.svg" class="close" @click="cancel" />
@@ -92,6 +93,9 @@ export default {
     this.editMode = this.edit
   },
   mounted: function () {
+    this.addButtonsToCodeBlocks()
+  },
+  updated: function () {
     this.addButtonsToCodeBlocks()
   },
   computed: {
@@ -263,7 +267,8 @@ $sky: #e6f6fe;
 
   .tags {
     font-size: 0.875rem;
-    color: #9dd5f1;
+    color: #6d88df;
+    margin-right: 20px;
   }
   .content {
     position: relative;

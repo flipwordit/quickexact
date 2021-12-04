@@ -91,9 +91,12 @@ export default {
         .map((el) => el.text)
 
       let countTags = 0
-      result = unique(result, (el) => el).map(
-        (tag) => (result[tag] = ++countTags),
-      )
+      result = unique(result, (el) => el).map((tag) => {
+        countTags += 1
+        result[tag] = countTags
+
+        return 0
+      })
 
       result.count = countTags
 

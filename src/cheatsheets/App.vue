@@ -31,7 +31,7 @@
           v-for="group in groups"
           :key="group.id"
           :group="group"
-          :showAll="groups.length === 1 || searchResults.length < 12"
+          :showAll="true||groups.length === 1 || searchResults.length < 12"
           :allTags="options"
           v-on:update-cheatsheet="updateCheatSheet($event)"
           v-on:remove-cheatsheet="removeCheatSheet($event)"
@@ -70,13 +70,13 @@ export default {
     return {
       selected: [],
       options: [],
-      sessions: [],
+      cheatSheets: [],
       newCheatSheet: null,
     }
   },
   beforeMount() {},
   mounted() {
-    this.update()
+    this.refresh()
 
     window.addEventListener(
       'keypress',
@@ -119,17 +119,20 @@ export default {
       let filterTags = {}
 
       let countTags = 0
-      unique(selectedTags, (el) => el).map(
-        (tag) => (filterTags[tag] = ++countTags),
-      )
+      unique(selectedTags, (el) => el).map((tag) => {
+        countTags += 1
+        filterTags[tag] = countTags
+        return 0
+      })
+
       filterTags.count = countTags
       let filterByTags = getFilterByFilterTags(
         (el) => el,
         () => filterTags,
       )
 
-      return (this.sessions || []).filter(
-        (session) => filterTags[session.query] || filterByTags(session),
+      return (this.cheatSheets || []).filter(
+        (cheatsheet) => filterTags[cheatsheet.query] || filterByTags(cheatsheet),
       )
     },
     smartotekaFabric() {
@@ -151,26 +154,30 @@ export default {
         .then(() => {
           this.newCheatSheet = null
 
-          this.update()
+          this.refresh()
         })
     },
-    update() {
+    refresh() {
       this.smartotekaFabric
         .queriesProvider()
         .getCheatSheets()
         .then((cheatsheets) => {
-          this.updateCheatSheets(cheatsheets)
+          this.refreshByData(cheatsheets)
         })
     },
-    updateCheatSheets(sessions) {
-      this.sessions = sessions
+    refreshByData(cheatSheets) {
+      this.cheatSheets = cheatSheets
 
       let allTags = []
 
-      sessions.forEach(
-        (el) => (allTags = allTags
-          .concat(el.tags)
-          .concat([{ id: el.query, text: el.query }])),
+      cheatSheets.forEach(
+        (el) => {
+          allTags = allTags
+            .concat(el.tags)
+            .concat([{ id: el.query, text: el.query }])
+
+          return 0
+        },
       )
 
       this.options = unique(allTags, (el) => el.id)
@@ -179,14 +186,14 @@ export default {
       this.smartotekaFabric
         .KBManager()
         .updateCheatSheets([cheatsheet])
-        .then(() => this.update())
+        .then(() => this.refresh())
     },
     removeCheatSheet(cheatsheet) {
       if (confirm('Are you sure?')) {
         this.smartotekaFabric
           .KBManager()
           .deleteCheatSheet(cheatsheet)
-          .then(() => this.update())
+          .then(() => this.refresh())
       }
     },
   },

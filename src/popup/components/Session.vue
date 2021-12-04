@@ -39,7 +39,7 @@
 <script>
 import Tab from './Tab'
 
-import { getActions } from '@/src_jq/common/speedDeal.js'
+import { getActions } from '@/src_jq/common/speedDeal'
 
 export default {
   name: 'Session',

@@ -6,7 +6,7 @@
         <div class="title">
           <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
         </div>
-        <img class="add" src="/images/plus-square.svg" @click="addCheatSheet" />
+        <!-- <img class="add" src="/images/plus-square.svg" @click="addCheatSheet" /> -->
         <!-- v-if="group.items.findIndex((el) => el.isNew) < 0" -->
       </div>
       <div class="content">
@@ -30,13 +30,15 @@
         </div>
         <div v-if="showAll" @click.self="showAll = !showAll">/*</div>
         <div v-if="recursive || showAll">
-          <!-- <CheatSheetGroup
-          v-for="group in group.groups"
-          :key="group.id"
-          :group="group"
-          :recursive="false"
-          :allTags="allTags"
-        ></CheatSheetGroup> -->
+          <CheatSheetGroup
+            v-for="group in group.groups"
+            :key="group.id"
+            :group="group"
+            :recursive="false"
+            :allTags="allTags"
+            v-on:update-cheatsheet="$emit('update-cheatsheet', $event)"
+            v-on:remove-cheatsheet="$emit('remove-cheatsheet', $event)"
+          ></CheatSheetGroup>
           <div v-if="showAll" @click.self="showAll = !showAll">*/</div>
         </div>
       </div>
@@ -82,9 +84,9 @@ export default {
     },
   },
   methods: {
-    addCheatSheet() {
-      alert('заглушка')
-    },
+    // addCheatSheet() {
+    //   alert('заглушка')
+    // },
   },
 }
 </script>
