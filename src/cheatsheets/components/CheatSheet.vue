@@ -42,16 +42,17 @@
 </template>
 
 <script>
-import "@toast-ui/editor/dist/toastui-editor.css"; // Editor's Style
+import '@toast-ui/editor/dist/toastui-editor.css' // Editor's Style
 
-import Viewer from "./Viewer.vue";
-import Editor from "./Editor.vue";
-import Select2 from "@/common/Select2.vue";
-import $ from "jquery";
-window.$ = $;
+import $ from 'jquery'
+import Viewer from './Viewer'
+import Editor from './Editor'
+import Select2 from '@/common/Select2'
+
+window.$ = $
 
 export default {
-  name: "CheatSheet",
+  name: 'CheatSheet',
   components: {
     Select2,
     Editor,
@@ -85,113 +86,111 @@ export default {
       },
       active: false,
       editMode: false,
-    };
+    }
   },
   beforeMount: function () {
-    this.editMode = this.edit;
+    this.editMode = this.edit
   },
   mounted: function () {
-    this.addButtonsToCodeBlocks();
+    this.addButtonsToCodeBlocks()
   },
   computed: {
     tags() {
-      this.updateEditTags();
+      this.updateEditTags()
 
-      return this.cheatsheet.tags.slice(this.commonTagsCount);
+      return this.cheatsheet.tags.slice(this.commonTagsCount)
     },
-    content(){
-      return this.cheatsheet.content;
-    }
+    content() {
+      return this.cheatsheet.content
+    },
   },
   methods: {
     addButtonsToCodeBlocks() {
-      $(".code code img", this.$el).remove();
-      var codeEls = $(".code code", this.$el).parent();
+      $('.code code img', this.$el).remove()
+      let codeEls = $('.code code', this.$el).parent()
 
       codeEls.append(
-        '<img class="copy" style="display:none" src="/images/copy.svg" data-v-2d0b1742="">'
-      );
-      codeEls.css("position", "relative");
+        '<img class="copy" style="display:none" src="/images/copy.svg" data-v-2d0b1742="">',
+      )
+      codeEls.css('position', 'relative')
 
-      codeEls.on("mouseleave", function () {
-        $("img", this).hide();
-      });
-      codeEls.on("mouseenter", function () {
-        $("img", this).show();
-      });
+      codeEls.on('mouseleave', function () {
+        $('img', this).hide()
+      })
+      codeEls.on('mouseenter', function () {
+        $('img', this).show()
+      })
 
-      $("img.copy", codeEls).on("click", function () {
-        var text = $(this).parent().text();
+      $('img.copy', codeEls).on('click', function () {
+        let text = $(this).parent().text()
 
         if (!navigator.clipboard) {
-          fallbackCopyTextToClipboard(text);
-          return;
+          fallbackCopyTextToClipboard(text)
+          return
         }
         navigator.clipboard.writeText(text).then(
           function () {
-            console.log("Async: Copying to clipboard was successful!");
+            console.log('Async: Copying to clipboard was successful!')
           },
           function (err) {
-            console.error("Async: Could not copy text: ", err);
-          }
-        );
-      });
+            console.error('Async: Could not copy text: ', err)
+          },
+        )
+      })
     },
     updateEditTags() {
-      this.editTags = this.cheatsheet.tags.slice(0);
+      this.editTags = this.cheatsheet.tags.slice(0)
     },
     toEditMode() {
-      this.editMode = true;
+      this.editMode = true
     },
     removeCheatSheet() {
-      this.closeDropdown();
-      this.$emit("remove-cheatsheet", this.cheatsheet);
+      this.closeDropdown()
+      this.$emit('remove-cheatsheet', this.cheatsheet)
     },
     save() {
-      this.editMode = false;
-      this.active = false;
-      let tags = this.editTags.map((el) => {
-        return { id: el.id, text: el.text };
-      });
+      this.editMode = false
+      this.active = false
+      let tags = this.editTags.map((el) => ({ id: el.id, text: el.text }))
 
-      this.cheatsheet.tags = this.editTags.slice(0);
-      this.cheatsheet.content = this.$refs.editor.editor.getMarkdown();
+      this.cheatsheet.tags = this.editTags.slice(0)
+      this.cheatsheet.content = this.$refs.editor.editor.getMarkdown()
 
       let saveCheatSheet = {
         content: this.cheatsheet.content,
         date: this.cheatsheet.date,
         tags: tags,
-      };
+      }
 
-      this.$emit("update-cheatsheet", saveCheatSheet);
+      this.$emit('update-cheatsheet', saveCheatSheet)
     },
     cancel() {
-      this.editMode = false;
-      this.active = false;
-      this.updateEditTags();
+      this.editMode = false
+      this.active = false
+      this.updateEditTags()
     },
     copyContent() {
-      var text = this.cheatsheet.content;
+      let text = this.cheatsheet.content
       navigator.clipboard.writeText(text).then(
         function () {
-          console.log("Async: Copying to clipboard was successful!");
+          console.log('Async: Copying to clipboard was successful!')
         },
         function (err) {
-          console.error("Async: Could not copy text: ", err);
-        }
-      );
+          console.error('Async: Could not copy text: ', err)
+        },
+      )
     },
     toggleDropdown() {
-      this.showDropdown = !this.showDropdown;
+      this.showDropdown = !this.showDropdown
     },
     closeDropdown() {
-      this.showDropdown = false;
+      this.showDropdown = false
     },
     clickAway() {
-      this.showDropdown = false;
+      this.showDropdown = false
     },
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>

@@ -1,177 +1,182 @@
-import { orderByRate, takeByRate } from "@/src_jq/common/rateTags"
-import { unique } from "@/src_jq/common/commonFunctions"
+import { orderByRate, takeByRate } from '@/src_jq/common/rateTags'
+import { unique } from '@/src_jq/common/commonFunctions'
 
 if (!window.$) {
-  window.$ = require("jquery");
+  window.$ = require('jquery')
 }
-var $ = window.$;
-
-
-export function getFilterByTags() {
-  return getFilterByFilterTags((node) => node.data, () => window.filterTags || { count: 0 });
-}
+let $ = window.$
 
 export function getFilterByFilterTags(getData, getFilterTags) {
-
   return (node) => {
-    let data = getData(node);
+    let data = getData(node)
 
     return !data
       || !data.tags
-      || data.tags.filter(tag => getFilterTags()[tag.id]).length === getFilterTags().count;
-  };
+      || data.tags.filter(tag => getFilterTags()[tag.id]).length === getFilterTags().count
+  }
+}
+
+export function getFilterByTags() {
+  return getFilterByFilterTags((node) => node.data, () => window.filterTags || { count: 0 })
 }
 
 export function registerFilterToGrid(grid) {
   $('#filter-tags').on('change', function (e) {
-    window.filterTags = { count: 0 };
+    window.filterTags = { count: 0 }
 
     let filterTags = $('#filter-tags')
       .select2('data')
-      .map(el => el.text);
+      .map(el => el.text)
 
-    let countTags = 0;
+    let countTags = 0
     unique(filterTags, el => el)
-      .map(tag => window.filterTags[tag] = ++countTags);
+      .map(tag => {
+        countTags += 1
+        window.filterTags[tag] = countTags
 
-    window.filterTags.count = countTags;
+        return 0
+      })
 
-    grid.api.onFilterChanged();
-  });
+    window.filterTags.count = countTags
+
+    grid.api.onFilterChanged()
+  })
 }
 
 export function select2UpdateTags(selector, tags) {
-  const select2 = $(selector);
-  select2.val(tags.map(el => el.id));
-  //Store order
+  const select2 = $(selector)
+  select2.val(tags.map(el => el.id))
+  // Store order
   select2
     .select2('data')
     .forEach(v => {
-      v.index = tags.findIndex(t => t.id === v.id);
-      v.text = tags[v.index].text;
-    });
+      v.index = tags.findIndex(t => t.id === v.id)
+      v.text = tags[v.index].text
+    })
 
-  select2.trigger('change');
+  select2.trigger('change')
 }
 
 export function select2ClearTags(selector) {
-  const select2 = $(selector);
+  const select2 = $(selector)
   select2.val(null).trigger('change')
 }
 
 $('#clear-filter-tags-btn').click(_ => {
-  select2ClearTags('#filter-tags');
-});
+  select2ClearTags('#filter-tags')
+})
 
 setTimeout(() => {
   $('.select2-search__field, .select2-search').keydown(function (e) {
-    if (e.code === "Escape") {
-      setTimeout(() => $(document.activeElement).blur());
+    if (e.code === 'Escape') {
+      setTimeout(() => $(document.activeElement).blur())
 
-      return;
+      return
     }
     switch (e.key) {
       case '~':
-        {
-          if ($(document.activeElement).attr('aria-describedby') === 'select2-add-tags-container') {
-            e.preventDefault();
-            select2ClearTags('#add-tags');
-          }
-          else {
-            e.preventDefault();
-            select2ClearTags('#filter-tags');
-          }
-        } break;
+        e.preventDefault()
+        if ($(document.activeElement).attr('aria-describedby') === 'select2-add-tags-container') {
+          select2ClearTags('#add-tags')
+        } else {
+          select2ClearTags('#filter-tags')
+        }
+        break
+      default:
+        break
     }
-  });
-}, 100);
+  })
+}, 100)
 
 $('#add-block-switch').click(function () {
   $(this).html(
-    "Add\\Edit&nbsp;" + ($('#add-block').toggle().is(':hidden') ? '&#8595;' : '&#8593;'));
-});
+    'Add\\Edit&nbsp;' + ($('#add-block').toggle().is(':hidden') ? '&#8595;' : '&#8593;'),
+  )
+})
 
 $(document).keypress(function (e) {
-  if (e.code === "Escape") {
-    setTimeout(() => $(document.activeElement).blur());
-    return;
+  if (e.code === 'Escape') {
+    setTimeout(() => $(document.activeElement).blur())
+    return
   }
 
-  if (document.activeElement.type === "textarea"
-    || document.activeElement.type === "text")
-    return;
+  if (document.activeElement.type === 'textarea'
+    || document.activeElement.type === 'text') { return }
 
   switch (e.key) {
     case 'f':
-      {
-        setTimeout(() => $('#filter-tags').focus(), 0);
-      } break;
+      setTimeout(() => $('#filter-tags').focus(), 0)
+      break
     case 'a':
-      {
-        $('#add-block').show();
-        setTimeout(() => $('#add-content').focus());
-      } break;
+      $('#add-block').show()
+      setTimeout(() => $('#add-content').focus())
+      break
+    default:
+      break
   }
-});
+})
 
-function generateAdditionalTagsFunction(getRows) {
+export function generateAdditionalTagsFunction(getRows) {
   function buildSearchArray(rows, selectedTags, nextLevel) {
     let arrayTagArrays = rows
       .filter(el => el.tags)
       .map(r => {
         let compare = (a, b) => {
-          let aId = window.restrictMap[a.text];
-          let bId = window.restrictMap[b.text];
+          let aId = window.restrictMap[a.text]
+          let bId = window.restrictMap[b.text]
 
-          return aId === undefined
-            ? bId === undefined
-              ? a.text.localeCompare(b.text)
-              : 1
-            : bId === undefined
-              ? -1
-              : aId.localeCompare(bId);
-        };
+          if (aId === undefined) {
+            if (bId === undefined) {
+              return a.text.localeCompare(b.text)
+            }
+            return 1
+          }
 
-        return r.tags.sort(compare);
-      });
+          if (bId === undefined) {
+            return -1
+          }
 
-    let tagPrefixMap = {};//TODO: нужно ли делать проверку что все выделенные тэги в массивах?
-
-    for (let i = 0; i < arrayTagArrays.length; i++) {
-      let tags = arrayTagArrays[i];
-
-      if (tags.length <= selectedTags.length + (nextLevel ? 0 : 1))
-        continue;
-
-      let prefix = "";
-      let prefixLength = 0;
-      for (let j = 0; j < tags.length; j++) {
-        let currentTag = tags[j].text;
-
-        if (selectedTags.indexOf(currentTag) >= 0)
-          continue;
-
-        prefix += currentTag + ",";
-        prefixLength++;
-
-        if (j === 0 || !nextLevel && prefixLength < 2) {
-          continue;
+          return aId.localeCompare(bId)
         }
 
-        let prefixMap = tagPrefixMap[currentTag] = tagPrefixMap[currentTag] || { count: 0, prefixes: {} };
+        return r.tags.sort(compare)
+      })
 
-        prefixMap.count++;
-        prefixMap.prefixes[prefix] = (prefixMap.prefixes[prefix] || 0) + 1;
+    let tagPrefixMap = {}// TODO: нужно ли делать проверку что все выделенные тэги в массивах?
 
-        if (nextLevel)
-          break;
+    for (let i = 0; i < arrayTagArrays.length; i++) {
+      let tags = arrayTagArrays[i]
+
+      if (tags.length <= selectedTags.length + (nextLevel ? 0 : 1)) { continue }
+
+      let prefix = ''
+      let prefixLength = 0
+      for (let j = 0; j < tags.length; j++) {
+        let currentTag = tags[j].text
+
+        if (selectedTags.indexOf(currentTag) >= 0) { continue }
+
+        prefix += currentTag + ','
+        prefixLength += 1
+
+        if (j === 0 || !nextLevel && prefixLength < 2) {
+          continue
+        }
+
+        let prefixMap = tagPrefixMap[currentTag] || { count: 0, prefixes: {} }
+        tagPrefixMap[currentTag] = prefixMap
+
+        prefixMap.count += 1
+        prefixMap.prefixes[prefix] = (prefixMap.prefixes[prefix] || 0) + 1
+
+        if (nextLevel) { break }
       }
     }
 
-    let arrayToSearch = [];
+    let arrayToSearch = []
 
     for (let tag in tagPrefixMap) {
-      let prefixMap = tagPrefixMap[tag];
+      let prefixMap = tagPrefixMap[tag]
 
       for (let prefix in prefixMap.prefixes) {
         // if (!nextLevel && prefixMap.count === 1)
@@ -181,53 +186,50 @@ function generateAdditionalTagsFunction(getRows) {
           tag: tag,
           tagCount: prefixMap.count,
           prefix: prefix,
-          prefixCount: prefixMap.prefixes[prefix]
+          prefixCount: prefixMap.prefixes[prefix],
         })
       }
     }
 
-    return arrayToSearch;
+    return arrayToSearch
   }
 
   window.getAdditionalTags = function (selectedTags) {
-    let rows = getRows();
+    let rows = getRows()
 
-    let arrayToSearch = buildSearchArray(rows, selectedTags, true);
+    let arrayToSearch = buildSearchArray(rows, selectedTags, true)
 
-    return arrayToSearch.map(el => el.tag);
+    return arrayToSearch.map(el => el.tag)
   }
 
   function generateAdditionalTags(params, selectedTags) {
-    let term = $.trim(params.term);
+    let term = $.trim(params.term)
 
-    if (term == '' || term.length < 2) {
-      return [];
+    if (term === '' || term.length < 2) {
+      return []
     }
 
-    let rows = getRows();
+    let rows = getRows()
 
-    let arrayToSearch = buildSearchArray(rows, selectedTags);
+    let arrayToSearch = buildSearchArray(rows, selectedTags)
 
-    let result = orderByRate(arrayToSearch, term);
+    let result = orderByRate(arrayToSearch, term)
 
-    let take = takeByRate(result);
+    let take = takeByRate(result)
 
     return take
       .map(el => {
-        let value = el.prefix.substring(0, el.prefix.length - 1);
+        let value = el.prefix.substring(0, el.prefix.length - 1)
 
         return {
           id: value,
-          text: value,//TODO: maybe add description about this variant 
+          text: value, // TODO: maybe add description about this variant
           newTag: true,
           unionTag: true,
-          score: 0.01 + el.rate * 0.01
-        };
-      });
+          score: 0.01 + el.rate * 0.01,
+        }
+      })
   }
 
-  return generateAdditionalTags;
+  return generateAdditionalTags
 }
-
-window.getFilterByFilterTags = getFilterByFilterTags;
-window.generateAdditionalTagsFunction = generateAdditionalTagsFunction;

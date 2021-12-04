@@ -1,11 +1,26 @@
 import createCheatSheetsGrid from './cheatsheetGrid'
 import { getSmartotekaFabric, unique } from '@/src_jq/common/commonFunctions'
-import { getFilterByTags, registerFilterToGrid, select2ClearTags, select2UpdateTags  } from '@/src_jq/common/mulitselectTagsHandlers'
+import {
+  getFilterByTags, registerFilterToGrid, select2ClearTags, select2UpdateTags,
+  generateAdditionalTagsFunction,
+} from '@/src_jq/common/mulitselectTagsHandlers'
 
 let smartotekaFabric = getSmartotekaFabric()
 
 $(function () {
   let cheatSheetsGrid = createCheatSheetsGrid('#cheatSheetsGrid', getFilterByTags())
+
+  function getSelectedCheatSheets() {
+    let selectedRows = cheatSheetsGrid.api.getSelectedRows()
+
+    return selectedRows
+  }
+
+  function clearAddBlockState() {
+    $('#add-content').val(null)
+    $('#add-btn').text('Add')
+    $('#copy-btn').hide()
+  }
 
   let addUpdateHandler = null
 
@@ -23,14 +38,10 @@ $(function () {
 
       select2UpdateTags('#add-tags', selectedCheatSheet.tags)
 
-      function clearAddBlockState() {
-        $('#add-content').val(null)
-        $('#add-btn').text('Add')
-        $('#copy-btn').hide()
-      }
       // update, copy
       addUpdateHandler = (cheatSheet, isUpdate) => {
         if (isUpdate) {
+          // eslint-disable-next-line no-param-reassign
           cheatSheet.date = selectedCheatSheet.date// Set id for update
 
           smartotekaFabric.KBManager()
@@ -96,41 +107,35 @@ $(function () {
     }
   }
 
-  function getSelectedCheatSheets() {
-    let selectedRows = cheatSheetsGrid.api.getSelectedRows()
-
-    return selectedRows
-  }
-
   cheatSheetsGrid.onDeleting = (cheatSheet) => new Promise(resolve => {
     smartotekaFabric.KBManager().deleteCheatSheet(cheatSheet)
       .then(_ => resolve())
   })
 
+  function handleCheatSheets(cheatSheets) {
+    let oldCheatSheets = []
+    cheatSheetsGrid.api.forEachNode(node => {
+      if (node.data) { oldCheatSheets.push(node.data) }
+    })
+
+    let newRows = cheatSheets.filter(t => oldCheatSheets.findIndex(ot => ot.id === t.id) < 0)
+    let removeRows = oldCheatSheets.filter(ot => cheatSheets.findIndex(t => ot.id === t.id) < 0)
+    let updateRows = cheatSheets.filter(t => oldCheatSheets.findIndex(ot => ot.id === t.id) >= 0)
+
+    cheatSheetsGrid.api.applyTransaction({
+      add: newRows,
+      remove: removeRows,
+      update: updateRows,
+    })
+  }
+
   function refreshCheatSheetsGrid(cheatSheets) {
-    let handleCheatSheets = (cheatSheets) => {
-      let oldCheatSheets = []
-      cheatSheetsGrid.api.forEachNode(node => {
-        if (node.data) { oldCheatSheets.push(node.data) }
-      })
-
-      let newRows = cheatSheets.filter(t => oldCheatSheets.findIndex(ot => ot.id === t.id) < 0)
-      let removeRows = oldCheatSheets.filter(ot => cheatSheets.findIndex(t => ot.id === t.id) < 0)
-      let updateRows = cheatSheets.filter(t => oldCheatSheets.findIndex(ot => ot.id === t.id) >= 0)
-
-      cheatSheetsGrid.api.applyTransaction({
-        add: newRows,
-        remove: removeRows,
-        update: updateRows,
-      })
-    }
-
     if (cheatSheets) {
       handleCheatSheets(cheatSheets)
     } else {
       smartotekaFabric.queriesProvider().getCheatSheets()
-        .then((cheatSheets) => {
-          handleCheatSheets(cheatSheets)
+        .then((requestedCheatSheets) => {
+          handleCheatSheets(requestedCheatSheets)
         })
     }
   }
@@ -141,11 +146,11 @@ $(function () {
     refreshCheatSheetsGrid()
   })
 
-  $('#clear-filter-btn').click(_ => clearFilters())
-
   function clearFilters() {
     cheatSheetsGrid.api.setFilterModel(null)
   }
+
+  $('#clear-filter-btn').click(_ => clearFilters())
 
   $('#add-btn,#copy-btn').click(function () {
     let dateCreation = new Date().valueOf()

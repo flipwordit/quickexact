@@ -1,54 +1,55 @@
 <template>
-  <br />
-  <div class="card">
-    <div class="header">
-      <div class="title">
-        <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
+  <div>
+    <br />
+    <div class="card">
+      <div class="header">
+        <div class="title">
+          <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
+        </div>
+        <img class="add" src="/images/plus-square.svg" @click="addCheatSheet" />
+        <!-- v-if="group.items.findIndex((el) => el.isNew) < 0" -->
       </div>
-      <img class="add" src="/images/plus-square.svg" @click="addCheatSheet" />
-      <!-- v-if="group.items.findIndex((el) => el.isNew) < 0" -->
-    </div>
-    <div class="content">
-      <CheatSheet
-        v-for="cheatsheet in showAll ? group.items : group.items.slice(0, 2)"
-        :key="cheatsheet.id"
-        :cheatsheet="cheatsheet"
-        :commonTagsCount="group.commonTagsCount"
-        :allTags="allTags"
-        v-on:update-cheatsheet="$emit('update-cheatsheet', $event)"
-        v-on:remove-cheatsheet="$emit('remove-cheatsheet', $event)"
-      ></CheatSheet>
-      <div
-        v-if="
-          !showAll &&
-          (group.items.length > 2 || (!recursive && group.groups.length > 0))
-        "
-        @click.self="showAll = !showAll"
-      >
-        ...
-      </div>
-      <div v-if="showAll" @click.self="showAll = !showAll">/*</div>
-      <div v-if="recursive || showAll">
-        <!-- <CheatSheetGroup
+      <div class="content">
+        <CheatSheet
+          v-for="cheatsheet in showAll ? group.items : group.items.slice(0, 2)"
+          :key="cheatsheet.id"
+          :cheatsheet="cheatsheet"
+          :commonTagsCount="group.commonTagsCount"
+          :allTags="allTags"
+          v-on:update-cheatsheet="$emit('update-cheatsheet', $event)"
+          v-on:remove-cheatsheet="$emit('remove-cheatsheet', $event)"
+        ></CheatSheet>
+        <div
+          v-if="
+            !showAll &&
+            (group.items.length > 2 || (!recursive && group.groups.length > 0))
+          "
+          @click.self="showAll = !showAll"
+        >
+          ...
+        </div>
+        <div v-if="showAll" @click.self="showAll = !showAll">/*</div>
+        <div v-if="recursive || showAll">
+          <!-- <CheatSheetGroup
           v-for="group in group.groups"
           :key="group.id"
           :group="group"
           :recursive="false"
           :allTags="allTags"
         ></CheatSheetGroup> -->
-        <div v-if="showAll" @click.self="showAll = !showAll">*/</div>
+          <div v-if="showAll" @click.self="showAll = !showAll">*/</div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import CheatSheet from "./CheatSheet";
-import { reactive } from "vue";
+import CheatSheet from './CheatSheet'
 
 export default {
-  name: "CheatSheetGroup",
-  emits: ["update-cheatsheet", "remove-cheatsheet"],
+  name: 'CheatSheetGroup',
+  emits: ['update-cheatsheet', 'remove-cheatsheet'],
   components: {
     CheatSheet,
   },
@@ -71,21 +72,21 @@ export default {
     },
   },
   data() {
-    return {};
+    return {}
   },
   computed: {
     tags() {
       return this.group.commonTagsCount === -1
         ? []
-        : this.group.items[0].tags.slice(0, this.group.commonTagsCount);
+        : this.group.items[0].tags.slice(0, this.group.commonTagsCount)
     },
   },
   methods: {
     addCheatSheet() {
-      alert("заглушка");
+      alert('заглушка')
     },
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>

@@ -1,18 +1,15 @@
 {
-  "name": "Quick & Exact",
+  "name": "Smartoteka",
   "description": "It helps look up information quickly and exactly",
   "version": "1.0",
   "manifest_version": 2,
-  "author": "Stav team",
+  "author": "Tatarkov M",
   "icons": {
     "48": "images/smart_48.png",
     "128": "images/smart_128.png"
   },
   "background": {
-    "scripts": [
-      "background/background.js",
-      "src_jq/common/commonFunctions.js"
-    ]
+    "page": "background/background.html"
   },
   "permissions": [
     "storage",
@@ -30,7 +27,7 @@
       "suggested_key": {
         "default": "Ctrl+Q"
       },
-      "description": "open Q&E search",
+      "description": "open shop search",
       "action": {},
       "global": true
     },

@@ -18,98 +18,102 @@
 </template>
 
 <script>
-import $ from "jquery";
-window.$ = $;
+import $ from 'jquery'
+import { unique, throttle } from '@/src_jq/common/commonFunctions'
+import {
+  select2UpdateTags,
+  generateAdditionalTagsFunction,
+} from '@/src_jq/common/mulitselectTagsHandlers'
 
-require("@/src_jq/libraries/select2.js");
+import registerRestrictionMap from '@/src_jq/common/restrictionMap'
 
-window.Fuse = require("@/src_jq/libraries/fuse.js");
+window.$ = $
 
-require("@/src_jq/common/multiselectTags.js");
-import { select2UpdateTags } from "@/src_jq/common/mulitselectTagsHandlers";
-import { unique, throttle } from "@/src_jq/common/commonFunctions";
+require('@/src_jq/libraries/select2')
 
-import registerRestrictionMap from "@/src_jq/common/restrictionMap";
+window.Fuse = require('@/src_jq/libraries/fuse')
+
+require('@/src_jq/common/multiselectTags')
 
 export default {
-  name: "select2",
+  name: 'select2',
   props: {
     options: Object,
     modelValue: Object,
     searchResults: Array,
   },
   mounted: function () {
-    console.log("mounted");
-    var vm = this;
-    registerRestrictionMap();
+    console.log('mounted')
+    let vm = this
+    registerRestrictionMap()
 
-    let sendUpdateEvent = throttle(() => vm.sendUpdateEvent(), 100);
+    let sendUpdateEvent = throttle(() => vm.sendUpdateEvent(), 100)
 
     let list = createMultiselectTags(
       this.selectList(),
       vm.$props.options,
-      generateAdditionalTagsFunction(() => this.searchResults || [])
-    );
+      generateAdditionalTagsFunction(() => this.searchResults || []),
+    )
 
-    select2UpdateTags(list, vm.$props.modelValue);
+    select2UpdateTags(list, vm.$props.modelValue)
 
-    list.on("change", sendUpdateEvent);
+    list.on('change', sendUpdateEvent)
   },
   watch: {
     modelValue: function (value) {
-      if (this.modelValue === value) return;
-      console.log("value" + value);
+      if (this.modelValue === value) return
+      console.log('value' + value)
       // update value
-      this.selectList().val(value).trigger("change");
+      this.selectList().val(value).trigger('change')
     },
     options: function (options) {
-      console.log("options");
-      let modelValue = this.selectList().val();
-      this.selectList().empty();
+      console.log('options')
+      let modelValue = this.selectList().val()
+      this.selectList().empty()
 
       createMultiselectTags(
         this.selectList(),
         options,
-        generateAdditionalTagsFunction(() => this.searchResults)
-      );
-      this.selectList().val(modelValue).trigger("change");
+        generateAdditionalTagsFunction(() => this.searchResults),
+      )
+      this.selectList().val(modelValue).trigger('change')
     },
   },
   destroyed: function () {
-    this.selectList().off().select2("destroy");
+    this.selectList().off().select2('destroy')
   },
   computed: {
     selectedTags() {
-      let result = { count: 0 };
+      let result = { count: 0 }
 
       let filterTags = $(this.$el)
-        .select2("data")
-        .map((el) => el.text);
+        .select2('data')
+        .map((el) => el.text)
 
-      let countTags = 0;
+      let countTags = 0
       result = unique(result, (el) => el).map(
-        (tag) => (result[tag] = ++countTags)
-      );
+        (tag) => (result[tag] = ++countTags),
+      )
 
-      result.count = countTags;
+      result.count = countTags
 
-      return filterTags;
+      return filterTags
     },
   },
   methods: {
     sendUpdateEvent: function () {
-      console.log("change");
+      console.log('change')
 
-      this.$emit("update:modelValue", this.selectList().select2("data"));
+      this.$emit('update:modelValue', this.selectList().select2('data'))
     },
     clearAllFilters() {
-      this.selectList().val(null).trigger("change");
+      this.selectList().val(null).trigger('change')
     },
     selectList() {
-      return $("select", this.$el);
+      return $('select', this.$el)
     },
   },
-};
+}
 </script>
 <style>
 @import "../src_jq/libraries/select2.min.css";

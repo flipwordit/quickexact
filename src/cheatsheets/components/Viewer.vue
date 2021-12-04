@@ -2,11 +2,11 @@
   <div ref="toastuiEditorViewer"></div>
 </template>
 <script>
-import Viewer from "@toast-ui/editor/dist/toastui-editor-viewer";
-import { optionsMixin } from "./mixin/option";
+import Viewer from '@toast-ui/editor/dist/toastui-editor-viewer'
+import { optionsMixin } from './mixin/option'
 
 export default {
-  name: "ToastuiEditorViewer",
+  name: 'ToastuiEditorViewer',
   mixins: [optionsMixin],
   props: {
     height: {
@@ -37,23 +37,23 @@ export default {
     const options = {
       ...this.computedOptions,
       el: this.$refs.toastuiEditorViewer,
-    };
+    }
 
-    this.editor = new Viewer(options);
+    this.editor = new Viewer(options)
   },
   updated() {
     let options = {
       ...this.computedOptions,
       el: this.$refs.toastuiEditorViewer,
-    };
+    }
 
-    options.initialValue = this.initialValue;
-    this.editor = new Viewer(options);
+    options.initialValue = this.initialValue
+    this.editor = new Viewer(options)
   },
   methods: {
     getRootElement() {
-      return this.$refs.toastuiEditorViewer;
+      return this.$refs.toastuiEditorViewer
     },
   },
-};
+}
 </script>

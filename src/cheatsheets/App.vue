@@ -48,17 +48,18 @@
 </template>
 
 <script>
-import Navbar from "@/popup/components/Navbar";
+import Navbar from '@/popup/components/Navbar'
 
-import CheatSheet from "./components/CheatSheet";
-import CheatSheetGroup from "./components/CheatSheetGroup";
-import Select2 from "@/common/Select2.vue";
+import CheatSheet from './components/CheatSheet'
+import CheatSheetGroup from './components/CheatSheetGroup'
+import Select2 from '@/common/Select2'
 
-import { unique, getSmartotekaFabric } from "@/src_jq/common/commonFunctions";
-import { cheatsheetsGroup } from "@/src_jq/common/cheatSheetsManage.js";
+import { unique, getSmartotekaFabric } from '@/src_jq/common/commonFunctions'
+import { cheatsheetsGroup } from '@/src_jq/common/cheatSheetsManage'
+import { getFilterByFilterTags } from '@/src_jq/common/mulitselectTagsHandlers'
 
 export default {
-  name: "App",
+  name: 'App',
   components: {
     CheatSheet,
     CheatSheetGroup,
@@ -71,125 +72,125 @@ export default {
       options: [],
       sessions: [],
       newCheatSheet: null,
-    };
+    }
   },
   beforeMount() {},
   mounted() {
-    let vm = this;
-
-    this.update();
+    this.update()
 
     window.addEventListener(
-      "keypress",
+      'keypress',
       (e) => {
-        if (e.code === "Escape") {
-          setTimeout(() => $(document.activeElement).blur());
-          return;
+        if (e.code === 'Escape') {
+          setTimeout(() => $(document.activeElement).blur())
+          return
         }
 
         if (
-          document.activeElement.type === "textarea" ||
-          document.activeElement.type === "text"
-        )
-          return;
-
-        switch (e.key) {
-          case "f":
-            {
-              setTimeout(() => $(".select2-search__field").focus(), 0);
-            }
-            break;
+          document.activeElement.type === 'textarea'
+          || document.activeElement.type === 'text'
+        ) {
+          return
         }
+
+        // switch (e.key) {
+        //   case 'f':
+        //     {
+        //       setTimeout(() => $('.select2-search__field').focus(), 0)
+        //     }
+        //     break
+        // }
       },
-      false
-    );
+      false,
+    )
   },
   computed: {
     groups() {
-      let cheatsheets = this.searchResults;
-      let result = cheatsheetsGroup(cheatsheets);
+      let cheatsheets = this.searchResults
+      let result = cheatsheetsGroup(cheatsheets)
 
-      return result;
+      return result
     },
     searchResults() {
-      console.log("searchResults");
-      let selectedTags = this.selected.map((el) => el.text);
+      console.log('searchResults')
+      let selectedTags = this.selected.map((el) => el.text)
 
-      //TODO: if(selectedTabs.length===0)Вывести топ 10 самых часто используемых
-      let filterTags = {};
+      // TODO: if(selectedTabs.length===0)Вывести топ 10 самых часто используемых
+      let filterTags = {}
 
-      let countTags = 0;
+      let countTags = 0
       unique(selectedTags, (el) => el).map(
-        (tag) => (filterTags[tag] = ++countTags)
-      );
-      filterTags.count = countTags;
+        (tag) => (filterTags[tag] = ++countTags),
+      )
+      filterTags.count = countTags
       let filterByTags = getFilterByFilterTags(
         (el) => el,
-        () => filterTags
-      );
+        () => filterTags,
+      )
 
       return (this.sessions || []).filter(
-        (session) => filterTags[session.query] || filterByTags(session)
-      );
+        (session) => filterTags[session.query] || filterByTags(session),
+      )
     },
     smartotekaFabric() {
-      return getSmartotekaFabric();
+      return getSmartotekaFabric()
     },
   },
   methods: {
     addCheatSheet() {
       this.newCheatSheet = {
         date: new Date().valueOf(),
-        content: "",
+        content: '',
         tags: [],
-      };
+      }
     },
     saveNewCheatSheet(cheatsheet) {
       this.smartotekaFabric
         .KBManager()
         .addCheatSheet(cheatsheet)
         .then(() => {
-          this.newCheatSheet = null;
+          this.newCheatSheet = null
 
-          this.update();
-        });
+          this.update()
+        })
     },
     update() {
       this.smartotekaFabric
         .queriesProvider()
         .getCheatSheets()
         .then((cheatsheets) => {
-          this.updateCheatSheets(cheatsheets);
-        });
+          this.updateCheatSheets(cheatsheets)
+        })
     },
     updateCheatSheets(sessions) {
-      this.sessions = sessions;
+      this.sessions = sessions
 
-      let allTags = [];
+      let allTags = []
 
       sessions.forEach(
-        (el) =>
-          (allTags = allTags
-            .concat(el.tags)
-            .concat([{ id: el.query, text: el.query }]))
-      );
+        (el) => (allTags = allTags
+          .concat(el.tags)
+          .concat([{ id: el.query, text: el.query }])),
+      )
 
-      this.options = unique(allTags, (el) => el.id);
+      this.options = unique(allTags, (el) => el.id)
     },
     updateCheatSheet(cheatsheet) {
-      this.smartotekaFabric.KBManager().updateCheatSheets([cheatsheet])
-      .then(()=>this.update());
+      this.smartotekaFabric
+        .KBManager()
+        .updateCheatSheets([cheatsheet])
+        .then(() => this.update())
     },
     removeCheatSheet(cheatsheet) {
-      if (confirm("Are you sure?")) {
+      if (confirm('Are you sure?')) {
         this.smartotekaFabric
           .KBManager()
           .deleteCheatSheet(cheatsheet)
-          .then(() => this.update());
+          .then(() => this.update())
       }
     },
   },
-};
+}
 </script>
 
 <style lang="scss">

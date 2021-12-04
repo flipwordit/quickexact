@@ -14,58 +14,55 @@
 
 // TODO move to separate module
 import storage from '@/utils/storage'
+import { getActiveTab } from '@/src_jq/common/commonFunctions'
 
 async function getOrCreatePopup(url, width, height) {
   let activateTab = async (tab) => {
-    let value = {};
-    value[url] = tab.id;
+    let value = {}
+    value[url] = tab.id
     await storage.set(value)
-  };
+  }
 
-  let create = () =>
-    chrome.windows.create(
-      {
-        url: chrome.runtime.getURL(url),
-        type: 'popup',
-        focused: true,
-        height: height,
-        width: width,
-        top: 0,
-        left: 0,
-        // alwaysOnTop: true,
-      },
-      activateTab,
-    );
+  let create = () => chrome.windows.create(
+    {
+      url: chrome.runtime.getURL(url),
+      type: 'popup',
+      focused: true,
+      height: height,
+      width: width,
+      top: 0,
+      left: 0,
+      // alwaysOnTop: true,
+    },
+    activateTab,
+  )
 
   let popup = await storage.get(url)
   if (popup) {
-
     chrome.windows.update(popup, { focused: true },
       (openWindow) => {
         if (openWindow) {
-
-
           getActiveTab().then((tab) => {
-            chrome.tabs.sendMessage(tab.id, "clear", function (response) {
-              console.log(response);
-            });
-          });
-          return;
+            chrome.tabs.sendMessage(tab.id, 'clear', function (response) {
+              console.log(response)
+            })
+          })
+          return
         }
 
-        create();
-      });
+        create()
+      })
   } else {
-    create();
+    create()
   }
 }
 
 async function openPopup() {
-  await getOrCreatePopup('popup/popup.html#/', 500, 1000);
+  await getOrCreatePopup('popup/popup.html#/', 500, 1000)
 }
 
 async function openShopsPopup() {
-  await getOrCreatePopup('shops/popup.html#/', 750, 250);
+  await getOrCreatePopup('shops/popup.html#/', 750, 250)
 }
 
 chrome.commands.onCommand.addListener(async (command) => {
@@ -77,50 +74,49 @@ chrome.commands.onCommand.addListener(async (command) => {
     case 'shops':
       openShopsPopup()
       break
-    case "add-tab-to-session": {
+    case 'add-tab-to-session': {
       getActiveTab()
         .then(activeTab => {
-
           smartotekaFabric.queriesProvider()
             .getSelectSession()
             .then(session => {
               if (session) {
-                session.tabs.push(activeTab);
+                session.tabs.push(activeTab)
 
                 smartotekaFabric.KBManager().updateSession(session)
                   .then(() => {
                     chrome.tabs.sendMessage(
                       activeTab.id,
                       {
-                        message: "Added to '" + session.query + "'"
+                        message: "Added to '" + session.query + "'",
                       },
                       function (response) {
-                        console.log(response.success);
-                      });
-                  });
-              }
-              else {
-
-                let session = createDefaultSession([activeTab]);
+                        console.log(response.success)
+                      },
+                    )
+                  })
+              } else {
+                let session = createDefaultSession([activeTab])
 
                 smartotekaFabric.KBManager()
                   .addSession(session)
                   .then(() => {
-                    smartotekaFabric.KBManager().setSelectSession(session.date);
+                    smartotekaFabric.KBManager().setSelectSession(session.date)
 
                     chrome.tabs.sendMessage(
                       activeTab.id,
                       {
-                        message: "Added to '" + session.query + "'"
+                        message: "Added to '" + session.query + "'",
                       },
                       function (response) {
-                        console.log(response.success);
-                      });
-                  });
+                        console.log(response.success)
+                      },
+                    )
+                  })
               }
             })
-        });
-      break;
+        })
+      break
     }
     default: {
       console.log(command)

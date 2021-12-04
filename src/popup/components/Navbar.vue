@@ -18,7 +18,7 @@
 </template>
 
 <script>
-//import VueTagsInput from '@johmun/vue-tags-input'
+// import VueTagsInput from '@johmun/vue-tags-input'
 
 export default {
   components: {
@@ -44,42 +44,40 @@ export default {
       tags: [],
       autocompleteItems: [
         {
-          text: "Spain",
+          text: 'Spain',
         },
         {
-          text: "France",
+          text: 'France',
         },
         {
-          text: "USA",
+          text: 'USA',
         },
         {
-          text: "Germany",
+          text: 'Germany',
         },
         {
-          text: "China",
+          text: 'China',
         },
       ],
-    };
+    }
   },
   // watch: {
   //   'tag': 'initItems',
   // },
   computed: {
     filteredItems() {
-      return this.autocompleteItems.filter((i) =>
-        i.text.toLowerCase().includes(this.tag.toLowerCase())
-      );
+      return this.autocompleteItems.filter((i) => i.text.toLowerCase().includes(this.tag.toLowerCase()))
     },
   },
   methods: {
     update(newTags) {
-      this.tags = newTags;
+      this.tags = newTags
     },
     openTab: function (url) {
-      chrome.tabs.create({ url: url });
+      chrome.tabs.create({ url: url })
     },
   },
-};
+}
 </script>
 
 <style lang="scss">

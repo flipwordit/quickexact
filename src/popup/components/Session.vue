@@ -37,12 +37,12 @@
 </template>
 
 <script>
-import Tab from "./Tab";
+import Tab from './Tab'
 
-import {getActions} from "@/src_jq/common/speedDeal.js"
+import { getActions } from '@/src_jq/common/speedDeal.js'
 
 export default {
-  name: "Session",
+  name: 'Session',
   components: {
     Tab,
   },
@@ -57,51 +57,51 @@ export default {
       showActions: false,
       showTabs: false,
       showTags: false,
-    };
+    }
   },
   computed: {
     tabs() {
-      return this.session.tabs;
+      return this.session.tabs
     },
     tags() {
-      return this.session.tags;
+      return this.session.tags
     },
     actions() {
-      let sessionActions = getActions().session;
+      let sessionActions = getActions().session
 
       let actions = Object.keys(sessionActions).map(
-        (key) => sessionActions[key]
-      );
+        (key) => sessionActions[key],
+      )
 
-      return actions;
+      return actions
     },
   },
   methods: {
     toggleActions() {
-      this.showActions = !this.showActions;
+      this.showActions = !this.showActions
 
       setTimeout(() => {
         if (this.showActions) {
-          document.addEventListener("click", this.closeActions);
+          document.addEventListener('click', this.closeActions)
         } else {
-          document.removeEventListener("click", this.closeActions);
+          document.removeEventListener('click', this.closeActions)
         }
-      }, 100);
+      }, 100)
     },
     closeActions() {
-      if (this.showActions) this.toggleActions();
+      if (this.showActions) this.toggleActions()
     },
     toggleTags() {
-      this.showTags = !this.showTags;
+      this.showTags = !this.showTags
     },
     toggleTabs() {
-      this.showTabs = !this.showTabs;
+      this.showTabs = !this.showTabs
     },
     clickAway() {
-      this.showActions = false;
+      this.showActions = false
     },
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>

@@ -10,7 +10,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 let WindiCSS = require('windicss-webpack-plugin')
 
 if (typeof (WindiCSS) !== 'function') {
-  WindiCSS = WindiCSS.default;
+  WindiCSS = WindiCSS.default
 }
 
 const ExtensionReloader = require('webpack-extension-reloader')
@@ -133,6 +133,7 @@ const config = {
       { from: 'src_jq', to: 'src_jq' },
       { from: 'fonts/**/*', to: 'fonts/[name].[ext]' },
       { from: 'popup/popup.html', to: 'popup/popup.html' },
+      { from: 'background/background.html', to: 'background/background.html' },
       { from: 'shops/popup.html', to: 'shops/popup.html' },
       { from: 'cheatsheets/page.html', to: 'cheatsheets/page.html' },
       {
@@ -193,11 +194,11 @@ module.exports = (env, argv) => {
             'shops/popup',
             'popup/popup',
             'cheatsheets',
-            "cheatsheets/script",
-            "src_jq/history/history",
-            "src_jq/session/session",
-            "src_jq/cheatsheets/cheatsheet",
-            'src_jq/settings/settings'
+            'cheatsheets/script',
+            'src_jq/history/history',
+            'src_jq/session/session',
+            'src_jq/cheatsheets/cheatsheet',
+            'src_jq/settings/settings',
           ],
         },
       }),
