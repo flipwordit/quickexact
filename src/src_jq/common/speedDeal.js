@@ -1,5 +1,9 @@
-import {throttle} from "@/src_jq/common/commonFunctions"
-import {openTabsInNewWindow, openTabs, closeTabsByUrlIfOpen } from "@/src_jq/common/commonFunctions"
+import {
+  throttle, openTabsInNewWindow,
+  openTabs, closeTabsByUrlIfOpen,
+  secondRunImmediately,
+  redirectCurrentTab,
+} from '@/src_jq/common/commonFunctions'
 
 export function getActions() {
   if (!window.actions) {
@@ -32,12 +36,14 @@ export function getActions() {
           },
         },
       ],
-    // cheatsheets: {
-    //     g: {
-    //         description: "Go to cheat sheets",
-    //         action: () => redirectCurrentTab("../cheatsheets/cheatsheet.html")
-    //     }
-    // }
+      cheatsheets: [
+        {
+          key: 'go',
+          type: 'changeHandler',
+          description: 'Go to cheat sheets',
+          action: () => openTabs([{ url: '../src_jq/cheatsheets/cheatsheet.html' }]),
+        },
+      ],
     }
   }
 
@@ -50,21 +56,6 @@ export function toHelp(steps, keyMapper = (k) => k, delim = ',') {
     .join(delim)
 }
 
-export function setSpeedDealHelp(helpPaneId, step) {
-  setTimeout(() => {
-    $('.values', helpPaneId)
-      .html('<br>' + toHelp(
-        step,
-        (el) => "<li action='" + el.key + "'>" + el.key + '&nbsp;-&nbsp;' + el.description + '</li>', '',
-      ))
-
-    $('.values li', helpPaneId).click(function () {
-      let action = $(this).attr('action')
-
-      speedDealKeyPress({ key: action })
-    })
-  }, 0)
-}
 export function registerSpeedDeal(helpPaneId, smartotekaFabric) {
   if ($(helpPaneId).is(':visible')) { return }
 
@@ -79,6 +70,22 @@ export function registerSpeedDeal(helpPaneId, smartotekaFabric) {
     .then(speedDealShortCut => {
       let firstHelp = toHelp(speedDealShortCut)
       let pointer = speedDealShortCut
+
+      function setSpeedDealHelp(helpPaneId, step) {
+        setTimeout(() => {
+          $('.values', helpPaneId)
+            .html('<br>' + toHelp(
+              step,
+              (el) => "<li action='" + el.key + "'>" + el.key + '&nbsp;-&nbsp;' + el.description + '</li>', '',
+            ))
+
+          $('.values li', helpPaneId).click(function () {
+            let action = $(this).attr('action')
+
+            speedDealKeyPress({ key: action })
+          })
+        }, 0)
+      }
 
       if (firstHelp) {
         setSpeedDealHelp(helpPaneId, pointer)
@@ -115,15 +122,51 @@ export function registerSpeedDeal(helpPaneId, smartotekaFabric) {
           }
           case 'cheatsheets':
           {
+            index = actions.cheatsheets.findIndex(el => el.key === nextStep.action)
+            if (index < 0) { throw new Error('Unexpected action ' + nextStep.action) }
+
+            handler = actions.cheatsheets[index].action
+            let mainHandler = () => {
+              handler()
+              $(document).unbind('keypress.speedDeal')
+              $(helpPaneId).hide()
+            }
+
+            if (nextStep.id) {
+              let id = parseInt(nextStep.id, 10)
+
+              mainHandler = () => {
+                smartotekaFabric.queriesProvider()
+                  .getCheatSheet(id)
+                  .then(cheatSheet => {
+                    if (cheatSheet) {
+                      console.log('Run operation' + new Date())
+                      handler(cheatSheet)
+                    } else {
+                      alert('cheatSheet not found!')
+                    }
+
+                    $(document).unbind('keypress.speedDeal')
+                    $(helpPaneId).hide()
+                  })
+              }
+            }
+
+            keyDownHandler = secondRunImmediately(mainHandler, 1500)
+            keyDownHandler()
+
+            pointer = actions.session
+            setSpeedDealHelp(helpPaneId, pointer)
+
             break
           }
           case 'session':
           {
-            let index = actions.session.findIndex(el => el.key === nextStep.action)
+            index = actions.session.findIndex(el => el.key === nextStep.action)
             if (index < 0) { throw new Error('Unexpected action ' + nextStep.action) }
 
             handler = actions.session[index].action
-            let id = parseInt(nextStep.id)
+            let id = parseInt(nextStep.id, 10)
 
             let mainHandler = () => {
               smartotekaFabric.queriesProvider()
@@ -166,6 +209,3 @@ export function registerSpeedDeal(helpPaneId, smartotekaFabric) {
       removeSpeaDealHandlers()
     })
 }
-
-// window.getActions = getActions;
-// window.registerSpeedDeal = registerSpeedDeal;
