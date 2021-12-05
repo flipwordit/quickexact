@@ -14,7 +14,7 @@
 
       <div>
         <img
-          class="add"
+          class="add ctrl-img"
           src="/images/plus-square.svg"
           @click="addCheatSheet"
           v-if="!newCheatSheet"
@@ -31,7 +31,7 @@
           v-for="group in groups"
           :key="group.id"
           :group="group"
-          :showAll="true||groups.length === 1 || searchResults.length < 12"
+          :showAll="groups.length === 1 || searchResults.length < 12"
           :allTags="options"
           v-on:update-cheatsheet="updateCheatSheet($event)"
           v-on:remove-cheatsheet="removeCheatSheet($event)"
@@ -201,6 +201,12 @@ export default {
 </script>
 
 <style lang="scss">
+ .ctrl-img {
+    opacity: 0.5;
+    filter: alpha(Opacity=50);
+    opacity: 0.5;
+  }
+
 #speedDealHelp {
   font-size: 150%;
   font-weight: bold;

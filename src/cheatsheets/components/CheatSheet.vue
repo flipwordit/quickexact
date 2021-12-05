@@ -204,6 +204,7 @@ $sky: #e6f6fe;
 
 .cheatsheet {
   float: left;
+  display: inline;
   // padding: 12px 16px;
   z-index: 10;
   //line-height: 1.25rem;

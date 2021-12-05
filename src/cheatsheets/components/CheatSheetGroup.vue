@@ -1,45 +1,56 @@
 <template>
   <div>
-    <br />
     <div class="card">
       <div class="header">
         <div class="title">
-          <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
+          <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp; </span>
+          <img
+            class="expand ctrl-img"
+            v-if="!showChildren && isManyChildren"
+            src="/images/arrow-down.svg"
+            @click.self="showChildren = !showChildren"
+          />
+          <img
+            class="collapse ctrl-img"
+            v-if="showChildren && isManyChildren"
+            @click.self="showChildren = !showChildren"
+            src="/images/arrow-up.svg"
+          />
         </div>
         <!-- <img class="add" src="/images/plus-square.svg" @click="addCheatSheet" /> -->
         <!-- v-if="group.items.findIndex((el) => el.isNew) < 0" -->
       </div>
       <div class="content">
-        <CheatSheet
-          v-for="cheatsheet in showAll ? group.items : group.items.slice(0, 2)"
-          :key="cheatsheet.id"
-          :cheatsheet="cheatsheet"
-          :commonTagsCount="group.commonTagsCount"
-          :allTags="allTags"
-          v-on:update-cheatsheet="$emit('update-cheatsheet', $event)"
-          v-on:remove-cheatsheet="$emit('remove-cheatsheet', $event)"
-        ></CheatSheet>
-        <div
-          v-if="
-            !showAll &&
-            (group.items.length > 2 || (!recursive && group.groups.length > 0))
-          "
-          @click.self="showAll = !showAll"
-        >
-          ...
-        </div>
-        <div v-if="showAll" @click.self="showAll = !showAll">/*</div>
-        <div v-if="recursive || showAll">
-          <CheatSheetGroup
-            v-for="group in group.groups"
-            :key="group.id"
-            :group="group"
-            :recursive="false"
+        <div class="row">
+          <CheatSheet
+            v-for="cheatsheet in showChildren
+              ? group.items
+              : group.items.slice(0, 2)"
+            :key="cheatsheet.id"
+            :cheatsheet="cheatsheet"
+            :commonTagsCount="group.commonTagsCount"
             :allTags="allTags"
             v-on:update-cheatsheet="$emit('update-cheatsheet', $event)"
             v-on:remove-cheatsheet="$emit('remove-cheatsheet', $event)"
-          ></CheatSheetGroup>
-          <div v-if="showAll" @click.self="showAll = !showAll">*/</div>
+          ></CheatSheet>
+        </div>
+        <div class="row" v-if="group.groups.length > 0 && showChildren">
+          <div class="column">
+            <img class="ctrl-img" src="/images/corner-down-right.svg" />
+          </div>
+          <div class="column2">
+            <CheatSheetGroup
+              :level="level + 1"
+              v-for="group in group.groups"
+              :key="group.id"
+              :group="group"
+              :showAll="showAll"
+              :showChildren="showAll"
+              :allTags="allTags"
+              v-on:update-cheatsheet="$emit('update-cheatsheet', $event)"
+              v-on:remove-cheatsheet="$emit('remove-cheatsheet', $event)"
+            ></CheatSheetGroup>
+          </div>
         </div>
       </div>
     </div>
@@ -60,17 +71,21 @@ export default {
       type: Object,
       default: () => {},
     },
-    recursive: {
+    showChildren: {
       type: Boolean,
       default: () => true,
     },
     showAll: {
       type: Boolean,
-      default: () => true,
+      default: () => false,
     },
     allTags: {
       type: Array,
       default: () => [],
+    },
+    level: {
+      type: Number,
+      default: () => 0,
     },
   },
   data() {
@@ -81,6 +96,9 @@ export default {
       return this.group.commonTagsCount === -1
         ? []
         : this.group.items[0].tags.slice(0, this.group.commonTagsCount)
+    },
+    isManyChildren() {
+      return this.group.items.length > 2 || this.group.groups.length > 0
     },
   },
   methods: {
@@ -94,17 +112,39 @@ export default {
 <style lang="scss" scoped>
 @import "../../styles/variables";
 
+$sky: #e6f6fe;
+
 .content {
   margin-left: 15px;
+
+  .column {
+    float: left;
+    display: inline;
+  }
+  .column2 {
+    display: inline;
+    float: left;
+  }
+
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
 }
-$sky: #e6f6fe;
+
 .page {
+  .ctrl-img {
+    opacity: 0.5;
+    filter: alpha(Opacity=50);
+    opacity: 0.5;
+  }
   //   // height: 50rem;
   background: oldlace;
   // }
   .card {
     clear: both;
-
+    border: 2px solid #e6f6fe;
     .header {
       background: #e6f6fe;
       font-size: 1.125rem;
@@ -126,6 +166,11 @@ $sky: #e6f6fe;
         vertical-align: middle;
         font-weight: 500;
         color: #194c66;
+
+        .expand,
+        .collapse {
+          display: inline-block;
+        }
       }
 
       //     .dropdown {

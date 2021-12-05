@@ -11,9 +11,8 @@
         margin: 5px 5px;
       "
       ><button id="clear-filter-tags-btn" @click.self="clearAllFilters">
-        X
-      </button></span
-    >
+        <img src="/images/x.svg" class="clear" /></button
+    ></span>
   </span>
 </template>
 
