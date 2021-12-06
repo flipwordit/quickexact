@@ -1,9 +1,14 @@
-
-import { getSmartotekaFabric, throttle, getAllTabs, createDefaultSession } from '@/src_jq/common/commonFunctions'
+import {
+  getSmartotekaFabric, throttle, getAllTabs, createDefaultSession,
+} from '@/src_jq/common/commonFunctions'
 import createSessionGrid from './sessionGrid'
 import createTabsGrid from './tabsGrid'
 import registerRestrictionMap from '@/src_jq/common/restrictionMap'
-import { getFilterByTags, registerFilterToGrid, select2ClearTags, select2UpdateTags } from '@/src_jq/common/mulitselectTagsHandlers'
+import {
+  getFilterByTags, registerFilterToGrid, select2ClearTags, select2UpdateTags,
+  generateAdditionalTagsFunction,
+} from '@/src_jq/common/mulitselectTagsHandlers'
+import createMultiselectTags from '@/src_jq/common/multiselectTags'
 
 let smartotekaFabric = getSmartotekaFabric()
 
@@ -345,21 +350,23 @@ $(function () {
         }
         break
       case 'updateSession':
-        {
-          currentSession.query = $('#add-query').val()
-          currentSession.tags = selectedTags.map(el => ({ id: el.id, text: el.text }))
 
-          smartotekaFabric.KBManager().updateSession(currentSession)
-            .then(() => {
-              $('#add-query').val(null)
+        currentSession.query = $('#add-query').val()
+        currentSession.tags = selectedTags.map(el => ({ id: el.id, text: el.text }))
 
-              sessionGrid.api.applyTransaction({
-                update: [currentSession],
-              })
-              $('#add-block').hide()
+        smartotekaFabric.KBManager().updateSession(currentSession)
+          .then(() => {
+            $('#add-query').val(null)
+
+            sessionGrid.api.applyTransaction({
+              update: [currentSession],
             })
-        }
+            $('#add-block').hide()
+          })
+
         break
+      default:
+        throw new Error('Unexpected variant ' + mode)
     }
   })
 

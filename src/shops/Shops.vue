@@ -13,12 +13,12 @@
 </template>
 
 <script>
-import Navbar from "@/popup/components/Navbar";
+import Navbar from '@/common/Navbar'
 
-import {openTabsInNewWindow, openTabs } from "@/src_jq/common/commonFunctions"
+import { openTabsInNewWindow, openTabs } from '@/src_jq/common/commonFunctions'
 
 export default {
-  name: "Shops",
+  name: 'Shops',
   components: {
     Navbar,
   },
@@ -26,67 +26,67 @@ export default {
     product: String,
   },
   data() {
-    return {};
+    return {}
   },
   beforeMount() {},
   mounted() {
     setTimeout(() => {
-      $("#productName").focus();
-      document.execCommand("paste");
+      $('#productName').focus()
+      document.execCommand('paste')
 
-      $("#productName").select();
-    }, 0);
+      $('#productName').select()
+    }, 0)
 
-    var vm = this;
-    $("#productName").on("keypress", (e) => {
+    let vm = this
+    $('#productName').on('keypress', (e) => {
       if (e.keyCode == 13) {
-        vm.openInNewWindow();
+        vm.openInNewWindow()
       }
-    });
+    })
   },
   computed: {},
   methods: {
     openInNewWindow() {
-      let tabs = this.getTabs();
+      let tabs = this.getTabs()
 
       tabs = tabs.map((el) => {
-        el.url = el.url + this.product;
+        el.url += this.product
 
-        return el;
-      });
-      openTabsInNewWindow(tabs);
+        return el
+      })
+      openTabsInNewWindow(tabs)
     },
     open() {
-      let tabs = this.getTabs();
+      let tabs = this.getTabs()
 
       tabs = tabs.map((el) => {
-        el.url = el.url + this.product;
+        el.url += this.product
 
-        return el;
-      });
-      openTabs(tabs);
+        return el
+      })
+      openTabs(tabs)
     },
     getTabs() {
       return [
         {
-          url: "https://www.mvideo.ru/product-list-page?q=",
+          url: 'https://www.mvideo.ru/product-list-page?q=',
         },
         {
-          url: "https://www.eldorado.ru/search/catalog.php?q=",
+          url: 'https://www.eldorado.ru/search/catalog.php?q=',
         },
         {
-          url: "https://www.dns-shop.ru/search/?q=",
+          url: 'https://www.dns-shop.ru/search/?q=',
         },
         {
-          url: "https://www.citilink.ru/search/?text=",
+          url: 'https://www.citilink.ru/search/?text=',
         },
         {
-          url: "https://www.ozon.ru/search?from=OpenSearch&text=",
+          url: 'https://www.ozon.ru/search?from=OpenSearch&text=',
         },
-      ];
+      ]
     },
   },
-};
+}
 </script>
 
 <style lang="scss">

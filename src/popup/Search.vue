@@ -34,7 +34,7 @@
 <script>
 import $ from 'jquery'
 
-import Navbar from '@/popup/components/Navbar'
+import Navbar from '@/common/Navbar'
 import Session from '@/popup/components/Session'
 import Select2 from '@/common/Select2'
 

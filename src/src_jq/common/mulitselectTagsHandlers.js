@@ -1,8 +1,9 @@
+import jQuery from 'jquery'
 import { orderByRate, takeByRate } from '@/src_jq/common/rateTags'
 import { unique } from '@/src_jq/common/commonFunctions'
 
 if (!window.$) {
-  window.$ = require('jquery')
+  window.$ = jQuery
 }
 let $ = window.$
 

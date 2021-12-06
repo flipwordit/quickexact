@@ -12,7 +12,9 @@
         v-if="active && !editMode"
       />
       <div class="tags" v-if="!editMode">
-        <span v-for="tag in tags" :key="tag.id">{{ tag.text }}&nbsp;</span>
+        <span v-for="tag in tags" :key="tag.id" @click="moveToTags(tag.id)"
+          >{{ tag.text }}&nbsp;</span
+        >
       </div>
       <div class="tags" v-if="editMode">
         <select2 :options="allTags" v-model="editTags"> </select2>
@@ -46,6 +48,7 @@
 import '@toast-ui/editor/dist/toastui-editor.css' // Editor's Style
 
 import $ from 'jquery'
+import { takeWhile } from 'lodash'
 import Viewer from './Viewer'
 import Editor from './Editor'
 import Select2 from '@/common/Select2'
@@ -54,6 +57,7 @@ window.$ = $
 
 export default {
   name: 'CheatSheet',
+  emits: ['move-to-tags'],
   components: {
     Select2,
     Editor,
@@ -109,6 +113,17 @@ export default {
     },
   },
   methods: {
+    moveToTags(tagId) {
+      let flag = true
+      let tags = takeWhile(this.cheatsheet.tags, (el) => {
+        let prevValue = flag
+        flag = el.id !== tagId
+
+        return prevValue
+      })
+
+      this.$emit('move-to-tags', tags)
+    },
     addButtonsToCodeBlocks() {
       $('.code code img', this.$el).remove()
       let codeEls = $('.code code', this.$el).parent()
@@ -270,6 +285,9 @@ $sky: #e6f6fe;
     font-size: 0.875rem;
     color: #6d88df;
     margin-right: 20px;
+    span {
+      cursor: pointer;
+    }
   }
   .content {
     position: relative;

@@ -10,8 +10,12 @@
         display: inline-block;
         margin: 5px 5px;
       "
-      ><button id="clear-filter-tags-btn" @click.self="clearAllFilters">
-        <img src="/images/x.svg" class="clear" /></button
+      ><button id="clear-filter-tags-btn">
+        <img
+          src="/images/x.svg"
+          class="clear"
+          @click.self="clearAllFilters"
+        /></button
     ></span>
   </span>
 </template>
@@ -26,13 +30,11 @@ import {
 
 import registerRestrictionMap from '@/src_jq/common/restrictionMap'
 
+import '@/src_jq/libraries/select2'
+
+import createMultiselectTags from '@/src_jq/common/multiselectTags'
+
 window.$ = $
-
-require('@/src_jq/libraries/select2')
-
-window.Fuse = require('@/src_jq/libraries/fuse')
-
-require('@/src_jq/common/multiselectTags')
 
 export default {
   name: 'select2',
@@ -48,22 +50,29 @@ export default {
 
     let sendUpdateEvent = throttle(() => vm.sendUpdateEvent(), 100)
 
-    let list = createMultiselectTags(
+    this.list = createMultiselectTags(
       this.selectList(),
       vm.$props.options,
       generateAdditionalTagsFunction(() => this.searchResults || []),
     )
 
-    select2UpdateTags(list, vm.$props.modelValue)
+    select2UpdateTags(this.list, vm.$props.modelValue)
 
-    list.on('change', sendUpdateEvent)
+    this.list.on('change', sendUpdateEvent)
   },
   watch: {
     modelValue: function (value) {
-      if (this.modelValue === value) return
-      console.log('value' + value)
-      // update value
-      this.selectList().val(value).trigger('change')
+      let strVal = JSON.stringify(value)
+      if (this.prevValue === strVal) return
+      this.prevValue = strVal
+      console.log('value' + strVal)
+
+      if (Array.isArray(value)) {
+        select2UpdateTags(this.selectList(), value)
+      } else {
+        // update value
+        this.selectList().val(value).trigger('change')
+      }
     },
     options: function (options) {
       console.log('options')

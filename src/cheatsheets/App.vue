@@ -31,10 +31,12 @@
           v-for="group in groups"
           :key="group.id"
           :group="group"
-          :showAll="groups.length === 1 || searchResults.length < 12"
+          :showAll="false&& (groups.length === 1 || searchResults.length < 4)"
+          :showChildren="groups.length <= 2"
           :allTags="options"
           v-on:update-cheatsheet="updateCheatSheet($event)"
           v-on:remove-cheatsheet="removeCheatSheet($event)"
+          v-on:move-to-tags="moveToTags($event)"
         />
 
         <!-- <CheatSheet
@@ -48,7 +50,7 @@
 </template>
 
 <script>
-import Navbar from '@/popup/components/Navbar'
+import Navbar from '@/common/Navbar'
 
 import CheatSheet from './components/CheatSheet'
 import CheatSheetGroup from './components/CheatSheetGroup'
@@ -140,6 +142,9 @@ export default {
     },
   },
   methods: {
+    moveToTags(tags) {
+      this.selected = tags
+    },
     addCheatSheet() {
       this.newCheatSheet = {
         date: new Date().valueOf(),
@@ -170,15 +175,13 @@ export default {
 
       let allTags = []
 
-      cheatSheets.forEach(
-        (el) => {
-          allTags = allTags
-            .concat(el.tags)
-            .concat([{ id: el.query, text: el.query }])
+      cheatSheets.forEach((el) => {
+        allTags = allTags
+          .concat(el.tags)
+          .concat([{ id: el.query, text: el.query }])
 
-          return 0
-        },
-      )
+        return 0
+      })
 
       this.options = unique(allTags, (el) => el.id)
     },
@@ -201,11 +204,11 @@ export default {
 </script>
 
 <style lang="scss">
- .ctrl-img {
-    opacity: 0.5;
-    filter: alpha(Opacity=50);
-    opacity: 0.5;
-  }
+.ctrl-img {
+  opacity: 0.5;
+  filter: alpha(Opacity=50);
+  opacity: 0.5;
+}
 
 #speedDealHelp {
   font-size: 150%;
