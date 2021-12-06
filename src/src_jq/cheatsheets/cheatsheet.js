@@ -4,6 +4,7 @@ import {
   getFilterByTags, registerFilterToGrid, select2ClearTags, select2UpdateTags,
   generateAdditionalTagsFunction,
 } from '@/src_jq/common/mulitselectTagsHandlers'
+import createMultiselectTags from '@/src_jq/common/multiselectTags'
 
 let smartotekaFabric = getSmartotekaFabric()
 

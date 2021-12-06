@@ -167,6 +167,7 @@ $sky: #e6f6fe;
       vertical-align: middle;
       font-weight: 500;
       color: #194c66;
+      cursor: pointer;
     }
 
     .reference {
