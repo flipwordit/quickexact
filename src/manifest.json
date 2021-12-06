@@ -1,6 +1,6 @@
 {
   "name": "Smartoteka",
-  "description": "It helps look up information quickly and exactly",
+  "description": "Your own knowledge base",
   "version": "1.0",
   "manifest_version": 2,
   "author": "Tatarkov M",
@@ -13,14 +13,10 @@
   },
   "permissions": [
     "storage",
-    "tabs",
-    "bookmarks",
-    "activeTab",
     "unlimitedStorage",
-    "commands",
-    "history",
-    "chrome://favicon/",
-    "clipboardRead"
+    "tabs",
+    "activeTab",
+    "commands"
   ],
   "commands": {
     "search": {
@@ -28,14 +24,6 @@
         "default": "Ctrl+Q"
       },
       "description": "open shop search",
-      "action": {},
-      "global": true
-    },
-    "shops": {
-      "suggested_key": {
-        "default": "Ctrl+1"
-      },
-      "description": "open online-shops",
       "action": {},
       "global": true
     },
@@ -48,25 +36,8 @@
       "comment": "TODO: check used short keys https://developer.chrome.com/docs/extensions/reference/commands/#verify-commands-registered"
     }
   },
-  "web_accessible_resources": [
-    "chrome://*"
-  ],
   "browser_action": {
     "default_title": "Smartoteka",
-    "default_popup": "shops/popup.html"
-  },
-  "content_security_policy": "img-src chrome://favicon2;",
-  "content_scripts": [
-    {
-      "matches": [
-        "https://google.com/*"
-      ],
-      "all_frames": true,
-      "match_about_blank": true,
-      "run_at": "document_end",
-      "js": [
-        "content/content.js"
-      ]
-    }
-  ]
+    "default_popup": "popup/popup.html"
+  }
 }

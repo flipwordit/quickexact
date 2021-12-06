@@ -42,15 +42,13 @@ export default function createTabsGrid(selector) {
         })
         row.attr('draggable', true)
 
-        let faviconUrl = 'chrome://favicon/' + params.data.url
+        let faviconUrl = params.data.favIconUrl
 
         let html = "<a class='website-link' href='" + params.data.url + "'>"
                     + `<div class="website-icon" id="icon"
-             style="background-image: -webkit-image-set(url(&quot;`
+             style="background-image: url(&quot;`
                     + faviconUrl
-                    + '&quot;) 1x, url(&quot;chrome://favicon2/?size=16&amp;scale_factor=2x&amp;page_url='
-                    + faviconUrl
-                    + '&amp;allow_google_server_fallback=0&quot;) 2x);"></div>'
+                    + '&quot;);"></div>'
                     + params.data.title + '</a>'
 
         return html

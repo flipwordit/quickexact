@@ -3,26 +3,15 @@
     <div v-for="l in links" :key="l.url">
       <a :href="l.url" v-on:click.prevent="openTab(l.url)">{{ l.title }}</a>
     </div>
-    <!-- <vue-tags-input
-      v-model="tag"
-      :tags="tags"
-      :autocomplete-items="filteredItems"
-      @tags-changed="newTags => tags = newTags"
-    /> -->
-    <!-- <vue-feather type="search" stroke="silver"/> -->
     <slot />
-    <!-- <div class="actions">
-      <div class="action"><vue-feather type="plus" stroke="white" /></div>
-    </div> -->
+
   </nav>
 </template>
 
 <script>
-// import VueTagsInput from '@johmun/vue-tags-input'
 
 export default {
   components: {
-    // VueTagsInput,
   },
   data() {
     return {
@@ -32,47 +21,17 @@ export default {
           title: 'sessions',
         },
         {
-          url: '../src_jq/cheatsheets/cheatsheet.html',
-          title: 'cheat sheets',
-        },
-        {
           url: '../cheatsheets/page.html',
-          title: 'cheat sheets(New)',
+          title: 'cheat sheets',
         },
       ],
       tag: '',
       tags: [],
-      autocompleteItems: [
-        {
-          text: 'Spain',
-        },
-        {
-          text: 'France',
-        },
-        {
-          text: 'USA',
-        },
-        {
-          text: 'Germany',
-        },
-        {
-          text: 'China',
-        },
-      ],
     }
   },
-  // watch: {
-  //   'tag': 'initItems',
-  // },
   computed: {
-    filteredItems() {
-      return this.autocompleteItems.filter((i) => i.text.toLowerCase().includes(this.tag.toLowerCase()))
-    },
   },
   methods: {
-    update(newTags) {
-      this.tags = newTags
-    },
     openTab: function (url) {
       chrome.tabs.create({ url: url })
     },
@@ -98,7 +57,6 @@ export default {
     outline: none;
     padding-left: 10px;
     background: transparent;
-    //  background: green;
     vertical-align: bottom;
   }
 

@@ -24,13 +24,9 @@ const config = {
   entry: {
     'background/background': './background/background.js',
     'popup/popup': './popup/popup.js',
-    'shops/popup': './shops/popup.js',
-    'src_jq/cheatsheets/cheatsheet': './src_jq/cheatsheets/cheatsheet.js',
     'src_jq/session/session': './src_jq/session/session.js',
-    'src_jq/history/history': './src_jq/history/history.js',
     'src_jq/settings/settings': './src_jq/settings/settings.js',
     'cheatsheets/script': './cheatsheets/script.js',
-    'content/content': './content/content.js',
   },
   output: {
     path: join(__dirname, 'dist/'),
@@ -134,7 +130,6 @@ const config = {
       { from: 'fonts/**/*', to: 'fonts/[name].[ext]' },
       { from: 'popup/popup.html', to: 'popup/popup.html' },
       { from: 'background/background.html', to: 'background/background.html' },
-      { from: 'shops/popup.html', to: 'shops/popup.html' },
       { from: 'cheatsheets/page.html', to: 'cheatsheets/page.html' },
       {
         from: 'manifest.json',
@@ -191,13 +186,10 @@ module.exports = (env, argv) => {
           // The entries used for the content/background scripts or extension pages
           background: 'background/background',
           extensionPage: [
-            'shops/popup',
             'popup/popup',
             'cheatsheets',
             'cheatsheets/script',
-            'src_jq/history/history',
             'src_jq/session/session',
-            'src_jq/cheatsheets/cheatsheet',
             'src_jq/settings/settings',
           ],
         },
