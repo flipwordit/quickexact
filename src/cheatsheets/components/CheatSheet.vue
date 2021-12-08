@@ -2,8 +2,8 @@
   <div class="cheatsheet">
     <div
       class="content"
-      @mouseenter="active = true"
-      @mouseleave="showDropdown = active = false"
+      @mouseenter="mouseFocus = true"
+      @mouseleave="showDropdown = mouseFocus = false"
     >
       <div class="tags" v-if="!editMode">
         <span v-for="tag in tags" :key="tag.id" @click="moveToTags(tag.id)"
@@ -26,7 +26,7 @@
         <img src="/images/save.svg" class="save" @click="save" />
         <img src="/images/x.svg" class="close" @click="cancel" />
       </div>
-      <div class="dropdown" v-if="active && !editMode">
+      <div class="dropdown" v-if="mouseFocus && !editMode">
         <div class="btn" @click.self="toggleDropdown" />
         <transition name="grow">
           <div class="menu" v-if="showDropdown" v-click-outside="closeDropdown">
@@ -88,7 +88,7 @@ export default {
       editorOptions: {
         usageStatistics: false,
       },
-      active: false,
+      mouseFocus: false,
       editMode: false,
     }
   },
@@ -169,7 +169,7 @@ export default {
     },
     save() {
       this.editMode = false
-      this.active = false
+      this.mouseFocus = false
       let tags = this.editTags.map((el) => ({ id: el.id, text: el.text }))
 
       this.cheatsheet.tags = this.editTags.slice(0)
@@ -179,13 +179,15 @@ export default {
         content: this.cheatsheet.content,
         date: this.cheatsheet.date,
         tags: tags,
+        id: this.cheatsheet.id,
+        link: this.cheatsheet.link,
       }
 
       this.$emit('update-cheatsheet', saveCheatSheet)
     },
     cancel() {
       this.editMode = false
-      this.active = false
+      this.mouseFocus = false
       this.updateEditTags()
       this.$emit('cancel-edit')
     },

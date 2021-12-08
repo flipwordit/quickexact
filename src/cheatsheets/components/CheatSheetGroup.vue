@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="card">
-      <div class="header">
+      <div class="header" @mouseenter="mouseFocus = true"
+      @mouseleave="mouseFocus = false">
         <div class="title">
           <span
             class="tag"
@@ -12,13 +13,13 @@
           </span>
           <img
             class="expand ctrl-img"
-            v-if="!showChildren"
+            v-if="!showChildren&&mouseFocus"
             src="/images/arrow-down.svg"
             @click.self="showChildren = !showChildren"
           />
           <img
             class="collapse ctrl-img"
-            v-if="showChildren"
+            v-if="showChildren&&mouseFocus"
             @click.self="showChildren = !showChildren"
             src="/images/arrow-up.svg"
           />
@@ -33,8 +34,9 @@
             v-for="cheatsheet in showChildren ? group.items : []"
             :key="cheatsheet.id"
           >
+          <!-- v-if="cheatsheet.type === 'cheatsheet'" -->
             <CheatSheet
-              v-if="cheatsheet.type === 'cheatsheet'"
+
               :cheatsheet="cheatsheet"
               :commonTagsCount="group.commonTagsCount"
               :allTags="allTags"
@@ -113,7 +115,9 @@ export default {
     },
   },
   data() {
-    return {}
+    return {
+      mouseFocus: false,
+    }
   },
   computed: {
     tags() {
@@ -185,7 +189,7 @@ $sky: #8ef7a0;
   clear: both;
   border: 2px solid #e6f6fe;
   .header {
-    background: #e6f6fe;
+    //background: #e6f6fe;
     font-size: 1.125rem;
     padding: 0 1rem;
     line-height: 1.125rem;

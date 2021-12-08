@@ -1,39 +1,58 @@
 <template>
   <nav class="nav">
-    <div v-for="l in links" :key="l.url">
-      <a :href="l.url" v-on:click.prevent="openTab(l.url)">{{ l.title }}</a>
-    </div>
-    <slot />
-
+    <a v-for="l in links" :key="l.url" :href="l.url"
+      ><img
+        class="ctrl-img"
+        :src="'/images/' + l.icon"
+        :title="l.title"
+        v-on:click.prevent="openTab(l.url)"
+    /></a>
+    <slot></slot>
   </nav>
 </template>
 
 <script>
+import { redirectCurrentTab, openTabs } from '@/src_jq/common/commonFunctions'
 
 export default {
-  components: {
+  props: {
+    popup: {
+      type: Boolean,
+      default: false,
+    },
   },
+  components: {},
   data() {
     return {
       links: [
         {
-          url: '../src_jq/session/session.html',
-          title: 'sessions',
-        },
-        {
-          url: '../cheatsheets/page.html',
-          title: 'cheat sheets',
+          url: '../src_jq/settings/settings.html',
+          title: 'settings',
+          icon: 'settings.svg',
         },
       ],
       tag: '',
       tags: [],
     }
   },
-  computed: {
+  mounted() {
+    if (this.popup) {
+      this.links.unshift({
+        url: '../cheatsheets/page.html',
+        title: 'fullscreen',
+        icon: 'maximize-2.svg',
+      })
+    }
   },
+  computed: {},
   methods: {
     openTab: function (url) {
-      chrome.tabs.create({ url: url })
+      if (this.popup) {
+        openTabs([{ url: url }])
+        return
+      }
+
+      redirectCurrentTab(url)
     },
   },
 }
@@ -45,29 +64,10 @@ export default {
   display: flex;
   padding: 0 20px;
   flex-direction: row;
-  justify-content: space-between;
+  column-gap: 10px;
+  //justify-content: space-between;
   align-items: center;
   font-size: 1.125rem;
   box-shadow: 0 0 4px rgba($color: black, $alpha: 0.1);
-
-  input {
-    flex-grow: 1;
-    border: none;
-    font-size: 1.25rem;
-    outline: none;
-    padding-left: 10px;
-    background: transparent;
-    vertical-align: bottom;
-  }
-
-  .action {
-    font-size: 2rem;
-    padding: 2px;
-    background: rgb(169, 255, 219);
-    height: 35px;
-    width: 35px;
-    text-align: center;
-    border-radius: 50vmin;
-  }
 }
 </style>

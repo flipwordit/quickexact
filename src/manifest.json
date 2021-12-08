@@ -38,6 +38,6 @@
   },
   "browser_action": {
     "default_title": "Smartoteka",
-    "default_popup": "session/page.html"
+    "default_popup": "popup/popup.html"
   }
 }

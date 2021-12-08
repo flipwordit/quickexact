@@ -1,45 +1,72 @@
 <template>
   <div class="popup">
-    <Navbar> </Navbar>
+    <Navbar :popup="popup">
+      <img
+        class="add ctrl-img"
+        src="/images/plus-square.svg"
+        @click="addCheatSheet"
+        v-if="!newCheatSheet"
+      />
+    </Navbar>
     <main>
       <div id="speedDealHelp"></div>
 
-      <!-- <p>Selected: {{ selected }}</p> -->
-      <select2
-        :options="options"
-        v-model="selected"
-        :searchResults="searchResults"
-      >
-      </select2>
-
-      <div>
-        <img
-          class="add ctrl-img"
-          src="/images/plus-square.svg"
-          @click="addCheatSheet"
-          v-if="!newCheatSheet"
-        />
+      <addBlock v-if="newCheatSheet">
+        <addModes class="selectElementInLine">
+          <!-- .filter((el) => !el.isAllow || el.isAllow()) -->
+          <div
+            v-for="v in addModes"
+            :key="v.title"
+            @click="addMode = v.title"
+            :class="
+              'pointer ' + (v.title == addMode ? 'selected' : 'unselected')
+            "
+          >
+            {{ v.title }}
+          </div>
+        </addModes>
         <CheatSheet
-          v-if="newCheatSheet"
           :cheatsheet="newCheatSheet"
           :allTags="options"
           v-on:update-cheatsheet="saveNewCheatSheet"
           v-on:cancel-edit="cancelNewCheatSheet"
           :edit="true"
         ></CheatSheet>
-
-        <CheatSheetGroup
-          v-for="group in groups"
-          :key="group.id"
-          :group="group"
-          :showAll="false && (groups.length === 1 || searchResults.length < 4)"
-          :showChildren="groups.length <= 2"
-          :allTags="options"
-          v-on:update-cheatsheet="updateCheatSheet($event)"
-          v-on:remove-cheatsheet="removeCheatSheet($event)"
-          v-on:move-to-tags="moveToTags($event)"
-        />
-      </div>
+      </addBlock>
+      <search v-if="!newCheatSheet">
+        <!-- <p>Selected: {{ selected }}</p> -->
+        <select2
+          :options="options"
+          v-model="selected"
+          :searchResults="searchResults"
+        >
+        </select2>
+        <div class="selectElementInLine">
+          <div
+            v-for="v in selectVariants"
+            :key="v.title"
+            @click="v.handler()"
+            class="pointer"
+          >
+            {{ v.title }}
+          </div>
+        </div>
+        <div>
+          <CheatSheetGroup
+            v-for="group in groups"
+            :key="group.id"
+            :group="group"
+            :showAll="
+              false && (groups.length === 1 || searchResults.length < 4)
+            "
+            :showChildren="groups.length <= 2"
+            :allTags="options"
+            v-on:update-cheatsheet="updateCheatSheet($event)"
+            v-on:remove-cheatsheet="removeCheatSheet($event)"
+            v-on:move-to-tags="moveToTags($event)"
+          />
+        </div>
+      </search>
     </main>
   </div>
 </template>
@@ -51,7 +78,7 @@ import CheatSheet from './components/CheatSheet'
 import CheatSheetGroup from './components/CheatSheetGroup'
 import Select2 from '@/common/Select2'
 
-import { unique, getSmartotekaFabric } from '@/src_jq/common/commonFunctions'
+import { unique, getSmartotekaFabric, getActiveTab } from '@/src_jq/common/commonFunctions'
 import { cheatsheetsGroup } from '@/src_jq/common/cheatSheetsManage'
 import { getFilterByFilterTags } from '@/src_jq/common/mulitselectTagsHandlers'
 
@@ -63,18 +90,57 @@ export default {
     Navbar,
     Select2,
   },
+  props: {
+    popup: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       selected: [],
       options: [],
       cheatSheets: [],
       newCheatSheet: null,
+      addMode: 'Cheat Sheet',
+      addModes: [
+        { title: 'Cheat Sheet' },
+        {
+          title: 'Tab',
+          isAllow: () => this.popup,
+        },
+        { title: 'Session' },
+      ],
+      selectVariants: [
+        {
+          title: 'All',
+          handler: () => {
+            this.refresh()
+          },
+        },
+        {
+          title: 'last created',
+          handler: () => {
+            this.refresh()
+          },
+        },
+        {
+          title: 'last finded',
+          handler: () => {
+            this.refresh()
+          },
+        },
+        {
+          title: 'last edited',
+          handler: () => {
+            this.refresh()
+          },
+        },
+      ],
     }
   },
   beforeMount() {},
   mounted() {
-    this.refresh()
-
     window.addEventListener(
       'keypress',
       (e) => {
@@ -134,6 +200,31 @@ export default {
     },
     smartotekaFabric() {
       return getSmartotekaFabric()
+    },
+  },
+  watch: {
+    addMode: function (value) {
+      switch (value) {
+        case 'Cheat Sheet':
+          break
+
+        case 'Session':
+          break
+        case 'Tab':
+          getActiveTab().then((tab) => {
+            this.newCheatSheet.content = '![Icon]('
+                  + tab.favIconUrl
+                  + ')['
+                  + tab.title
+                  + ']('
+                  + tab.url
+                  + ')'
+            this.newCheatSheet.link = tab.url
+          })
+          break
+        default:
+          throw new Error('Unexpected addMode' + value)
+      }
     },
   },
   methods: {
@@ -246,13 +337,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.ctrl-img {
-  opacity: 0.5;
-  filter: alpha(Opacity=50);
-  opacity: 0.5;
-}
-
+<style lang="scss" scoped>
 #speedDealHelp {
   font-size: 150%;
   font-weight: bold;
@@ -288,5 +373,22 @@ export default {
   height: calc(100% - 90px);
   overflow: auto;
   background: hsl(203deg, 34%, 95%);
+}
+
+.selected {
+  color: green;
+}
+
+.unselected {
+  color: inherit;
+}
+
+.pointer {
+  cursor: pointer;
+}
+.selectElementInLine {
+  display: flex;
+  flex-direction: row;
+  column-gap: 10px;
 }
 </style>

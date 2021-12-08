@@ -9,9 +9,9 @@ import ElementPlus from 'element-plus'
 import VueFeather from 'vue-feather'
 import store from '@/store'
 
-import App from './Search'
+import App from '../cheatsheets/App'
 
-const app = createApp(App)
+const app = createApp(App, { popup: true })
 app.use(store)
 
 app.use(ElementPlus)
