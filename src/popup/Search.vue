@@ -21,7 +21,7 @@
       <div>
         <Session
           v-for="session in searchResults"
-          :key="session.date"
+          :key="session.id"
           :session="session"
         />
       </div>

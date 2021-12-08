@@ -1,22 +1,11 @@
 <template>
-  <span style="display: inline-block; width: 95%">
-    <select>
+  <span style="display: flex; width: 100%">
+    <span class="clear-filter">
+      <img src="/images/x.svg" @click.self="clearAllFilters" />
+    </span>
+    <select style="flex-grow: 1">
       <slot></slot>
     </select>
-    <span
-      style="
-        display: inline-block;
-        position: absolute;
-        display: inline-block;
-        margin: 5px 5px;
-      "
-      ><button id="clear-filter-tags-btn">
-        <img
-          src="/images/x.svg"
-          class="clear"
-          @click.self="clearAllFilters"
-        /></button
-    ></span>
   </span>
 </template>
 
@@ -126,6 +115,13 @@ export default {
   },
 }
 </script>
-<style>
+<style lang="scss" scoped>
 @import "../src_jq/libraries/select2.min.css";
+
+.clear-filter {
+  margin: 5px 5px;
+
+  width: 16px;
+  height: 16px;
+}
 </style>

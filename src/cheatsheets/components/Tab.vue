@@ -1,42 +1,30 @@
 <template>
-  <div class="cheatsheet">
+  <div class="tab">
     <div
       class="content"
       @mouseenter="active = true"
-      @mouseleave="showDropdown = active = false"
+      @mouseleave="active = false"
     >
-      <div class="tags" v-if="!editMode">
-        <span v-for="tag in tags" :key="tag.id" @click="moveToTags(tag.id)"
-          >{{ tag.text }}&nbsp;</span
-        >
-      </div>
-      <div class="tags" v-if="editMode">
-        <select2 :options="allTags" v-model="editTags"> </select2>
-      </div>
-      <div class="code">
-        <Editor
-          ref="editor"
-          v-if="editMode"
-          :initialValue="cheatsheet.content"
-        />
-        <Viewer v-if="!editMode" :initialValue="content" :content="content" />
-      </div>
+      <img
+        class="edit"
+        src="/images/edit.svg"
+        @click="toEditMode"
+        v-if="active && !editMode"
+      />
+
+      <img style="width: 16px; height: 16px" :src="tab.favIconUrl" />
+      <a :href="tab.url">{{ tab.title }}</a>
 
       <div class="edit-buttons" v-if="editMode">
         <img src="/images/save.svg" class="save" @click="save" />
         <img src="/images/x.svg" class="close" @click="cancel" />
       </div>
-      <div class="dropdown" v-if="active && !editMode">
+      <div class="dropdown">
         <div class="btn" @click.self="toggleDropdown" />
         <transition name="grow">
-          <div class="menu" v-if="showDropdown" v-click-outside="closeDropdown">
-            <img class="edit" src="/images/edit.svg" @click="toEditMode" />
-            <img
-              class="edit"
-              src="/images/trash.svg"
-              @click="removeCheatSheet"
-            />
-          </div>
+          <ul class="menu" v-if="showDropdown" v-click-outside="closeDropdown">
+            <li @click="removeTab">Remove</li>
+          </ul>
         </transition>
       </div>
     </div>
@@ -44,36 +32,19 @@
 </template>
 
 <script>
-import '@toast-ui/editor/dist/toastui-editor.css' // Editor's Style
-
 import $ from 'jquery'
 import { takeWhile } from 'lodash'
-import Viewer from './Viewer'
-import Editor from './Editor'
-import Select2 from '@/common/Select2'
 
 window.$ = $
 
 export default {
-  name: 'CheatSheet',
-  emits: ['move-to-tags', 'cancel-edit'],
-  components: {
-    Select2,
-    Editor,
-    Viewer,
-  },
+  name: 'Tab',
+  emits: ['move-to-tags'],
+  components: {},
   props: {
-    cheatsheet: {
+    tab: {
       type: Object,
       default: () => {},
-    },
-    commonTagsCount: {
-      type: Number,
-      default: () => 0,
-    },
-    allTags: {
-      type: Array,
-      default: () => [],
     },
     edit: {
       type: Boolean,
@@ -99,23 +70,22 @@ export default {
     this.addButtonsToCodeBlocks()
   },
   updated: function () {
-    if (this.editMode) this.updateEditTags()
-    else this.addButtonsToCodeBlocks()
+    this.addButtonsToCodeBlocks()
   },
   computed: {
     tags() {
       this.updateEditTags()
 
-      return this.cheatsheet.tags.slice(this.commonTagsCount)
+      return this.tab.tags.slice(this.commonTagsCount)
     },
     content() {
-      return this.cheatsheet.content
+      return this.tab.content
     },
   },
   methods: {
     moveToTags(tagId) {
       let flag = true
-      let tags = takeWhile(this.cheatsheet.tags, (el) => {
+      let tags = takeWhile(this.tab.tags, (el) => {
         let prevValue = flag
         flag = el.id !== tagId
 
@@ -125,7 +95,7 @@ export default {
       this.$emit('move-to-tags', tags)
     },
     addButtonsToCodeBlocks() {
-      $('.code .copy', this.$el).remove()
+      $('.code code img', this.$el).remove()
       let codeEls = $('.code code', this.$el).parent()
 
       codeEls.append(
@@ -158,39 +128,38 @@ export default {
       })
     },
     updateEditTags() {
-      this.editTags = this.cheatsheet.tags.slice(0)
+      this.editTags = this.tab.tags.slice(0)
     },
     toEditMode() {
       this.editMode = true
     },
-    removeCheatSheet() {
+    removeTab() {
       this.closeDropdown()
-      this.$emit('remove-cheatsheet', this.cheatsheet)
+      this.$emit('remove-tab', this.tab)
     },
     save() {
       this.editMode = false
       this.active = false
       let tags = this.editTags.map((el) => ({ id: el.id, text: el.text }))
 
-      this.cheatsheet.tags = this.editTags.slice(0)
-      this.cheatsheet.content = this.$refs.editor.editor.getMarkdown()
+      this.tab.tags = this.editTags.slice(0)
+      this.tab.content = this.$refs.editor.editor.getMarkdown()
 
-      let saveCheatSheet = {
-        content: this.cheatsheet.content,
-        date: this.cheatsheet.date,
+      let saveTab = {
+        content: this.tab.content,
+        date: this.tab.date,
         tags: tags,
       }
 
-      this.$emit('update-cheatsheet', saveCheatSheet)
+      this.$emit('update-tab', saveTab)
     },
     cancel() {
       this.editMode = false
       this.active = false
       this.updateEditTags()
-      this.$emit('cancel-edit')
     },
     copyContent() {
-      let text = this.cheatsheet.content
+      let text = this.tab.content
       navigator.clipboard.writeText(text).then(
         function () {
           console.log('Async: Copying to clipboard was successful!')
@@ -218,22 +187,24 @@ export default {
 
 $sky: #e6f6fe;
 
-.cheatsheet {
+.tab {
   float: left;
   display: inline;
+  // padding: 12px 16px;
   z-index: 10;
+  //line-height: 1.25rem;
   background: white;
   font-size: 1rem;
   transition: all 0.2s;
   border-radius: 5px;
   margin: 0.5rem 0.5rem;
+  // box-shadow: 0 1px 2px rgba(0, 0, 0,  20%);
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
   text-align: left;
   color: $black;
   font-family: $roboto;
   overflow: visible;
-  border: 1px solid #bbfdc6;
-
+  border: 1px solid #e6f6fe;
   .header {
     background: #e6f6fe;
     font-size: 1.125rem;
@@ -244,8 +215,27 @@ $sky: #e6f6fe;
     justify-content: space-between;
     align-items: center;
 
+    .version {
+      // background: #9dd5f1;
+      // line-height: 1rem;
+      // padding: 1px 5px;
+      display: inline-block;
+      font-size: 0.875rem;
+      // height: 1.5rem;
+      // background: yellow;
+      line-height: 0.875rem;
+      vertical-align: super;
+      // position:relative;
+      // margin-top: -3px;
+      color: #9dd5f1;
+      // border-radius: 50vmin;
+      // display: inline-block;
+      // color: white;
+      // text-align: center;
+    }
     .title {
       line-height: 1.5rem;
+      // background: violet;
       vertical-align: middle;
       font-weight: 500;
       color: #194c66;
@@ -273,8 +263,22 @@ $sky: #e6f6fe;
     position: relative;
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
-    display: grid;
-    row-gap: 4px;
+
+    .edit {
+      position: absolute;
+      top: 25px;
+      right: 5px;
+      filter: alpha(Opacity=50);
+      opacity: 0.5;
+    }
+
+    .copy {
+      position: absolute;
+      right: 0px;
+      top: 0px;
+      filter: alpha(Opacity=50);
+      opacity: 0.5;
+    }
 
     .code {
       position: relative;
@@ -284,21 +288,19 @@ $sky: #e6f6fe;
     .edit-buttons {
       height: 30px;
       position: relative;
-      margin-right: 20px;
 
       .close {
         position: absolute;
         right: 5px;
-        cursor: pointer;
       }
 
       .save {
         position: absolute;
         right: 40px;
-        cursor: pointer;
       }
     }
     hr {
+      // box-shadow: 0 0 1px 1px #9dd5f1;
       height: 1px;
       border: none;
       /* Set the hr color */
@@ -313,11 +315,23 @@ $sky: #e6f6fe;
 
       padding: 5px;
       background: transparent;
+      // border-radius: 50vmin; Increase click area
+      // height: 1.5rem;
+      // width: 1.5rem;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
 
+      &:hover {
+        background: darken(#e6f6fe, 5);
+
+        .menu {
+          opacity: 1;
+          display: flex;
+          z-index: 1;
+        }
+      }
       .btn {
         width: 10px;
         height: 10px;
@@ -327,24 +341,28 @@ $sky: #e6f6fe;
       }
 
       .menu {
-        min-width: 40px;
+        min-width: 400px;
         min-height: 2em;
         position: absolute;
         top: 9px;
-        left: 0px;
+        left: 11px;
         background: white;
         flex-direction: column;
+        width: 10rem;
         font-size: 0.95rem;
         border: 1px solid #9dd5f1;
         border-radius: 5px;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, 20px);
-        grid-column-gap: 5px;
-        img {
-          margin: 2px 2px;
-          width: 32px;
-          &:hover {
-            background: darken(#e6f6fe, 5);
+        display: flex;
+        li {
+          padding: 0.5rem;
+          transition: all 0.1s;
+          border-bottom: 1px solid #e6f6fe;
+
+          a {
+            font-style: italic;
+            color: darken(#9dd5f1, 8);
+            text-decoration: underline;
+            text-underline-offset: 1px;
           }
         }
       }
@@ -374,6 +392,7 @@ $sky: #e6f6fe;
       font-family: consolas, cursive;
       font-style: italic;
       font-size: 1rem;
+      // font-size: 1.25rem;
       color: hsl(210deg, 10%, 70%);
     }
   }

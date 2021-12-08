@@ -164,6 +164,7 @@ export function createDefaultSession(tabs) {
   let dateCreation = now.valueOf()
 
   let session = {
+    id: dateCreation,
     date: dateCreation,
     query: now.toLocaleString({
       year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',

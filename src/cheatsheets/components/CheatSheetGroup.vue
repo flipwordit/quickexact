@@ -29,16 +29,30 @@
       <!-- group.items.slice(0, 2) -->
       <div class="content">
         <div class="row">
-          <CheatSheet
+          <div
             v-for="cheatsheet in showChildren ? group.items : []"
             :key="cheatsheet.id"
-            :cheatsheet="cheatsheet"
-            :commonTagsCount="group.commonTagsCount"
-            :allTags="allTags"
-            v-on:update-cheatsheet="$emit('update-cheatsheet', $event)"
-            v-on:remove-cheatsheet="$emit('remove-cheatsheet', $event)"
-            v-on:move-to-tags="$emit('move-to-tags', $event)"
-          ></CheatSheet>
+          >
+            <CheatSheet
+              v-if="cheatsheet.type === 'cheatsheet'"
+              :cheatsheet="cheatsheet"
+              :commonTagsCount="group.commonTagsCount"
+              :allTags="allTags"
+              v-on:update-cheatsheet="$emit('update-cheatsheet', $event)"
+              v-on:remove-cheatsheet="$emit('remove-cheatsheet', $event)"
+              v-on:move-to-tags="$emit('move-to-tags', $event)"
+            ></CheatSheet>
+
+             <Session
+              v-if="cheatsheet.type === 'session'"
+              :session="cheatsheet"
+              :commonTagsCount="group.commonTagsCount"
+              :allTags="allTags"
+              v-on:update-cheatsheet="$emit('update-session', $event)"
+              v-on:remove-cheatsheet="$emit('remove-session', $event)"
+              v-on:move-to-tags="$emit('move-to-tags', $event)"
+            ></Session>
+          </div>
         </div>
         <div class="row" v-if="group.groups.length > 0 && showChildren">
           <div class="column">
@@ -67,12 +81,14 @@
 <script>
 import { takeWhile } from 'lodash'
 import CheatSheet from './CheatSheet'
+import Session from './Session'
 
 export default {
   name: 'CheatSheetGroup',
   emits: ['update-cheatsheet', 'remove-cheatsheet', 'move-to-tags'],
   components: {
     CheatSheet,
+    Session,
   },
   props: {
     group: {
@@ -138,7 +154,7 @@ export default {
 <style lang="scss" scoped>
 @import "../../styles/variables";
 
-$sky: #e6f6fe;
+$sky: #8ef7a0;
 
 .content {
   margin-left: 15px;
@@ -177,11 +193,6 @@ $sky: #e6f6fe;
     height: 2.5rem;
     justify-content: space-between;
     align-items: center;
-
-    .add {
-      filter: alpha(Opacity=50);
-      opacity: 0.5;
-    }
 
     .title {
       line-height: 1.5rem;

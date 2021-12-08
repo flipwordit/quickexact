@@ -27,6 +27,7 @@ const config = {
     'src_jq/session/session': './src_jq/session/session.js',
     'src_jq/settings/settings': './src_jq/settings/settings.js',
     'cheatsheets/script': './cheatsheets/script.js',
+    'session/script': './session/script.js',
   },
   output: {
     path: join(__dirname, 'dist/'),
@@ -131,6 +132,7 @@ const config = {
       { from: 'popup/popup.html', to: 'popup/popup.html' },
       { from: 'background/background.html', to: 'background/background.html' },
       { from: 'cheatsheets/page.html', to: 'cheatsheets/page.html' },
+      { from: 'session/page.html', to: 'session/page.html' },
       {
         from: 'manifest.json',
         to: 'manifest.json',
@@ -180,7 +182,7 @@ module.exports = (env, argv) => {
     config.plugins.push(
       new ExtensionReloader({
         reloadPage: true,
-        port: 9592,
+        port: 9591,
         // manifest: resolve(__dirname, 'src', 'manifest.json'),
         entries: {
           // The entries used for the content/background scripts or extension pages
@@ -188,7 +190,7 @@ module.exports = (env, argv) => {
           extensionPage: [
             'popup/popup',
             'cheatsheets',
-            'cheatsheets/script',
+            'session',
             'src_jq/session/session',
             'src_jq/settings/settings',
           ],

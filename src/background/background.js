@@ -61,18 +61,11 @@ async function openPopup() {
   await getOrCreatePopup('popup/popup.html#/', 500, 1000)
 }
 
-async function openShopsPopup() {
-  await getOrCreatePopup('shops/popup.html#/', 750, 250)
-}
-
 chrome.commands.onCommand.addListener(async (command) => {
   console.log('Command:' + command)
   switch (command) {
     case 'search':
       openPopup()
-      break
-    case 'shops':
-      openShopsPopup()
       break
     case 'add-tab-to-session': {
       getActiveTab()
@@ -102,7 +95,7 @@ chrome.commands.onCommand.addListener(async (command) => {
                 smartotekaFabric.KBManager()
                   .addSession(session)
                   .then(() => {
-                    smartotekaFabric.KBManager().setSelectSession(session.date)
+                    smartotekaFabric.KBManager().setSelectSession(session.id)
 
                     chrome.tabs.sendMessage(
                       activeTab.id,

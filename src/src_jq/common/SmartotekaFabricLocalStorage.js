@@ -1,9 +1,6 @@
-import { unique } from "@/src_jq/common/commonFunctions"
+import { unique } from '@/src_jq/common/commonFunctions'
 
 class SmartotekaFabricLocalStorage {
-  constructor() {
-  }
-
   #save(smartoteka) {
     return new Promise(r => chrome.storage.local.set({ Smartoteka: smartoteka }, () => r()))
   }
@@ -243,6 +240,10 @@ class SmartotekaFabricLocalStorage {
         return new Promise(r => chrome.storage.local.set({ selectSessionId: sessionId }, () => r()))
       }
 
+      saveCheatSheets(cheatSheets) {
+        parent.#saveCheatSheets(cheatSheets)
+      }
+
       import(json) {
         let sessions = json.Sessions || []
         let cheatSheets = json.CheatSheets || []
@@ -324,7 +325,7 @@ class SmartotekaFabricLocalStorage {
             .then(cheatSheets => {
               updateCheatSheets
                 .forEach(cheatSheet => {
-                  let index = cheatSheets.findIndex(el => el.date === cheatSheet.date)
+                  let index = cheatSheets.findIndex(el => el.id === cheatSheet.id)
                   if (index !== -1) {
                     cheatSheets[index] = cheatSheet
                   }
@@ -354,7 +355,7 @@ class SmartotekaFabricLocalStorage {
         return new Promise(resolve => {
           parent.#getCheatSheets()
             .then(cheatSheets => {
-              let index = cheatSheets.findIndex(el => el.content === cheatSheet.content && el.date === cheatSheet.date)
+              let index = cheatSheets.findIndex(el => el.content === cheatSheet.content && el.id === cheatSheet.id)
               if (index !== -1) {
                 cheatSheets.splice(index, 1)
               }

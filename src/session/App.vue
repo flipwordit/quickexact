@@ -47,8 +47,8 @@
 <script>
 import Navbar from '@/common/Navbar'
 
-import CheatSheet from './components/CheatSheet'
-import CheatSheetGroup from './components/CheatSheetGroup'
+import CheatSheet from '../cheatsheets/components/CheatSheet'
+import CheatSheetGroup from '../cheatsheets/components/CheatSheetGroup'
 import Select2 from '@/common/Select2'
 
 import { unique, getSmartotekaFabric } from '@/src_jq/common/commonFunctions'
@@ -146,7 +146,7 @@ export default {
         id: date,
         date: date,
         content: '',
-        tags: this.selected,
+        tags: [],
       }
     },
     saveNewCheatSheet(cheatsheet) {
@@ -167,52 +167,20 @@ export default {
         .queriesProvider()
         .getCheatSheets()
         .then((cheatsheets) => {
-          this.refreshByData(cheatsheets)
-          // cheatsheets.forEach((el) => {
-          //   el.type = 'cheatsheet'
-          // })
-          // this.smartotekaFabric
-          //   .queriesProvider()
-          //   .getSessions()
-          //   .then((sessions) => {
-          //     let data = cheatsheets
+          cheatsheets.forEach((el) => {
+            el.type = 'cheatsheet'
+          })
+          this.smartotekaFabric
+            .queriesProvider()
+            .getSessions()
+            .then((sessions) => {
+              sessions.forEach((el) => {
+                el.type = 'session'
+              })
 
-          // cheatsheets.forEach((v) => (v.id = v.date))
-          // sessions.map((session) => {
-          //   let i = 0
-          //   let tags = session.tags
-          //   tags.push({ id: session.query, text: session.query })
-
-          //   let cheatsheetsSession = session.tabs.map((tab) => {
-          //     i += 1
-
-          //     let id = parseInt(session.date + '' + i, 10)
-
-          //     return {
-          //       id: id,
-          //       date: session.date,
-          //       type: 'cheatsheet',
-          //       link: tab.url,
-          //       content:
-          //         '![Icon]('
-          //         + tab.favIconUrl
-          //         + ')['
-          //         + tab.title
-          //         + ']('
-          //         + tab.url
-          //         + ')',
-          //       tags: tags,
-          //     }
-          //   })
-
-          //   data = data.concat(cheatsheetsSession)
-
-          //   this.smartotekaFabric.KBManager().saveCheatSheets(data)
-          //   return 0
-          // })
-
-          // this.refreshByData(data)
-          // })
+              let data = cheatsheets.concat(sessions)
+              this.refreshByData(data)
+            })
         })
     },
     refreshByData(cheatSheets) {
