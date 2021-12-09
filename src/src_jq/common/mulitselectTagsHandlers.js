@@ -46,7 +46,10 @@ export function registerFilterToGrid(grid) {
 
 export function select2UpdateTags(selector, tags) {
   const select2 = $(selector)
-  select2.val(tags.map(el => el.id))
+  let dataAdapter = select2.data('select2').dataAdapter
+
+  tags.map(el => ({ id: el.id, text: el.text }))
+    .forEach(tag => dataAdapter.select(tag))
   // Store order
   select2
     .select2('data')

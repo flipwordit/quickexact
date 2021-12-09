@@ -51,7 +51,19 @@ export default {
   },
   watch: {
     modelValue: function (value) {
-      let strVal = JSON.stringify(value)
+      let strVal = ''
+      if (Array.isArray(value)) {
+        strVal = JSON.stringify(
+          value.map(el => ({
+            id: el.id,
+            text: el.text,
+            selected: el.selected,
+          })),
+        )
+      } else {
+        strVal = JSON.stringify(value)
+      }
+
       if (this.prevValue === strVal) return
       this.prevValue = strVal
       console.log('value' + strVal)

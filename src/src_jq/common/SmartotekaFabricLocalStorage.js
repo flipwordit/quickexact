@@ -256,8 +256,9 @@ class SmartotekaFabricLocalStorage {
 
         cheatSheets.forEach(el => allTags = allTags.concat(el.tags))
         sessions.forEach(el => allTags = allTags.concat(el.tags))
+        allTags = allTags.concat(json.Tags || [])
 
-        allTags = unique(allTags.concat(json.Tags || []), el => el.id)
+        allTags = unique(allTags.filter(el => el), el => el.id)
         parent.#saveTags(allTags)
       }
 
@@ -294,10 +295,14 @@ class SmartotekaFabricLocalStorage {
       }
 
       addCheatSheet(cheatSheet) {
+        return this.addCheatSheets([cheatSheet])
+      }
+
+      addCheatSheets(newCheatSheets) {
         return new Promise(resolve => {
           parent.#getCheatSheets()
             .then(cheatSheets => {
-              cheatSheets = [...cheatSheets, cheatSheet]
+              cheatSheets = [...cheatSheets, ...newCheatSheets]
               parent.#saveCheatSheets(cheatSheets)
 
               resolve()

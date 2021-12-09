@@ -1,11 +1,11 @@
 <template>
-  <div class="cheatsheet">
+  <div :class="'cheatsheet ' + (cheatsheet.link ? 'link' : 'info')">
     <div
       class="content"
       @mouseenter="mouseFocus = true"
       @mouseleave="showDropdown = mouseFocus = false"
     >
-      <div class="tags" v-if="!editMode">
+      <div :class="'tags '+ (editMode?'hide':'')" >
         <span v-for="tag in tags" :key="tag.id" @click="moveToTags(tag.id)"
           >{{ tag.text }}&nbsp;</span
         >
@@ -26,7 +26,7 @@
         <img src="/images/save.svg" class="save" @click="save" />
         <img src="/images/x.svg" class="close" @click="cancel" />
       </div>
-      <div class="dropdown" v-if="mouseFocus && !editMode">
+      <div class="dropdown" v-if="mouseFocus && !editMode && !readOnly">
         <div class="btn" @click.self="toggleDropdown" />
         <transition name="grow">
           <div class="menu" v-if="showDropdown" v-click-outside="closeDropdown">
@@ -51,6 +51,8 @@ import { takeWhile } from 'lodash'
 import Viewer from './Viewer'
 import Editor from './Editor'
 import Select2 from '@/common/Select2'
+import ClickOutsideEvent from '@/common/directives/ClickOutside'
+import { unwrapCheatSheet } from '@/src_jq/common/commonFunctions'
 
 window.$ = $
 
@@ -61,6 +63,9 @@ export default {
     Select2,
     Editor,
     Viewer,
+  },
+  directives: {
+    'click-outside': ClickOutsideEvent,
   },
   props: {
     cheatsheet: {
@@ -76,6 +81,11 @@ export default {
       default: () => [],
     },
     edit: {
+      type: Boolean,
+      defautl: () => false,
+      writable: true,
+    },
+    readOnly: {
       type: Boolean,
       defautl: () => false,
       writable: true,
@@ -99,8 +109,9 @@ export default {
     this.addButtonsToCodeBlocks()
   },
   updated: function () {
-    if (this.editMode) this.updateEditTags()
-    else this.addButtonsToCodeBlocks()
+    if (!this.editMode) {
+      this.addButtonsToCodeBlocks()
+    }
   },
   computed: {
     tags() {
@@ -110,6 +121,18 @@ export default {
     },
     content() {
       return this.cheatsheet.content
+    },
+  },
+  watch: {
+    editMode(value) {
+      if (value) {
+        this.updateEditTags()
+      }
+    },
+    'cheatsheet.tags'(value) {
+      if (value) {
+        this.updateEditTags()
+      }
     },
   },
   methods: {
@@ -170,18 +193,11 @@ export default {
     save() {
       this.editMode = false
       this.mouseFocus = false
-      let tags = this.editTags.map((el) => ({ id: el.id, text: el.text }))
 
       this.cheatsheet.tags = this.editTags.slice(0)
       this.cheatsheet.content = this.$refs.editor.editor.getMarkdown()
 
-      let saveCheatSheet = {
-        content: this.cheatsheet.content,
-        date: this.cheatsheet.date,
-        tags: tags,
-        id: this.cheatsheet.id,
-        link: this.cheatsheet.link,
-      }
+      let saveCheatSheet = unwrapCheatSheet(this.cheatsheet, this.editTags)
 
       this.$emit('update-cheatsheet', saveCheatSheet)
     },
@@ -220,6 +236,18 @@ export default {
 
 $sky: #e6f6fe;
 
+.info {
+  border: 1px solid #bbfdc6;
+}
+
+.link {
+  border: 1px solid #e6f6fe;
+}
+
+.hide{
+  display: none !important;
+}
+
 .cheatsheet {
   float: left;
   display: inline;
@@ -234,7 +262,6 @@ $sky: #e6f6fe;
   color: $black;
   font-family: $roboto;
   overflow: visible;
-  border: 1px solid #bbfdc6;
 
   .header {
     background: #e6f6fe;
@@ -242,7 +269,6 @@ $sky: #e6f6fe;
     padding: 0 1rem;
     line-height: 1.125rem;
     display: flex;
-    height: 2.5rem;
     justify-content: space-between;
     align-items: center;
 

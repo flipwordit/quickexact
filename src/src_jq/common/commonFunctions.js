@@ -123,12 +123,16 @@ export function createWindow(url) {
   })
 }
 
-export function getAllTabs() {
-  return new Promise(r => chrome.tabs.query({}, (tabs) => r(tabs)))
+export function getAllTabs(currentWindow) {
+  return new Promise(r => chrome.tabs.query({
+    currentWindow: !!currentWindow,
+  }, (tabs) => r(tabs)))
 }
 
-export function getTabsByPattern(pattern) {
-  return new Promise(r => chrome.tabs.query({}, (tabs) => r(tabs)))
+export function getAllTabsByWindow(windowId) {
+  return new Promise(r => chrome.tabs.query({
+    windowId: windowId,
+  }, (tabs) => r(tabs)))
 }
 
 export function getActiveTab() {
@@ -178,4 +182,17 @@ export function createDefaultSession(tabs) {
 export function getSmartotekaFabric() {
   return new SmartotekaFabricLocalStorage()
   // new SmartotekaFabricDGraph("https://blue-surf-390018.us-east-1.aws.cloud.dgraph.io/")
+}
+
+export function unwrapCheatSheet(reactive, tags) {
+  let result = {
+    content: reactive.content,
+    date: reactive.date,
+    tags: tags.map((el) => ({ id: el.id, text: el.text })),
+    id: reactive.id,
+  }
+
+  if (reactive.link) { result.link = reactive.link }
+
+  return result
 }

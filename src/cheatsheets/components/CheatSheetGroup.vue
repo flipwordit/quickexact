@@ -1,8 +1,11 @@
 <template>
   <div>
-    <div class="card">
-      <div class="header" @mouseenter="mouseFocus = true"
-      @mouseleave="mouseFocus = false">
+    <div :class="'card ' + (isContainsLink ? 'link' : 'info')">
+      <div
+        class="header"
+        @mouseenter="mouseFocus = true"
+        @mouseleave="mouseFocus = false"
+      >
         <div class="title">
           <span
             class="tag"
@@ -13,13 +16,13 @@
           </span>
           <img
             class="expand ctrl-img"
-            v-if="!showChildren&&mouseFocus"
+            v-if="!showChildren && mouseFocus"
             src="/images/arrow-down.svg"
             @click.self="showChildren = !showChildren"
           />
           <img
             class="collapse ctrl-img"
-            v-if="showChildren&&mouseFocus"
+            v-if="showChildren && mouseFocus"
             @click.self="showChildren = !showChildren"
             src="/images/arrow-up.svg"
           />
@@ -34,9 +37,8 @@
             v-for="cheatsheet in showChildren ? group.items : []"
             :key="cheatsheet.id"
           >
-          <!-- v-if="cheatsheet.type === 'cheatsheet'" -->
+            <!-- v-if="cheatsheet.type === 'cheatsheet'" -->
             <CheatSheet
-
               :cheatsheet="cheatsheet"
               :commonTagsCount="group.commonTagsCount"
               :allTags="allTags"
@@ -45,7 +47,7 @@
               v-on:move-to-tags="$emit('move-to-tags', $event)"
             ></CheatSheet>
 
-             <Session
+            <Session
               v-if="cheatsheet.type === 'session'"
               :session="cheatsheet"
               :commonTagsCount="group.commonTagsCount"
@@ -120,6 +122,9 @@ export default {
     }
   },
   computed: {
+    isContainsLink() {
+      return this.group.items.findIndex((el) => el.link) >= 0
+    },
     tags() {
       if (this.group.commonTagsCount === -1) {
         return []
@@ -180,21 +185,25 @@ $sky: #8ef7a0;
 }
 
 .ctrl-img {
-  opacity: 0.5;
-  filter: alpha(Opacity=50);
-  opacity: 0.5;
+  width:16px
+}
+
+.info {
+  border: 2px solid #bbfdc6;
+}
+
+.link {
+  border: 2px solid #e6f6fe;
 }
 
 .card {
   clear: both;
-  border: 2px solid #e6f6fe;
   .header {
     //background: #e6f6fe;
     font-size: 1.125rem;
     padding: 0 1rem;
     line-height: 1.125rem;
     display: flex;
-    height: 2.5rem;
     justify-content: space-between;
     align-items: center;
 

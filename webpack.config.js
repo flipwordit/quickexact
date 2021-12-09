@@ -50,6 +50,15 @@ const config = {
       {
         test: /\.vue$/,
         loaders: 'vue-loader',
+        options: {
+          compilerOptions: {
+            isCustomElement: (tag) => [
+              'addBlock',
+              'addModes',
+              'search',
+            ].indexOf(tag) >= 0,
+          },
+        },
       },
       {
         test: /\.js$/,
@@ -187,7 +196,7 @@ module.exports = (env, argv) => {
           background: 'background/background',
           extensionPage: [
             'popup/popup',
-            'cheatsheets',
+            'cheatsheets/script',
             'src_jq/session/session',
             'src_jq/settings/settings',
           ],

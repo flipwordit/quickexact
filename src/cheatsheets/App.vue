@@ -32,6 +32,12 @@
           v-on:cancel-edit="cancelNewCheatSheet"
           :edit="true"
         ></CheatSheet>
+        <CheatSheet
+          v-for="ch in sesstionTabs"
+          :key="ch.id"
+          :cheatsheet="ch"
+          :readOnly="true"
+        ></CheatSheet>
       </addBlock>
       <search v-if="!newCheatSheet">
         <!-- <p>Selected: {{ selected }}</p> -->
@@ -52,13 +58,13 @@
           </div>
         </div>
         <div>
+          <!-- :showAll="
+              (groups.length === 1 || searchResults.length < 4)
+            " -->
           <CheatSheetGroup
             v-for="group in groups"
             :key="group.id"
             :group="group"
-            :showAll="
-              false && (groups.length === 1 || searchResults.length < 4)
-            "
             :showChildren="groups.length <= 2"
             :allTags="options"
             v-on:update-cheatsheet="updateCheatSheet($event)"
@@ -72,13 +78,20 @@
 </template>
 
 <script>
+import storage from '@/utils/storage'
 import Navbar from '@/common/Navbar'
 
 import CheatSheet from './components/CheatSheet'
 import CheatSheetGroup from './components/CheatSheetGroup'
 import Select2 from '@/common/Select2'
 
-import { unique, getSmartotekaFabric, getActiveTab } from '@/src_jq/common/commonFunctions'
+import {
+  unique,
+  getSmartotekaFabric,
+  getActiveTab,
+  getAllTabsByWindow,
+  unwrapCheatSheet,
+} from '@/src_jq/common/commonFunctions'
 import { cheatsheetsGroup } from '@/src_jq/common/cheatSheetsManage'
 import { getFilterByFilterTags } from '@/src_jq/common/mulitselectTagsHandlers'
 
@@ -102,6 +115,7 @@ export default {
       options: [],
       cheatSheets: [],
       newCheatSheet: null,
+      sesstionTabs: [],
       addMode: 'Cheat Sheet',
       addModes: [
         { title: 'Cheat Sheet' },
@@ -141,6 +155,8 @@ export default {
   },
   beforeMount() {},
   mounted() {
+    this.refresh()
+
     window.addEventListener(
       'keypress',
       (e) => {
@@ -203,22 +219,37 @@ export default {
     },
   },
   watch: {
-    addMode: function (value) {
+    addMode: async function (value) {
+      this.sesstionTabs = []
+
       switch (value) {
         case 'Cheat Sheet':
           break
 
         case 'Session':
+          let windowId = await storage.get('windowId')
+          getAllTabsByWindow(windowId).then((tabs) => {
+            let date = new Date().toLocaleString().replace(',', '')
+
+            let sessionTag = 'Session ' + date
+            this.newCheatSheet.tags.push({ id: sessionTag, text: sessionTag })
+
+            let i = 0
+            this.sesstionTabs = tabs.map((tab) => {
+              i += 1
+              return {
+                id: parseInt(date + '' + i, 10),
+                date: date,
+                content: this.tabLinkMarkdown(tab),
+                tags: [],
+                link: tab.url,
+              }
+            })
+          })
           break
         case 'Tab':
           getActiveTab().then((tab) => {
-            this.newCheatSheet.content = '![Icon]('
-                  + tab.favIconUrl
-                  + ')['
-                  + tab.title
-                  + ']('
-                  + tab.url
-                  + ')'
+            this.newCheatSheet.content = this.tabLinkMarkdown(tab)
             this.newCheatSheet.link = tab.url
           })
           break
@@ -228,6 +259,16 @@ export default {
     },
   },
   methods: {
+    tabLinkMarkdown(tab) {
+      let markdown = ''
+
+      if (tab.favIconUrl) {
+        markdown += '![Icon](' + tab.favIconUrl + ')'
+      }
+      markdown += '[' + tab.title + '](' + tab.url + ')'
+
+      return markdown
+    },
     moveToTags(tags) {
       this.selected = tags
     },
@@ -237,21 +278,46 @@ export default {
         id: date,
         date: date,
         content: '',
-        tags: this.selected,
+        tags: this.selected.slice(0),
       }
     },
     saveNewCheatSheet(cheatsheet) {
-      this.smartotekaFabric
-        .KBManager()
-        .addCheatSheet(cheatsheet)
-        .then(() => {
-          this.newCheatSheet = null
+      switch (this.addMode) {
+        case 'Cheat Sheet':
+        case 'Tab':
+          this.smartotekaFabric
+            .KBManager()
+            .addCheatSheet(cheatsheet)
+            .then(() => {
+              this.resetEditState()
 
-          this.refresh()
-        })
+              this.refresh()
+            })
+          break
+
+        case 'Session':
+          let tabsToSave = this.sesstionTabs.map((ch) => unwrapCheatSheet(ch, cheatsheet.tags))
+
+          this.smartotekaFabric
+            .KBManager()
+            .addCheatSheets(tabsToSave)
+            .then(() => {
+              this.resetEditState()
+
+              this.refresh()
+            })
+          break
+        default:
+          throw new Error('Unexpected addMode' + this.addMode)
+      }
+    },
+    resetEditState() {
+      this.newCheatSheet = null
+      this.addMode = 'Cheat Sheet'
+      this.sesstionTabs = []
     },
     cancelNewCheatSheet() {
-      this.newCheatSheet = null
+      this.resetEditState()
     },
     refresh() {
       this.smartotekaFabric
@@ -317,7 +383,7 @@ export default {
         return 0
       })
 
-      this.options = unique(allTags, (el) => el.id)
+      this.options = unique(allTags.filter(el => el), (el) => el.id)
     },
     updateCheatSheet(cheatsheet) {
       this.smartotekaFabric
