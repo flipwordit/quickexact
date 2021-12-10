@@ -93,6 +93,8 @@ import {
   openTabs,
   closeTabsByUrlIfOpen,
   getGroupTags,
+  getAllTabs,
+  closeTabs,
 } from '@/src_jq/common/commonFunctions'
 
 export default {
@@ -160,6 +162,19 @@ export default {
             handler: function () {
               let tabs = that.getTabs()
               closeTabsByUrlIfOpen(tabs)
+            },
+          },
+          {
+            text: 'Close others',
+            handler: function () {
+              let currentTabs = that.getTabs()
+
+              getAllTabs()
+                .then((tabs) => {
+                  let otherTabs = tabs.filter(tab => currentTabs.findIndex(st => st.url === tab.url) === -1)
+
+                  closeTabs(otherTabs)
+                })
             },
           },
         ])

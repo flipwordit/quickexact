@@ -332,8 +332,8 @@ export default {
             .map((ch) => unwrapCheatSheet(ch, cheatsheet.tags))
 
           if (tabsToSave.length === 0) {
-            alert('Select one or more tabs')
-            return
+            tabsToSave = this.sesstionTabs
+              .map((ch) => unwrapCheatSheet(ch, cheatsheet.tags))
           }
           this.smartotekaFabric
             .KBManager()
