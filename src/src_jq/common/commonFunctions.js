@@ -123,10 +123,8 @@ export function createWindow(url) {
   })
 }
 
-export function getAllTabs(currentWindow) {
-  return new Promise(r => chrome.tabs.query({
-    currentWindow: !!currentWindow,
-  }, (tabs) => r(tabs)))
+export function getAllTabs() {
+  return new Promise(r => chrome.tabs.query({ }, (tabs) => r(tabs)))
 }
 
 export function getAllTabsByWindow(windowId) {

@@ -1,11 +1,20 @@
 <template>
-  <div :class="'cheatsheet ' + (cheatsheet.link ? 'link' : 'info')">
+  <div
+    :class="
+      'cheatsheet ' +
+      (cheatsheet.link ? 'link' : 'info') +
+      (selected ? ' selected' : '')
+    "
+    @click="selected=!selected"
+    v-click-outside="clickOutside"
+
+  >
     <div
       class="content"
       @mouseenter="mouseFocus = true"
-      @mouseleave="showDropdown = mouseFocus = false"
+      @mouseleave="mouseFocus = false"
     >
-      <div :class="'tags '+ (editMode?'hide':'')" >
+      <div :class="'tags ' + (editMode ? 'hide' : '')">
         <span v-for="tag in tags" :key="tag.id" @click="moveToTags(tag.id)"
           >{{ tag.text }}&nbsp;</span
         >
@@ -13,7 +22,7 @@
       <div class="tags" v-if="editMode">
         <select2 :options="allTags" v-model="editTags"> </select2>
       </div>
-      <div class="code">
+      <div class="code" v-if="!hideContent">
         <Editor
           ref="editor"
           v-if="editMode"
@@ -26,19 +35,11 @@
         <img src="/images/save.svg" class="save" @click="save" />
         <img src="/images/x.svg" class="close" @click="cancel" />
       </div>
-      <div class="dropdown" v-if="mouseFocus && !editMode && !readOnly">
-        <div class="btn" @click.self="toggleDropdown" />
-        <transition name="grow">
-          <div class="menu" v-if="showDropdown" v-click-outside="closeDropdown">
-            <img class="edit" src="/images/edit.svg" @click="toEditMode" />
-            <img
-              class="edit"
-              src="/images/trash.svg"
-              @click="removeCheatSheet"
-            />
-          </div>
-        </transition>
-      </div>
+      <Menu
+        v-if="mouseFocus && !editMode && !readOnly"
+        :elements="menuElements"
+      >
+      </Menu>
     </div>
   </div>
 </template>
@@ -53,6 +54,7 @@ import Editor from './Editor'
 import Select2 from '@/common/Select2'
 import ClickOutsideEvent from '@/common/directives/ClickOutside'
 import { unwrapCheatSheet } from '@/src_jq/common/commonFunctions'
+import Menu from './menu'
 
 window.$ = $
 
@@ -63,6 +65,7 @@ export default {
     Select2,
     Editor,
     Viewer,
+    Menu,
   },
   directives: {
     'click-outside': ClickOutsideEvent,
@@ -90,16 +93,35 @@ export default {
       defautl: () => false,
       writable: true,
     },
+    hideContent: {
+      type: Boolean,
+      defautl: () => false,
+      writable: true,
+    },
+    selected: {
+      type: Boolean,
+      defautl: () => false,
+      writable: true,
+    },
   },
   data() {
     return {
-      showDropdown: false,
       editTags: [],
       editorOptions: {
         usageStatistics: false,
       },
       mouseFocus: false,
       editMode: false,
+      menuElements: [
+        {
+          image: '/images/edit.svg',
+          handler: () => this.toEditMode(),
+        },
+        {
+          image: '/images/trash.svg',
+          handler: () => this.removeCheatSheet(),
+        },
+      ],
     }
   },
   beforeMount: function () {
@@ -129,13 +151,19 @@ export default {
         this.updateEditTags()
       }
     },
-    'cheatsheet.tags'(value) {
-      if (value) {
-        this.updateEditTags()
-      }
+    selected(value) {
+      this.cheatsheet.selected = value
     },
   },
   methods: {
+    clickOutside(event) {
+      if (this.selected) {
+        console.log('outside!')
+        if (!(event.ctrlKey || event.shiftKey)) {
+          this.selected = false
+        }
+      }
+    },
     moveToTags(tagId) {
       let flag = true
       let tags = takeWhile(this.cheatsheet.tags, (el) => {
@@ -187,7 +215,6 @@ export default {
       this.editMode = true
     },
     removeCheatSheet() {
-      this.closeDropdown()
       this.$emit('remove-cheatsheet', this.cheatsheet)
     },
     save() {
@@ -195,7 +222,7 @@ export default {
       this.mouseFocus = false
 
       this.cheatsheet.tags = this.editTags.slice(0)
-      this.cheatsheet.content = this.$refs.editor.editor.getMarkdown()
+      if (this.$refs.editor) { this.cheatsheet.content = this.$refs.editor.editor.getMarkdown() }
 
       let saveCheatSheet = unwrapCheatSheet(this.cheatsheet, this.editTags)
 
@@ -218,15 +245,6 @@ export default {
         },
       )
     },
-    toggleDropdown() {
-      this.showDropdown = !this.showDropdown
-    },
-    closeDropdown() {
-      this.showDropdown = false
-    },
-    clickAway() {
-      this.showDropdown = false
-    },
   },
 }
 </script>
@@ -244,7 +262,11 @@ $sky: #e6f6fe;
   border: 1px solid #e6f6fe;
 }
 
-.hide{
+.selected {
+  border-width: 6px !important;
+}
+
+.hide {
   display: none !important;
 }
 
@@ -332,50 +354,6 @@ $sky: #e6f6fe;
       /* Set the hr color */
       color: #e6f6fe; /* old IE */
       background-color: #e6f6fe; /* Modern Browsers */
-    }
-
-    .dropdown {
-      position: absolute;
-      right: 5px;
-      top: 5px;
-
-      padding: 5px;
-      background: transparent;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-
-      .btn {
-        width: 10px;
-        height: 10px;
-        border-left: 6px solid transparent;
-        border-right: 6px solid transparent;
-        border-top: 6px solid #9dd5f1;
-      }
-
-      .menu {
-        min-width: 40px;
-        min-height: 2em;
-        position: absolute;
-        top: 9px;
-        left: 0px;
-        background: white;
-        flex-direction: column;
-        font-size: 0.95rem;
-        border: 1px solid #9dd5f1;
-        border-radius: 5px;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, 20px);
-        grid-column-gap: 5px;
-        img {
-          margin: 2px 2px;
-          width: 32px;
-          &:hover {
-            background: darken(#e6f6fe, 5);
-          }
-        }
-      }
     }
 
     .tags {

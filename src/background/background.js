@@ -27,9 +27,9 @@ async function getOrCreatePopup(url, width, height) {
   )
 
   let activateTab = async (tab) => {
-    // let value = {}
-    // value[url] = tab.id
-    // await storage.set(value)
+    let value = {}
+    value[url] = tab.id
+    await storage.set(value)
   }
 
   let create = () => chrome.windows.create(

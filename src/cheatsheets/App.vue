@@ -11,11 +11,10 @@
     <main>
       <div id="speedDealHelp"></div>
 
-      <addBlock v-if="newCheatSheet">
+      <addBlock v-if="newCheatSheet" class="row">
         <addModes class="selectElementInLine">
-          <!-- .filter((el) => !el.isAllow || el.isAllow()) -->
           <div
-            v-for="v in addModes"
+            v-for="v in addModes.filter((el) => !el.isAllow || el.isAllow())"
             :key="v.title"
             @click="addMode = v.title"
             :class="
@@ -26,11 +25,13 @@
           </div>
         </addModes>
         <CheatSheet
+          style="min-width: 350px"
           :cheatsheet="newCheatSheet"
           :allTags="options"
           v-on:update-cheatsheet="saveNewCheatSheet"
           v-on:cancel-edit="cancelNewCheatSheet"
           :edit="true"
+          :hideContent="addMode === 'Session'"
         ></CheatSheet>
         <CheatSheet
           v-for="ch in sesstionTabs"
@@ -39,7 +40,16 @@
           :readOnly="true"
         ></CheatSheet>
       </addBlock>
-      <search v-if="!newCheatSheet">
+
+      <div
+        v-if="newCheatSheet && addMode === 'Session'"
+        @click="distributeTabToGroups = !distributeTabToGroups"
+        style="cursor: pointer;margin-top:10px;margin-bottom:10px;"
+      >
+        {{ distributeTabToGroups ? "Close groups" : "Distribute by groups" }}
+      </div>
+
+      <search v-if="!newCheatSheet || distributeTabToGroups">
         <!-- <p>Selected: {{ selected }}</p> -->
         <select2
           :options="options"
@@ -111,6 +121,7 @@ export default {
   },
   data() {
     return {
+      distributeTabToGroups: false,
       selected: [],
       options: [],
       cheatSheets: [],
@@ -296,8 +307,14 @@ export default {
           break
 
         case 'Session':
-          let tabsToSave = this.sesstionTabs.map((ch) => unwrapCheatSheet(ch, cheatsheet.tags))
+          let tabsToSave = this.sesstionTabs
+            .filter(el => el.selected)
+            .map((ch) => unwrapCheatSheet(ch, cheatsheet.tags))
 
+          if (tabsToSave.length === 0) {
+            alert('Select one or more tabs')
+            return
+          }
           this.smartotekaFabric
             .KBManager()
             .addCheatSheets(tabsToSave)
@@ -315,6 +332,7 @@ export default {
       this.newCheatSheet = null
       this.addMode = 'Cheat Sheet'
       this.sesstionTabs = []
+      this.distributeTabToGroups = false
     },
     cancelNewCheatSheet() {
       this.resetEditState()
@@ -383,7 +401,10 @@ export default {
         return 0
       })
 
-      this.options = unique(allTags.filter(el => el), (el) => el.id)
+      this.options = unique(
+        allTags.filter((el) => el),
+        (el) => el.id,
+      )
     },
     updateCheatSheet(cheatsheet) {
       this.smartotekaFabric

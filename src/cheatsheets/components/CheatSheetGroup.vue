@@ -27,6 +27,11 @@
             src="/images/arrow-up.svg"
           />
         </div>
+        <Menu
+          v-if="mouseFocus && menuElements.length > 0"
+          :elements="menuElements"
+        >
+        </Menu>
         <!-- <img class="add" src="/images/plus-square.svg" @click="addCheatSheet" /> -->
         <!-- v-if="group.items.findIndex((el) => el.isNew) < 0" -->
       </div>
@@ -46,16 +51,6 @@
               v-on:remove-cheatsheet="$emit('remove-cheatsheet', $event)"
               v-on:move-to-tags="$emit('move-to-tags', $event)"
             ></CheatSheet>
-
-            <Session
-              v-if="cheatsheet.type === 'session'"
-              :session="cheatsheet"
-              :commonTagsCount="group.commonTagsCount"
-              :allTags="allTags"
-              v-on:update-cheatsheet="$emit('update-session', $event)"
-              v-on:remove-cheatsheet="$emit('remove-session', $event)"
-              v-on:move-to-tags="$emit('move-to-tags', $event)"
-            ></Session>
           </div>
         </div>
         <div class="row" v-if="group.groups.length > 0 && showChildren">
@@ -85,14 +80,19 @@
 <script>
 import { takeWhile } from 'lodash'
 import CheatSheet from './CheatSheet'
-import Session from './Session'
+import Menu from './menuText'
+import {
+  openTabsInNewWindow,
+  openTabs,
+  closeTabsByUrlIfOpen,
+} from '@/src_jq/common/commonFunctions'
 
 export default {
   name: 'CheatSheetGroup',
   emits: ['update-cheatsheet', 'remove-cheatsheet', 'move-to-tags'],
   components: {
     CheatSheet,
-    Session,
+    Menu,
   },
   props: {
     group: {
@@ -122,6 +122,51 @@ export default {
     }
   },
   computed: {
+    menuElements() {
+      if (this.isContainsLink) {
+        let that = this
+        return [
+          {
+            text: 'Open in current window',
+            handler: () => {
+              let tabs = that.getTabs()
+              openTabs(tabs)
+            },
+          },
+          {
+            text: 'Open in new window',
+            handler: () => {
+              let tabs = that.getTabs()
+              openTabsInNewWindow(tabs)
+            },
+          },
+          {
+            text: 'Close all and dublicates',
+            handler: function () {
+              let tabs = that.getTabs()
+              closeTabsByUrlIfOpen(tabs)
+            },
+          },
+          // {
+          //   name: 'Replace current',
+          //   action: function () {
+          //     sessionGridOptions.onReplacing(params.node.data)
+          //       .then((tabs) => params.node.setDataValue('tabs', tabs))
+          //   },
+          // },
+          // {
+          //   name: 'Delete',
+          //   action: function () {
+          //     sessionGridOptions.onDeleting(params.node.data)
+          //       .then(() => sessionGridOptions.api.applyTransaction({
+          //         remove: [params.node.data],
+          //       }))
+          //   },
+        ]
+      }
+
+      return []
+    },
     isContainsLink() {
       return this.group.items.findIndex((el) => el.link) >= 0
     },
@@ -142,9 +187,11 @@ export default {
     // },
   },
   methods: {
-    // addCheatSheet() {
-    //   alert('заглушка')
-    // },
+    getTabs() {
+      return this.group.items
+        .filter((el) => el.link)
+        .map((el) => ({ url: el.link }))
+    },
     moveToTags(tagId) {
       let flag = true
       let tags = takeWhile(this.tags, (el) => {
@@ -176,16 +223,10 @@ $sky: #8ef7a0;
     display: inline;
     float: left;
   }
-
-  .row:after {
-    content: "";
-    display: table;
-    clear: both;
-  }
 }
 
 .ctrl-img {
-  width:16px
+  width: 16px;
 }
 
 .info {
@@ -199,7 +240,7 @@ $sky: #8ef7a0;
 .card {
   clear: both;
   .header {
-    //background: #e6f6fe;
+    position: relative;
     font-size: 1.125rem;
     padding: 0 1rem;
     line-height: 1.125rem;
@@ -208,8 +249,8 @@ $sky: #8ef7a0;
     align-items: center;
 
     .title {
+      min-height: 1.5rem;
       line-height: 1.5rem;
-      // background: violet;
       vertical-align: middle;
       font-weight: 500;
       color: #194c66;
