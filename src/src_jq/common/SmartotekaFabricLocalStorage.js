@@ -356,14 +356,17 @@ class SmartotekaFabricLocalStorage {
         })
       }
 
-      deleteCheatSheet(cheatSheet) {
+      deleteCheatSheets(deleteCheatSheets) {
         return new Promise(resolve => {
           parent.#getCheatSheets()
             .then(cheatSheets => {
-              let index = cheatSheets.findIndex(el => el.content === cheatSheet.content && el.id === cheatSheet.id)
-              if (index !== -1) {
-                cheatSheets.splice(index, 1)
-              }
+              deleteCheatSheets.forEach(cheatSheet => {
+                let index = cheatSheets.findIndex(el => el.content === cheatSheet.content && el.id === cheatSheet.id)
+                if (index !== -1) {
+                  cheatSheets.splice(index, 1)
+                }
+              })
+
               parent.#saveCheatSheets(cheatSheets)
                 .then(() => resolve())
             })

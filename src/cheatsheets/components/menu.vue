@@ -1,6 +1,6 @@
 <template>
   <div class="dropdown">
-    <div class="btn" @click="toggleDropdown" />
+    <div class="btn" @click="toggleDropdown($event)" />
     <transition name="grow">
       <div class="menu" v-if="showDropdown" v-click-outside="closeDropdown">
         <img
@@ -36,8 +36,9 @@ export default {
     }
   },
   methods: {
-    toggleDropdown() {
+    toggleDropdown(event) {
       this.showDropdown = !this.showDropdown
+      event.stopPropagation()
     },
     closeDropdown() {
       this.showDropdown = false

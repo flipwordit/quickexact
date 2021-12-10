@@ -38,6 +38,8 @@
           :key="ch.id"
           :cheatsheet="ch"
           :readOnly="true"
+          draggable="true"
+          @dragstart="startSessionTabDrag($event, ch)"
         ></CheatSheet>
       </addBlock>
 
@@ -46,7 +48,11 @@
         @click="distributeTabToGroups = !distributeTabToGroups"
         style="cursor: pointer; margin-top: 10px; margin-bottom: 10px"
       >
-        {{ distributeTabToGroups ? "Close groups" : "Distribute by groups" }}
+        {{
+          distributeTabToGroups
+            ? "Close Drag & drop mode"
+            : "Drag & drop by groups"
+        }}
       </div>
 
       <search v-if="!newCheatSheet || distributeTabToGroups">
@@ -78,8 +84,10 @@
             :showChildren="groups.length <= 2"
             :allTags="options"
             v-on:update-cheatsheet="updateCheatSheet($event)"
-            v-on:remove-cheatsheet="removeCheatSheet($event)"
+            v-on:remove-cheatsheets="removeCheatSheets($event)"
             v-on:move-to-tags="moveToTags($event)"
+            v-on:drop-session-tabs-to-group="sessionTabsToGroup($event)"
+            v-on:drop-cheat-sheets-to-group="dropCheatSheetsToGroup($event)"
           />
         </div>
       </search>
@@ -101,6 +109,7 @@ import {
   getActiveTab,
   getAllTabsByWindow,
   unwrapCheatSheet,
+  getGroupTags,
 } from '@/src_jq/common/commonFunctions'
 import { cheatsheetsGroup } from '@/src_jq/common/cheatSheetsManage'
 import { getFilterByFilterTags } from '@/src_jq/common/mulitselectTagsHandlers'
@@ -240,16 +249,16 @@ export default {
         case 'Session':
           let windowId = await storage.get('windowId')
           getAllTabsByWindow(windowId).then((tabs) => {
-            let date = new Date().toLocaleString().replace(',', '')
+            let date = new Date()
 
-            let sessionTag = 'Session ' + date
+            let sessionTag = 'Session ' + date.toLocaleString().replace(',', '')
             this.newCheatSheet.tags.push({ id: sessionTag, text: sessionTag })
 
             let i = 0
             this.sesstionTabs = tabs.map((tab) => {
               i += 1
               return {
-                id: parseInt(date + '' + i, 10),
+                id: parseInt(date.getTime() + '' + i, 10),
                 date: date,
                 content: this.tabLinkMarkdown(tab),
                 tags: [],
@@ -270,6 +279,17 @@ export default {
     },
   },
   methods: {
+    startSessionTabDrag(evt, item) {
+      // TODO: сделать перетаскивание группами
+      // TODO: сделать перемещение и копирование в группы
+
+      let ids = item.selected
+        ? this.sesstionTabs.filter((el) => el.selected).map((el) => el.id)
+        : [item.id]
+      evt.dataTransfer.dropEffect = 'copy'
+      evt.dataTransfer.effectAllowed = 'copy'
+      evt.dataTransfer.setData('data', JSON.stringify({ ids: ids, type: 'sessionTabs' }))
+    },
     tabLinkMarkdown(tab) {
       let markdown = ''
 
@@ -412,12 +432,46 @@ export default {
         .updateCheatSheets([cheatsheet])
         .then(() => this.refresh())
     },
-    removeCheatSheet(cheatsheet) {
+    removeCheatSheets(cheatsheets) {
       if (confirm('Are you sure?')) {
         this.smartotekaFabric
           .KBManager()
-          .deleteCheatSheet(cheatsheet)
+          .deleteCheatSheets(cheatsheets)
           .then(() => this.refresh())
+      }
+    },
+    sessionTabsToGroup(event) {
+      let tabsIds = event.ids
+      let group = event.group
+      let tags = getGroupTags(group)
+
+      let cheatSheets = this.sesstionTabs
+        .filter((el) => tabsIds.indexOf(el.id) >= 0)
+        .map(el => unwrapCheatSheet(el, tags))
+
+      if (cheatSheets.length > 0) {
+        this.smartotekaFabric
+          .KBManager()
+          .addCheatSheets(cheatSheets)
+          .then(() => {
+            cheatSheets.forEach(el => group.items.push(el))
+          })
+      }
+    },
+    dropCheatSheetsToGroup(event) {
+      let group = event.group
+      let tags = getGroupTags(group)
+
+      let cheatSheets = event.cheatsheets
+        .map(el => unwrapCheatSheet(el, tags))
+
+      if (cheatSheets.length > 0) {
+        this.smartotekaFabric
+          .KBManager()
+          .updateCheatSheets(cheatSheets)
+          .then(() => {
+            cheatSheets.forEach(el => group.items.push(el))
+          })
       }
     },
   },

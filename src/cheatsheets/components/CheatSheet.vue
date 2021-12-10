@@ -1,6 +1,5 @@
 <template>
-  <div
-    :class="
+  <div    :class="
       'cheatsheet ' +
       (cheatsheet.link ? 'link' : 'info') +
       (selected ? ' selected' : '')
@@ -155,7 +154,13 @@ export default {
     clickOutside(event) {
       if (this.selected) {
         console.log('outside!')
-        if (!(event.ctrlKey || event.shiftKey)) {
+        if (!(event.ctrlKey || event.shiftKey
+        || (
+          event.target.parentElement
+          && (
+            event.target.parentElement.classList.contains('dropdown')
+            || event.target.parentElement.classList.contains('menu')
+          )))) {
           this.selected = false
         }
       }
@@ -180,9 +185,9 @@ export default {
       )
       codeEls.css('position', 'relative')
 
-      codeEls.on('mouseleave', function () {
-        $('img', this).hide()
-      })
+      // codeEls.on('mouseleave', function () {
+      //   $('img', this).hide()
+      // })
       codeEls.on('mouseenter', function () {
         $('img', this).show()
       })
@@ -211,7 +216,7 @@ export default {
       this.editMode = true
     },
     removeCheatSheet() {
-      this.$emit('remove-cheatsheet', this.cheatsheet)
+      this.$emit('remove-cheatsheets', [this.cheatsheet])
     },
     save() {
       this.editMode = false
@@ -253,16 +258,16 @@ export default {
 $sky: #e6f6fe;
 
 .info {
-  border: 1px solid #bbfdc6;
+  border: 2px solid #bbfdc6;
 }
 
 .link {
-  border: 1px solid #e6f6fe;
+  border: 2px solid #e6f6fe;
 }
 
 .selected {
-  border-width: 0.3rem !important;
-  margin: 0.2rem 0.2rem !important;
+  border-width: 4px !important;
+  margin: 6px 6px !important;
 }
 
 .hide {
@@ -277,7 +282,7 @@ $sky: #e6f6fe;
   font-size: 1rem;
   transition: all 0.2s;
   border-radius: 5px;
-  margin: 0.5rem 0.5rem;
+  margin: 8px 8px;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
   text-align: left;
   color: $black;

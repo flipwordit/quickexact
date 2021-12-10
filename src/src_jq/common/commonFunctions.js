@@ -124,7 +124,7 @@ export function createWindow(url) {
 }
 
 export function getAllTabs() {
-  return new Promise(r => chrome.tabs.query({ }, (tabs) => r(tabs)))
+  return new Promise(r => chrome.tabs.query({}, (tabs) => r(tabs)))
 }
 
 export function getAllTabsByWindow(windowId) {
@@ -193,4 +193,16 @@ export function unwrapCheatSheet(reactive, tags) {
   if (reactive.link) { result.link = reactive.link }
 
   return result
+}
+
+export function getGroupTags(group) {
+  if (group.commonTagsCount === -1) {
+    return []
+  }
+
+  while (!group.items.length > 0) {
+    group = group.groups[0]
+  }
+
+  return group.items[0].tags.slice(0, group.commonTagsCount)
 }

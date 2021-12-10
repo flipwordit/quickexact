@@ -1,6 +1,11 @@
 <template>
   <div>
-    <div :class="'card ' + (isContainsLink ? 'link' : 'info')">
+    <div
+      :class="'card ' + (isContainsLink ? 'link' : 'info')"
+      @drop="onDrop($event)"
+      @dragleave="dragLeave($event)"
+      @dragover="dragOver($event)"
+    >
       <div
         class="header"
         @mouseenter="mouseFocus = true"
@@ -48,8 +53,10 @@
               :commonTagsCount="group.commonTagsCount"
               :allTags="allTags"
               v-on:update-cheatsheet="$emit('update-cheatsheet', $event)"
-              v-on:remove-cheatsheet="$emit('remove-cheatsheet', $event)"
+              v-on:remove-cheatsheets="$emit('remove-cheatsheets', $event)"
               v-on:move-to-tags="$emit('move-to-tags', $event)"
+              draggable="true"
+              @dragstart="startCheatSheetDrag($event, cheatsheet)"
             ></CheatSheet>
           </div>
         </div>
@@ -67,7 +74,7 @@
               :showChildren="showAll"
               :allTags="allTags"
               v-on:update-cheatsheet="$emit('update-cheatsheet', $event)"
-              v-on:remove-cheatsheet="$emit('remove-cheatsheet', $event)"
+              v-on:remove-cheatsheets="$emit('remove-cheatsheets', $event)"
               v-on:move-to-tags="$emit('move-to-tags', $event)"
             ></CheatSheetGroup>
           </div>
@@ -85,11 +92,17 @@ import {
   openTabsInNewWindow,
   openTabs,
   closeTabsByUrlIfOpen,
+  getGroupTags,
 } from '@/src_jq/common/commonFunctions'
 
 export default {
   name: 'CheatSheetGroup',
-  emits: ['update-cheatsheet', 'remove-cheatsheet', 'move-to-tags'],
+  emits: [
+    'update-cheatsheet',
+    'remove-cheatsheets',
+    'move-to-tags',
+    'drop-cheatsheet-to-group',
+  ],
   components: {
     CheatSheet,
     Menu,
@@ -123,9 +136,11 @@ export default {
   },
   computed: {
     menuElements() {
+      let menuItems = []
+
       if (this.isContainsLink) {
         let that = this
-        return [
+        menuItems = menuItems.concat([
           {
             text: 'Open in current window',
             handler: () => {
@@ -147,50 +162,55 @@ export default {
               closeTabsByUrlIfOpen(tabs)
             },
           },
-          // {
-          //   name: 'Replace current',
-          //   action: function () {
-          //     sessionGridOptions.onReplacing(params.node.data)
-          //       .then((tabs) => params.node.setDataValue('tabs', tabs))
-          //   },
-          // },
-          // {
-          //   name: 'Delete',
-          //   action: function () {
-          //     sessionGridOptions.onDeleting(params.node.data)
-          //       .then(() => sessionGridOptions.api.applyTransaction({
-          //         remove: [params.node.data],
-          //       }))
-          //   },
-        ]
+        ])
       }
 
-      return []
+      if (this.isContainsSelected) {
+        let that = this
+        menuItems = menuItems.concat([
+          {
+            text: 'Remove selected',
+            handler: () => {
+              let cheatsheets = that.getSelected()
+
+              that.$emit('remove-cheatsheets', cheatsheets)
+            },
+          },
+        ])
+      }
+
+      return menuItems
     },
     isContainsLink() {
       return this.group.items.findIndex((el) => el.link) >= 0
     },
+    isContainsSelected() {
+      return this.group.items.findIndex((el) => el.selected) >= 0
+    },
     tags() {
-      if (this.group.commonTagsCount === -1) {
-        return []
-      }
-
-      let group = this.group
-      while (!group.items.length > 0) {
-        group = group.groups[0]
-      }
-
-      return group.items[0].tags.slice(0, this.group.commonTagsCount)
+      return getGroupTags(this.group)
     },
     // isManyChildren() {
     //   return this.group.items.length > 0 || this.group.groups.length > 0
     // },
   },
   methods: {
+    startCheatSheetDrag(evt, item) {
+      let cheatsheets = item.selected
+        ? this.items.filter((el) => el.selected)
+        : [item]
+      evt.dataTransfer.dropEffect = 'move'
+      evt.dataTransfer.effectAllowed = 'move'
+      evt.dataTransfer.setData('data', JSON.stringify({ cheatsheets: cheatsheets, type: 'moveCheatSheets' }))
+    },
+    getSelected() {
+      return this.group.items.filter((el) => el.selected)
+    },
     getTabs() {
-      return this.group.items
-        .filter((el) => el.link)
-        .map((el) => ({ url: el.link }))
+      let items = this.group.items
+      items = this.isContainsSelected ? this.getSelected() : items
+
+      return items.filter((el) => el.link).map((el) => ({ url: el.link }))
     },
     moveToTags(tagId) {
       let flag = true
@@ -202,6 +222,34 @@ export default {
       })
 
       this.$emit('move-to-tags', tags)
+    },
+    dragOver(event) {
+      event.preventDefault()
+    },
+    dragLeave(event) {
+      event.preventDefault()
+      event.stopPropagation()
+    },
+    onDrop(evt) {
+      const dataStr = evt.dataTransfer.getData('data')
+      let data = JSON.parse(dataStr)
+
+      switch (data.type) {
+        case 'sessionTabs':
+          this.$emit('drop-session-tabs-to-group', {
+            ids: data.ids,
+            group: this.group,
+          })
+          break
+        case 'moveCheatSheets':
+          this.$emit('drop-cheat-sheets-to-group', {
+            cheatsheets: data.cheatsheets,
+            group: this.group,
+          })
+          break
+        default:
+          throw new Error('Unexpected type of drop ' + data.type)
+      }
     },
   },
 }
