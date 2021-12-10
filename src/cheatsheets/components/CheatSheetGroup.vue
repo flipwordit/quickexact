@@ -238,7 +238,10 @@ $sky: #8ef7a0;
 }
 
 .card {
+  padding-top: 10px;
+  padding-bottom: 10px;
   clear: both;
+
   .header {
     position: relative;
     font-size: 1.125rem;

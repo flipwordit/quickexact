@@ -44,7 +44,7 @@
       <div
         v-if="newCheatSheet && addMode === 'Session'"
         @click="distributeTabToGroups = !distributeTabToGroups"
-        style="cursor: pointer;margin-top:10px;margin-bottom:10px;"
+        style="cursor: pointer; margin-top: 10px; margin-bottom: 10px"
       >
         {{ distributeTabToGroups ? "Close groups" : "Distribute by groups" }}
       </div>
@@ -57,7 +57,7 @@
           :searchResults="searchResults"
         >
         </select2>
-        <div class="selectElementInLine">
+        <!-- <div class="selectElementInLine">
           <div
             v-for="v in selectVariants"
             :key="v.title"
@@ -66,8 +66,8 @@
           >
             {{ v.title }}
           </div>
-        </div>
-        <div>
+        </div> -->
+        <div style="margin-top: 10px">
           <!-- :showAll="
               (groups.length === 1 || searchResults.length < 4)
             " -->
@@ -308,7 +308,7 @@ export default {
 
         case 'Session':
           let tabsToSave = this.sesstionTabs
-            .filter(el => el.selected)
+            .filter((el) => el.selected)
             .map((ch) => unwrapCheatSheet(ch, cheatsheet.tags))
 
           if (tabsToSave.length === 0) {
