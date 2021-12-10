@@ -5,9 +5,8 @@
       (cheatsheet.link ? 'link' : 'info') +
       (selected ? ' selected' : '')
     "
-    @click="selected=!selected"
+    @click="selected = !selected"
     v-click-outside="clickOutside"
-
   >
     <div
       class="content"
@@ -98,14 +97,10 @@ export default {
       defautl: () => false,
       writable: true,
     },
-    selected: {
-      type: Boolean,
-      defautl: () => false,
-      writable: true,
-    },
   },
   data() {
     return {
+      selected: false,
       editTags: [],
       editorOptions: {
         usageStatistics: false,
@@ -153,6 +148,7 @@ export default {
     },
     selected(value) {
       this.cheatsheet.selected = value
+      return true
     },
   },
   methods: {
@@ -222,7 +218,9 @@ export default {
       this.mouseFocus = false
 
       this.cheatsheet.tags = this.editTags.slice(0)
-      if (this.$refs.editor) { this.cheatsheet.content = this.$refs.editor.editor.getMarkdown() }
+      if (this.$refs.editor) {
+        this.cheatsheet.content = this.$refs.editor.editor.getMarkdown()
+      }
 
       let saveCheatSheet = unwrapCheatSheet(this.cheatsheet, this.editTags)
 
@@ -263,7 +261,8 @@ $sky: #e6f6fe;
 }
 
 .selected {
-  border-width: 6px !important;
+  border-width: 0.3rem !important;
+  margin: 0.2rem 0.2rem !important;
 }
 
 .hide {
