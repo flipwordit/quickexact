@@ -54,7 +54,6 @@ export default {
       }
 
       redirectCurrentTab(url)
-      window.close()
     },
   },
 }

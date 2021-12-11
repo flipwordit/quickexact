@@ -35,7 +35,7 @@
       </div>
       <Menu
         v-if="mouseFocus && !editMode && !readOnly"
-        :elements="menuElements"
+        :elements="menuElements" :textElements="textMenuElements"
       >
       </Menu>
     </div>
@@ -51,7 +51,9 @@ import Viewer from './Viewer'
 import Editor from './Editor'
 import Select2 from '@/common/Select2'
 import ClickOutsideEvent from '@/common/directives/ClickOutside'
-import { unwrapCheatSheet } from '@/src_jq/common/commonFunctions'
+import {
+  unwrapCheatSheet, closeTabsByUrlIfOpen, openTabsInNewWindow, openTabs,
+} from '@/src_jq/common/commonFunctions'
 import Menu from './menu'
 
 window.$ = $
@@ -130,6 +132,38 @@ export default {
     }
   },
   computed: {
+    textMenuElements() {
+      let menuItems = []
+
+      if (this.cheatsheet.link) {
+        let that = this
+        menuItems = menuItems.concat([
+          {
+            text: 'Open in current window',
+            handler: () => {
+              let tabs = that.getTabs()
+              openTabs(tabs)
+            },
+          },
+          {
+            text: 'Open in new window',
+            handler: () => {
+              let tabs = that.getTabs()
+              openTabsInNewWindow(tabs)
+            },
+          },
+          {
+            text: 'Close',
+            handler: function () {
+              let tabs = that.getTabs()
+              closeTabsByUrlIfOpen(tabs)
+            },
+          },
+        ])
+      }
+
+      return menuItems
+    },
     tags() {
       this.updateEditTags()
 
@@ -151,6 +185,9 @@ export default {
     },
   },
   methods: {
+    getTabs() {
+      return [{ url: this.cheatsheet.link }]
+    },
     clickOutside(event) {
       if (this.selected) {
         console.log('outside!')

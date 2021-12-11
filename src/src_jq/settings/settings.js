@@ -1,81 +1,75 @@
-import { getSmartotekaFabric} from '@/src_jq/common/commonFunctions'
+import { getSmartotekaFabric } from '@/src_jq/common/commonFunctions'
 
-let smartotekaFabric = getSmartotekaFabric();
+let smartotekaFabric = getSmartotekaFabric()
 
 $(function () {
-    registerSmartotekaHandlers();
-    registerSpeedDealHandlers();
+  registerSmartotekaHandlers()
+  registerSpeedDealHandlers()
 
-    function registerSpeedDealHandlers() {
-        $('#export-spead-deal-btn')
-            .click((e) => {
-                smartotekaFabric
-                    .queriesProvider()
-                    .exportSpeedDeal("SpeedDeal" + new Date().toJSON().replaceAll(":", "_"));
-            });
+  function registerSpeedDealHandlers() {
+    $('#export-spead-deal-btn')
+      .click((e) => {
+        smartotekaFabric
+          .queriesProvider()
+          .exportSpeedDeal('SpeedDeal' + new Date().toJSON().replaceAll(':', '_'))
+      })
 
-        let form = document.querySelector('#import-spead-deal-form');
-        let file = document.querySelector('#import-spead-deal-file');
+    let form = document.querySelector('#import-spead-deal-form')
+    let file = document.querySelector('#import-spead-deal-file')
 
-        form.addEventListener('submit', (event) => {
+    form.addEventListener('submit', (event) => {
+      // Stop the form from reloading the page
+      event.preventDefault()
 
-            // Stop the form from reloading the page
-            event.preventDefault();
+      // If there's no file, do nothing
+      if (!file.value.length) { return }
 
-            // If there's no file, do nothing
-            if (!file.value.length)
-                return;
+      // Create a new FileReader() object
+      let reader = new FileReader()
 
-            // Create a new FileReader() object
-            let reader = new FileReader();
+      // Setup the callback event to run when the file is read
+      reader.onload = (event) => {
+        let str = event.target.result
+        let json = JSON.parse(str)
 
-            // Setup the callback event to run when the file is read
-            reader.onload = (event) => {
-                let str = event.target.result;
-                let json = JSON.parse(str);
+        smartotekaFabric.KBManager().importSpeedDeal(json)
+      }
 
-                smartotekaFabric.KBManager().importSpeedDeal(json);
-            };
+      // Read the file
+      reader.readAsText(file.files[0])
+    })
+  }
 
-            // Read the file
-            reader.readAsText(file.files[0]);
+  function registerSmartotekaHandlers() {
+    $('#export-all-btn').click((e) => {
+      smartotekaFabric
+        .queriesProvider()
+        .export(new Date().toJSON().replaceAll(':', '_'))
+    })
 
-        });
-    }
+    let form = document.querySelector('#import-form')
+    let file = document.querySelector('#import-file')
 
-    function registerSmartotekaHandlers() {
-        $('#export-all-btn').click((e) => {
-            smartotekaFabric
-                .queriesProvider()
-                .export(new Date().toJSON().replaceAll(":", "_"));
-        });
+    form.addEventListener('submit', (event) => {
+      // Stop the form from reloading the page
+      event.preventDefault()
 
-        let form = document.querySelector('#import-form');
-        let file = document.querySelector('#import-file');
+      // If there's no file, do nothing
+      if (!file.value.length) { return }
 
-        form.addEventListener('submit', (event) => {
+      // Create a new FileReader() object
+      let reader = new FileReader()
 
-            // Stop the form from reloading the page
-            event.preventDefault();
+      // Setup the callback event to run when the file is read
+      reader.onload = (event) => {
+        let str = event.target.result
+        let json = JSON.parse(str)
 
-            // If there's no file, do nothing
-            if (!file.value.length)
-                return;
+        smartotekaFabric.KBManager().import(json)
+      }
 
-            // Create a new FileReader() object
-            let reader = new FileReader();
-
-            // Setup the callback event to run when the file is read
-            reader.onload = (event) => {
-                let str = event.target.result;
-                let json = JSON.parse(str);
-
-                smartotekaFabric.KBManager().import(json);
-            };
-
-            // Read the file
-            reader.readAsText(file.files[0]);
-
-        });
-    }
+      // Read the file
+      reader.readAsText(file.files[0])
+    })
+  }
 })

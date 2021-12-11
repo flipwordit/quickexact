@@ -10,6 +10,16 @@
           :src="el.image"
           @click="el.handler"
         />
+        <ul class="menu" v-if="textElements.length>0">
+          <li
+            v-for="el in textElements"
+            :key="el.text"
+            class="edit"
+            @click="clickHandler(el)"
+          >
+            {{ el.text }}
+          </li>
+        </ul>
       </div>
     </transition>
   </div>
@@ -26,6 +36,10 @@ export default {
   },
   props: {
     elements: {
+      type: Array,
+      default: () => [],
+    },
+    textElements: {
       type: Array,
       default: () => [],
     },
@@ -46,12 +60,17 @@ export default {
     clickAway() {
       this.showDropdown = false
     },
+    clickHandler(el) {
+      el.handler()
+    },
   },
 }
 </script>
 
 <style lang="scss" scoped>
 .dropdown {
+  min-height: 2em;
+  min-width: 2em;
   position: absolute;
   right: 5px;
   top: 5px;
@@ -71,7 +90,8 @@ export default {
     border-top: 6px solid #9dd5f1;
   }
 
-  .menu {
+  div.menu {
+    z-index: 1;
     min-width: 40px;
     min-height: 2em;
     position: absolute;
@@ -91,6 +111,24 @@ export default {
       &:hover {
         background: darken(#e6f6fe, 5);
       }
+    }
+  }
+
+  ul.menu {
+    z-index: 1;
+    min-width: 200px;
+    background: white;
+    flex-direction: column;
+    width: 10rem;
+    font-size: 0.95rem;
+    border: 1px solid #9dd5f1;
+    border-radius: 5px;
+    display: flex;
+    li {
+      //padding: 0.5rem;
+      transition: all 0.1s;
+      border-bottom: 1px solid #e6f6fe;
+      min-height: 2em;
     }
   }
 }

@@ -24,7 +24,6 @@ const config = {
   entry: {
     'background/background': './background/background.js',
     'popup/popup': './popup/popup.js',
-    'src_jq/session/session': './src_jq/session/session.js',
     'src_jq/settings/settings': './src_jq/settings/settings.js',
     'cheatsheets/script': './cheatsheets/script.js',
   },
@@ -197,7 +196,6 @@ module.exports = (env, argv) => {
           extensionPage: [
             'popup/popup',
             'cheatsheets/script',
-            'src_jq/session/session',
             'src_jq/settings/settings',
           ],
         },
