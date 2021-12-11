@@ -16,28 +16,28 @@
 import storage from '@/utils/storage'
 import { getActiveTab, createDefaultSession, getSmartotekaFabric } from '@/src_jq/common/commonFunctions'
 
-async function getOrCreatePopup(url, width, height) {
+async function getOrCreatePopup(activeTab, url, width, height) {
   let activateTab = async (tab) => {
     let value = {}
     value[url] = tab.id
     await storage.set(value)
   }
 
-  let create = () => chrome.windows.create(
+  let create = (top) => chrome.windows.create(
     {
       url: chrome.runtime.getURL(url),
       type: 'popup',
       focused: true,
       height: height,
       width: width,
-      top: 0,
-      left: 0,
+      top: top,
+      left: screen.width - width,
       // alwaysOnTop: true,
     },
     activateTab,
   )
 
-  let open = async () => {
+  let open = async (top) => {
     let popup = await storage.get(url)
     if (popup) {
       chrome.windows.update(popup, { focused: true },
@@ -51,34 +51,30 @@ async function getOrCreatePopup(url, width, height) {
             return
           }
 
-          create()
+          create(top)
         })
     } else {
-      create()
+      create(top)
     }
   }
 
-  chrome.windows.getCurrent(
-    {},
-    async (window) => {
-      let value = {}
-      value.windowId = window.id
-      await storage.set(value)
+  let value = {}
+  value.windowId = activeTab.windowId
+  await storage.set(value)
 
-      await open()
-    },
-  )
+  await open(screen.height - activeTab.height)
 }
 
-async function openPopup() {
-  await getOrCreatePopup('popup/popup.html#/', 500, 1000)
+async function openPopup(tab) {
+  await getOrCreatePopup(tab, 'popup/popup.html#/', 500, tab.height)
 }
 
 chrome.commands.onCommand.addListener(async (command) => {
   console.log('Command:' + command)
   switch (command) {
     case 'search':
-      openPopup()
+      getActiveTab()
+        .then(activeTab => openPopup(activeTab))
       break
     case 'add-tab-to-session': {
       getActiveTab()
@@ -136,7 +132,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 })
 
 chrome.browserAction.onClicked.addListener((tab) => {
-  openPopup()
+  openPopup(tab)
 })
 
 chrome.windows.onRemoved.addListener(async (windowId) => {
