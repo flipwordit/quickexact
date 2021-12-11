@@ -133,8 +133,15 @@ export function getAllTabsByWindow(windowId) {
   }, (tabs) => r(tabs)))
 }
 
-export function getActiveTab() {
-  return new Promise(r => chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => r(tabs.length ? tabs[0] : null)))
+export function getActiveTab(windowId) {
+  let params = { active: true }
+
+  if (windowId) {
+    params.windowId = windowId
+  } else {
+    params.currentWindow = true
+  }
+  return new Promise(r => chrome.tabs.query(params, (tabs) => r(tabs.length ? tabs[0] : null)))
 }
 
 export function closeTabs(tabs) {

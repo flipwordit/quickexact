@@ -268,7 +268,8 @@ export default {
           })
           break
         case 'Tab':
-          getActiveTab().then((tab) => {
+          windowId = await storage.get('windowId')
+          getActiveTab(windowId).then((tab) => {
             this.newCheatSheet.content = this.tabLinkMarkdown(tab)
             this.newCheatSheet.link = tab.url
           })

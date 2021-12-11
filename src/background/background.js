@@ -17,15 +17,6 @@ import storage from '@/utils/storage'
 import { getActiveTab, createDefaultSession, getSmartotekaFabric } from '@/src_jq/common/commonFunctions'
 
 async function getOrCreatePopup(url, width, height) {
-  chrome.windows.getCurrent(
-    {},
-    async (window) => {
-      let value = {}
-      value.windowId = window.id
-      await storage.set(value)
-    },
-  )
-
   let activateTab = async (tab) => {
     let value = {}
     value[url] = tab.id
@@ -46,24 +37,37 @@ async function getOrCreatePopup(url, width, height) {
     activateTab,
   )
 
-  let popup = await storage.get(url)
-  if (popup) {
-    chrome.windows.update(popup, { focused: true },
-      (openWindow) => {
-        if (openWindow) {
-          getActiveTab().then((tab) => {
-            chrome.tabs.sendMessage(tab.id, 'clear', function (response) {
-              console.log(response)
+  let open = async () => {
+    let popup = await storage.get(url)
+    if (popup) {
+      chrome.windows.update(popup, { focused: true },
+        (openWindow) => {
+          if (openWindow) {
+            getActiveTab().then((tab) => {
+              chrome.tabs.sendMessage(tab.id, 'clear', function (response) {
+                console.log(response)
+              })
             })
-          })
-          return
-        }
+            return
+          }
 
-        create()
-      })
-  } else {
-    create()
+          create()
+        })
+    } else {
+      create()
+    }
   }
+
+  chrome.windows.getCurrent(
+    {},
+    async (window) => {
+      let value = {}
+      value.windowId = window.id
+      await storage.set(value)
+
+      await open()
+    },
+  )
 }
 
 async function openPopup() {
