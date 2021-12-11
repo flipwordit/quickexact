@@ -49,10 +49,12 @@ export default {
     openTab: function (url) {
       if (this.popup) {
         openTabs([{ url: url }])
+        window.close()
         return
       }
 
       redirectCurrentTab(url)
+      window.close()
     },
   },
 }
