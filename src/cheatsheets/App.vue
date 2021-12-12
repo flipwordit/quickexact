@@ -57,12 +57,26 @@
 
       <search v-if="!newCheatSheet || distributeTabToGroups">
         <!-- <p>Selected: {{ selected }}</p> -->
-        <select2
-          :options="options"
-          v-model="selected"
-          :searchResults="searchResults"
-        >
-        </select2>
+        <div style="display: flex">
+          <select2
+            :options="options"
+            v-model="selected"
+            :searchResults="searchResults"
+          >
+          </select2>
+          <img
+            class="ctrl-img search-img"
+            src="/images/google.svg"
+            @click="google"
+            v-if="!newCheatSheet"
+          />
+          <img
+            class="ctrl-img search-img"
+            src="/images/stack-overflow.svg"
+            @click="stackoverflow"
+            v-if="!newCheatSheet"
+          />
+        </div>
         <!-- <div class="selectElementInLine">
           <div
             v-for="v in selectVariants"
@@ -110,6 +124,7 @@ import {
   getAllTabsByWindow,
   unwrapCheatSheet,
   getGroupTags,
+  openTabs,
 } from '@/src_jq/common/commonFunctions'
 import { cheatsheetsGroup } from '@/src_jq/common/cheatSheetsManage'
 import { getFilterByFilterTags } from '@/src_jq/common/mulitselectTagsHandlers'
@@ -289,7 +304,10 @@ export default {
         : [item.id]
       evt.dataTransfer.dropEffect = 'copy'
       evt.dataTransfer.effectAllowed = 'copy'
-      evt.dataTransfer.setData('data', JSON.stringify({ ids: ids, type: 'sessionTabs' }))
+      evt.dataTransfer.setData(
+        'data',
+        JSON.stringify({ ids: ids, type: 'sessionTabs' }),
+      )
     },
     tabLinkMarkdown(tab) {
       let markdown = ''
@@ -333,8 +351,7 @@ export default {
             .map((ch) => unwrapCheatSheet(ch, cheatsheet.tags))
 
           if (tabsToSave.length === 0) {
-            tabsToSave = this.sesstionTabs
-              .map((ch) => unwrapCheatSheet(ch, cheatsheet.tags))
+            tabsToSave = this.sesstionTabs.map((ch) => unwrapCheatSheet(ch, cheatsheet.tags))
           }
           this.smartotekaFabric
             .KBManager()
@@ -448,14 +465,14 @@ export default {
 
       let cheatSheets = this.sesstionTabs
         .filter((el) => tabsIds.indexOf(el.id) >= 0)
-        .map(el => unwrapCheatSheet(el, tags))
+        .map((el) => unwrapCheatSheet(el, tags))
 
       if (cheatSheets.length > 0) {
         this.smartotekaFabric
           .KBManager()
           .addCheatSheets(cheatSheets)
           .then(() => {
-            cheatSheets.forEach(el => group.items.push(el))
+            cheatSheets.forEach((el) => group.items.push(el))
           })
       }
     },
@@ -463,17 +480,26 @@ export default {
       let group = event.group
       let tags = getGroupTags(group)
 
-      let cheatSheets = event.cheatsheets
-        .map(el => unwrapCheatSheet(el, tags))
+      let cheatSheets = event.cheatsheets.map((el) => unwrapCheatSheet(el, tags))
 
       if (cheatSheets.length > 0) {
         this.smartotekaFabric
           .KBManager()
           .updateCheatSheets(cheatSheets)
           .then(() => {
-            cheatSheets.forEach(el => group.items.push(el))
+            cheatSheets.forEach((el) => group.items.push(el))
           })
       }
+    },
+    google() {
+      let tags = this.selected.map((el) => el.text).join(' ')
+      let tab = { url: 'https://www.google.com/search?q=' + tags }
+      openTabs([tab])
+    },
+    stackoverflow() {
+      let tags = this.selected.map((el) => el.text).join(' ')
+      let tab = { url: 'https://stackoverflow.com/search?q=' + tags }
+      openTabs([tab])
     },
   },
 }
@@ -515,6 +541,11 @@ export default {
   height: calc(100% - 90px);
   overflow: auto;
   background: hsl(203deg, 34%, 95%);
+}
+
+.search-img {
+  width: 16px;
+  margin: 3px 3px;
 }
 
 .selected {
