@@ -21,15 +21,9 @@
           </span>
           <img
             class="expand ctrl-img"
-            v-if="!showChildren && mouseFocus"
-            src="/images/arrow-down.svg"
+            :style="mouseFocus?'':'visibility:hidden'"
+            :src="showChildren?'/images/arrow-up.svg':'/images/arrow-down.svg'"
             @click.self="showChildren = !showChildren"
-          />
-          <img
-            class="collapse ctrl-img"
-            v-if="showChildren && mouseFocus"
-            @click.self="showChildren = !showChildren"
-            src="/images/arrow-up.svg"
           />
         </div>
         <Menu
@@ -321,9 +315,10 @@ $sky: #8ef7a0;
       font-weight: 500;
       color: #194c66;
 
-      .expand,
-      .collapse {
+      .expand {
         display: inline-block;
+        cursor: pointer;
+        margin-right: 20px;
       }
 
       .tag {

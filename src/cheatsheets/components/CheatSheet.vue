@@ -218,7 +218,7 @@ export default {
       let codeEls = $('.code code', this.$el).parent()
 
       codeEls.append(
-        '<img class="copy" style="display:none" src="/images/copy.svg" data-v-2d0b1742="">',
+        '<img class="copy" display="none" src="/images/copy.svg" data-v-2d0b1742="">',
       )
       codeEls.css('position', 'relative')
 
@@ -229,7 +229,10 @@ export default {
         $('img', this).show()
       })
 
-      $('img.copy', codeEls).on('click', function () {
+      $('img.copy', codeEls).on('click', function (e) {
+        e.stopPropagation()
+
+        $(this).css({ 'background-color': '#bbfdc6' })
         let text = $(this).parent().text()
 
         if (!navigator.clipboard) {
@@ -309,6 +312,12 @@ $sky: #e6f6fe;
 
 .hide {
   display: none !important;
+}
+
+.copy {
+  position: absolute;
+  top: 2px;
+  right: 2px;
 }
 
 .cheatsheet {
