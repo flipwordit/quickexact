@@ -8,13 +8,16 @@ import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
 import VueFeather from 'vue-feather'
 
+import ContextMenu from '@imengyu/vue3-context-menu'
 import App from './cheatscheets'
 import storage from '@/utils/storage'
 import { redirectCurrentTab } from '@/src_jq/common/commonFunctions'
+import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 
 const app = createApp(App)
 
 app.use(ElementPlus)
+app.use(ContextMenu)
 app.component(VueFeather.name, VueFeather)
 
 app.mount('#app')

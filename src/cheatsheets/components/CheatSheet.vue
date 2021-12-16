@@ -6,6 +6,7 @@
     "
     @click="selected = !selected"
     v-click-outside="clickOutside"
+     @contextmenu="onContextMenu($event)"
   >
     <div
       class="content"
@@ -288,6 +289,41 @@ export default {
           console.error('Async: Could not copy text: ', err)
         },
       )
+    },
+    onContextMenu(e) {
+      let items = [
+        {
+          label: 'Copy',
+          onClick: () => {
+            let text = JSON.stringify(unwrapCheatSheet(this.cheatsheet, this.cheatsheet.tags))
+            navigator.clipboard.writeText(text)
+          },
+        },
+      ]
+
+      if (this.edit) {
+        items.push({
+          label: 'Paste',
+          onClick: () => {
+            navigator.clipboard.readText()
+              .then(text => {
+                let cheatSheet = JSON.parse(text)
+
+                this.cheatsheet.tags = cheatSheet.tags
+                this.cheatsheet.link = cheatSheet.link
+                this.cheatsheet.content = cheatSheet.content
+              })
+          },
+        })
+      }
+      // prevent the browser's default menu
+      e.preventDefault()
+      // shou our menu
+      this.$contextmenu({
+        x: e.x,
+        y: e.y,
+        items: items,
+      })
     },
   },
 }

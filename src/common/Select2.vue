@@ -1,5 +1,5 @@
 <template>
-  <span style="display: flex; width: 100%">
+  <span style="display: flex; width: 100%" @contextmenu="onContextMenu($event)">
     <span class="clear-filter">
       <img src="/images/x.svg" @click.self="clearAllFilters" />
     </span>
@@ -51,29 +51,7 @@ export default {
   },
   watch: {
     modelValue: function (value) {
-      let strVal = ''
-      if (Array.isArray(value)) {
-        strVal = JSON.stringify(
-          value.map(el => ({
-            id: el.id,
-            text: el.text,
-            selected: el.selected,
-          })),
-        )
-      } else {
-        strVal = JSON.stringify(value)
-      }
-
-      if (this.prevValue === strVal) return
-      this.prevValue = strVal
-      console.log('value' + strVal)
-
-      if (Array.isArray(value)) {
-        select2UpdateTags(this.selectList(), value)
-      } else {
-        // update value
-        this.selectList().val(value).trigger('change')
-      }
+      this.setModelValue(value)
     },
     options: function (options) {
       console.log('options')
@@ -113,6 +91,61 @@ export default {
     },
   },
   methods: {
+    setModelValue(value) {
+      let strVal = ''
+      if (Array.isArray(value)) {
+        strVal = JSON.stringify(
+          value.map(el => ({
+            id: el.id,
+            text: el.text,
+            selected: el.selected,
+          })),
+        )
+      } else {
+        strVal = JSON.stringify(value)
+      }
+
+      if (this.prevValue === strVal) return
+      this.prevValue = strVal
+      console.log('value' + strVal)
+
+      if (Array.isArray(value)) {
+        select2UpdateTags(this.selectList(), value)
+      } else {
+        // update value
+        this.selectList().val(value).trigger('change')
+      }
+    },
+    onContextMenu(e) {
+      let vm = this
+      // prevent the browser's default menu
+      e.preventDefault()
+      // shou our menu
+      this.$contextmenu({
+        x: e.x,
+        y: e.y,
+        items: [
+          {
+            label: 'Copy',
+            onClick: () => {
+              let text = vm.modelValue.map(el => el.text).join(', ')
+              navigator.clipboard.writeText(text)
+            },
+          },
+          {
+            label: 'Paste',
+            onClick: () => {
+              navigator.clipboard.readText()
+                .then(text => {
+                  let tags = text.split(',').map(el => el.trim()).map(el => ({ id: el, text: el }))
+
+                  vm.setModelValue(tags)
+                })
+            },
+          },
+        ],
+      })
+    },
     sendUpdateEvent: function () {
       console.log('change')
 
