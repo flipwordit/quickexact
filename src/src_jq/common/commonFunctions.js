@@ -193,7 +193,7 @@ export function unwrapCheatSheet(reactive, tags) {
   let result = {
     content: reactive.content,
     date: reactive.date,
-    tags: tags.map((el) => ({ id: el.id, text: el.text })),
+    tags: unique(tags.map((el) => ({ id: el.id, text: el.text }), el => el.id)),
     id: reactive.id,
   }
 

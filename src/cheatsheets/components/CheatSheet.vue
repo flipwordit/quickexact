@@ -53,6 +53,7 @@ import Select2 from '@/common/Select2'
 import ClickOutsideEvent from '@/common/directives/ClickOutside'
 import {
   unwrapCheatSheet, closeTabsByUrlIfOpen, openTabsInNewWindow, openTabs,
+  unique,
 } from '@/src_jq/common/commonFunctions'
 import Menu from './menu'
 
@@ -218,13 +219,13 @@ export default {
       let codeEls = $('.code code', this.$el).parent()
 
       codeEls.append(
-        '<img class="copy" display="none" src="/images/copy.svg" data-v-2d0b1742="">',
+        '<img class="copy" style="display:none" src="/images/copy.svg" data-v-2d0b1742="">',
       )
       codeEls.css('position', 'relative')
 
-      // codeEls.on('mouseleave', function () {
-      //   $('img', this).hide()
-      // })
+      codeEls.on('mouseleave', function () {
+        $('img', this).hide()
+      })
       codeEls.on('mouseenter', function () {
         $('img', this).show()
       })
@@ -262,7 +263,7 @@ export default {
       this.editMode = false
       this.mouseFocus = false
 
-      this.cheatsheet.tags = this.editTags.slice(0)
+      this.cheatsheet.tags = unique(this.editTags.slice(0), el => el.id)
       if (this.$refs.editor) {
         this.cheatsheet.content = this.$refs.editor.editor.getMarkdown()
       }

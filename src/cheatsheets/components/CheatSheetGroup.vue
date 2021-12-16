@@ -279,6 +279,7 @@ $sky: #8ef7a0;
   .column2 {
     display: inline;
     float: left;
+    width: 100%;
   }
 }
 
