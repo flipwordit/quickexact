@@ -139,7 +139,7 @@ export default {
                 .then(text => {
                   let tags = text.split(',').map(el => el.trim()).map(el => ({ id: el, text: el }))
 
-                  vm.setModelValue(tags)
+                  vm.setModelValue(vm.modelValue.concat(tags))
                 })
             },
           },
