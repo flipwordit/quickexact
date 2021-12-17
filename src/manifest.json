@@ -16,7 +16,8 @@
     "unlimitedStorage",
     "tabs",
     "activeTab",
-    "commands"
+    "commands",
+    "https://localhost:44383/*"
   ],
   "commands": {
     "search": {

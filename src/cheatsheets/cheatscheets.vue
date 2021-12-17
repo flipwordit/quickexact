@@ -8,6 +8,7 @@
         v-if="!newCheatSheet"
       />
     </Navbar>
+    <StatusBar></StatusBar>
     <main>
       <div id="speedDealHelp"></div>
 
@@ -116,6 +117,7 @@ import Navbar from '@/common/Navbar'
 import CheatSheet from './components/CheatSheet'
 import CheatSheetGroup from './components/CheatSheetGroup'
 import Select2 from '@/common/Select2'
+import StatusBar from './components/StatusBar'
 
 import {
   unique,
@@ -136,6 +138,7 @@ export default {
     CheatSheetGroup,
     Navbar,
     Select2,
+    StatusBar,
   },
   props: {
     popup: {

@@ -22,67 +22,85 @@
         </svg>
       </div>
       <h3 class="text-2xl font-bold text-center">Login to your account</h3>
-      <form action="">
-        <div class="mt-4">
-          <div>
-            <label class="block" for="email">Email</label>
-            <input
-              type="text"
-              placeholder="Email"
-              :value="email"
-              class="
-                w-full
-                px-4
-                py-2
-                mt-2
-                border
-                rounded-md
-                focus:outline-none focus:ring-1 focus:ring-blue-600
-              "
-            />
-            <span class="text-xs tracking-wide text-red-600"
-              >{{ emailMessage }}
-            </span>
-          </div>
-          <div class="mt-4">
-            <label class="block">Login</label>
-            <input
-              type="text"
-              placeholder="Login"
-              :value="login"
-              class="
-                w-full
-                px-4
-                py-2
-                mt-2
-                border
-                rounded-md
-                focus:outline-none focus:ring-1 focus:ring-blue-600
-              "
-            />
-            <span class="text-xs tracking-wide text-red-600"
-              >{{ loginMessage }}
-            </span>
-          </div>
-          <div class="flex items-baseline justify-between">
-            <button
-              class="
-                px-6
-                py-2
-                mt-4
-                text-white
-                bg-blue-600
-                rounded-lg
-                hover:bg-blue-900
-              "
-              @click="enter"
-            >
-              Login
-            </button>
-            <!-- <a href="#" class="text-sm text-blue-600 hover:underline">Forgot password?</a> -->
-          </div>
+
+      <div class="mt-4">
+        <div>
+          <label class="block" for="email">Email</label>
+          <input
+            type="text"
+            placeholder="Email"
+            v-model="email"
+            class="
+              w-full
+              px-4
+              py-2
+              mt-2
+              border
+              rounded-md
+              focus:outline-none focus:ring-1 focus:ring-blue-600
+            "
+          />
+          <span class="text-xs tracking-wide text-red-600"
+            >{{ emailMessage }}
+          </span>
         </div>
-      </form>
+        <div class="mt-4">
+          <label class="block">Login</label>
+          <input
+            type="text"
+            placeholder="Login"
+            v-model="login"
+            class="
+              w-full
+              px-4
+              py-2
+              mt-2
+              border
+              rounded-md
+              focus:outline-none focus:ring-1 focus:ring-blue-600
+            "
+          />
+          <span class="text-xs tracking-wide text-red-600"
+            >{{ loginMessage }}
+          </span>
+        </div>
+        <div class="flex items-baseline justify-between">
+          <button
+            class="
+              px-6
+              py-2
+              mt-4
+              text-white
+              bg-blue-600
+              rounded-lg
+              hover:bg-blue-900
+            "
+            @click="loginHandler"
+          >
+            Login
+          </button>
+          <button
+            class="
+              px-6
+              py-2
+              mt-4
+              text-white
+              bg-blue-600
+              rounded-lg
+              hover:bg-blue-900
+            "
+            @click="registerHandler"
+          >
+            Register
+          </button>
+          <!-- <a href="#" class="text-sm text-blue-600 hover:underline">Forgot password?</a> -->
+        </div>
+        <div class="flex items-baseline justify-between">
+         <span class="text-xs tracking-wide text-red-600"
+            >{{ sendMessage }}
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -101,6 +119,7 @@ export default {
       email: '',
       emailMessage: '',
       loginMessage: '',
+      sendMessage: '',
     }
   },
   props: {},
@@ -108,7 +127,10 @@ export default {
   mounted: function () {},
   updated: function () {},
   methods: {
-    enter() {
+    isValid() {
+      this.emailMessage = ''
+      this.loginMessage = ''
+
       let valid = true
       if (!this.email) {
         this.emailMessage = 'Email field is required'
@@ -122,20 +144,61 @@ export default {
         this.loginMessage = 'Login field is required'
         valid = false
       }
+      return valid
+    },
+    loginHandler() {
+      if (!this.isValid()) {
+        return false
+      }
 
-      if (!valid) { return }
-      // TODO: send to api
-      console.log(
-        JSON.stringify({
+      this.axios
+        .put('https://localhost:44383/Main', { // TODO: put in config
           login: this.login,
           email: this.email,
           extId: chrome.runtime.id,
-        }),
-      )
+          version: 'version',
+        })
+        .then((response) => {
+          let data = response.data
 
-      storage
-        .set({ 'app-uuid': 'test' })
-        .then(() => redirectCurrentTab('/cheatsheets/page.html'))
+          if (data.isSuccess && data.result) {
+            storage
+              .set({ 'app-uuid': data.result })
+              .then(() => redirectCurrentTab('/cheatsheets/page.html'))
+          } else {
+            this.sendMessage = data.displayMessage
+          }
+        })
+        .catch((e) => {
+          this.sendMessage = 'An error occurred while sending. Try it later or write for help'
+        })
+    },
+    registerHandler() {
+      if (!this.isValid()) {
+        return false
+      }
+
+      this.axios
+        .post('https://localhost:44383/Main', { // TODO: put in config
+          login: this.login,
+          email: this.email,
+          extId: chrome.runtime.id,
+          version: 'version', // TODO: put in config. And make autogenerate
+        })
+        .then((response) => {
+          let data = response.data
+
+          if (data.isSuccess && data.result) {
+            storage
+              .set({ 'app-uuid': data.result })
+              .then(() => redirectCurrentTab('/cheatsheets/page.html'))
+          } else {
+            this.sendMessage = data.displayMessage
+          }
+        })
+        .catch((e) => {
+          this.sendMessage = 'An error occurred while sending. Try it later or write for help'
+        })
     },
     validateEmail(email) {
       return String(email)
