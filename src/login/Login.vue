@@ -108,6 +108,7 @@
 <script>
 import storage from '@/utils/storage'
 import { redirectCurrentTab } from '@/src_jq/common/commonFunctions'
+import axios from '@/services/axios'
 
 export default {
   name: 'Login',
@@ -151,12 +152,12 @@ export default {
         return false
       }
 
-      this.axios
-        .put('https://localhost:44383/Main', { // TODO: put in config
+      axios
+        .put('/Main', {
           login: this.login,
           email: this.email,
           extId: chrome.runtime.id,
-          version: 'version',
+          version: chrome.runtime.getManifest().version,
         })
         .then((response) => {
           let data = response.data
@@ -178,12 +179,12 @@ export default {
         return false
       }
 
-      this.axios
-        .post('https://localhost:44383/Main', { // TODO: put in config
+      axios
+        .post('/Main', {
           login: this.login,
           email: this.email,
           extId: chrome.runtime.id,
-          version: 'version', // TODO: put in config. And make autogenerate
+          version: chrome.runtime.getManifest().version,
         })
         .then((response) => {
           let data = response.data

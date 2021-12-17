@@ -1,9 +1,11 @@
 <template>
-  <div>{{message}}</div>
+  <div>{{ message }}</div>
 </template>
 
 <script>
 import storage from '@/utils/storage'
+import axios from '@/services/axios'
+import { version } from '../../../package.json'
 
 export default {
   // props: {
@@ -21,37 +23,30 @@ export default {
   mounted() {
     let today = new Date().toISOString().slice(0, 10)
 
-    storage
-      .get('check-update')
-      .then(
-        checkUpdate => {
-          if (checkUpdate !== today) {
-            storage
-              .get('app-uuid')
-              .then(uuid => {
-                this.checkUpdate(uuid, today)
-              })
-          }
-        },
-      )
+    storage.get('check-update').then((checkUpdate) => {
+      if (checkUpdate !== today) {
+        storage.get('app-uuid').then((uuid) => {
+          this.checkUpdate(uuid, today)
+        })
+      }
+    })
   },
   computed: {},
   methods: {
     checkUpdate(uuid, today) {
-      this.axios
-        .get('https://localhost:44383/Main', {
-          params: { // TODO: put in config
+      axios
+        .get('/Main', {
+          params: {
             uuid: uuid,
             extId: chrome.runtime.id,
-            version: 'version', // TODO: put in config. And make autogenerate
+            version: chrome.runtime.getManifest().version,
           },
         })
         .then((response) => {
           let data = response.data
 
           if (data.isSuccess) {
-            storage
-              .set({ 'check-update': today })
+            storage.set({ 'check-update': today })
           }
           if (data.displayMessage) {
             this.message = data.displayMessage
