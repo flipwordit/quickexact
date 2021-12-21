@@ -5,15 +5,8 @@
 <script>
 import storage from '@/utils/storage'
 import axios from '@/services/axios'
-import { version } from '../../../package.json'
 
 export default {
-  // props: {
-  //   message: {
-  //     type: String,
-  //     default: 'test',
-  //   },
-  // },
   components: {},
   data() {
     return {

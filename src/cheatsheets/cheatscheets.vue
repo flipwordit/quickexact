@@ -7,8 +7,8 @@
         @click="addCheatSheet"
         v-if="!newCheatSheet"
       />
+      <StatusBar class="statusbar"></StatusBar>
     </Navbar>
-    <StatusBar></StatusBar>
     <main>
       <div id="speedDealHelp"></div>
 
@@ -509,6 +509,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.statusbar{
+    position: absolute;
+    right: 0px;
+}
 #speedDealHelp {
   font-size: 150%;
   font-weight: bold;
