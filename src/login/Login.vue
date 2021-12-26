@@ -108,7 +108,7 @@
 <script>
 import storage from '@/utils/storage'
 import { redirectCurrentTab } from '@/src_jq/common/commonFunctions'
-import axios from '@/services/axios'
+import api from '@/services/api'
 
 export default {
   name: 'Login',
@@ -147,59 +147,45 @@ export default {
       }
       return valid
     },
-    loginHandler() {
+    async loginHandler() {
       if (!this.isValid()) {
         return false
       }
 
-      axios
-        .put('/Main', {
-          login: this.login,
-          email: this.email,
-          extId: chrome.runtime.id,
-          version: chrome.runtime.getManifest().version,
-        })
-        .then((response) => {
-          let data = response.data
+      try {
+        // use password instead of login
+        const { isSuccess, result, displayMessage } = await api.login(this.login, this.email)
 
-          if (data.isSuccess && data.result) {
-            storage
-              .set({ 'app-uuid': data.result })
-              .then(() => redirectCurrentTab('/cheatsheets/page.html'))
-          } else {
-            this.sendMessage = data.displayMessage
-          }
-        })
-        .catch((e) => {
-          this.sendMessage = 'An error occurred while sending. Try it later or write for help'
-        })
+        if (isSuccess && result) {
+          await storage.set({ 'app-uuid': result })
+          // TODO needs to be done with a vue-router
+          redirectCurrentTab('/cheatsheets/page.html')
+        } else {
+          this.sendMessage = displayMessage
+        }
+      } catch (e) {
+        this.sendMessage = 'An error occurred while sending. Try it later or write for help'
+      }
     },
-    registerHandler() {
+    async registerHandler() {
       if (!this.isValid()) {
         return false
       }
 
-      axios
-        .post('/Main', {
-          login: this.login,
-          email: this.email,
-          extId: chrome.runtime.id,
-          version: chrome.runtime.getManifest().version,
-        })
-        .then((response) => {
-          let data = response.data
+      try {
+        // use password instead of login
+        const { isSuccess, result, displayMessage } = await api.register(this.login, this.email)
 
-          if (data.isSuccess && data.result) {
-            storage
-              .set({ 'app-uuid': data.result })
-              .then(() => redirectCurrentTab('/cheatsheets/page.html'))
-          } else {
-            this.sendMessage = data.displayMessage
-          }
-        })
-        .catch((e) => {
-          this.sendMessage = 'An error occurred while sending. Try it later or write for help'
-        })
+        if (isSuccess && result) {
+          await storage.set({ 'app-uuid': result })
+          // TODO needs to be done with a vue-router
+          redirectCurrentTab('/cheatsheets/page.html')
+        } else {
+          this.sendMessage = displayMessage
+        }
+      } catch (e) {
+        this.sendMessage = 'An error occurred while sending. Try it later or write for help'
+      }
     },
     validateEmail(email) {
       return String(email)
