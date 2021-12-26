@@ -16,6 +16,7 @@ if (typeof (WindiCSS) !== 'function') {
 const ExtensionReloader = require('webpack-extension-reloader')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
+const Dotenv = require('dotenv-webpack')
 let { version } = require('./package.json')
 
 const config = {
@@ -133,6 +134,7 @@ const config = {
       __VUE_PROD_DEVTOOLS__: 'false',
     }),
     new VueLoaderPlugin(),
+    new Dotenv(),
     new CopyWebpackPlugin([
       { from: 'images', to: 'images' },
       { from: 'src_jq', to: 'src_jq' },
@@ -165,16 +167,6 @@ const config = {
     //   filename: `Q&E_${version}.zip`,
     // })] : []),
   ],
-}
-
-if (config.mode === 'production') {
-  config.plugins = (config.plugins || []).concat([
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"',
-      },
-    }),
-  ])
 }
 
 // if (config.mode === 'development') {
