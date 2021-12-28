@@ -134,7 +134,11 @@ const config = {
       __VUE_PROD_DEVTOOLS__: 'false',
     }),
     new VueLoaderPlugin(),
-    new Dotenv(),
+    new Dotenv({
+      path: process.env.NODE_ENV === 'development'
+        ? '.env.development'
+        : '.env.production',
+    }),
     new CopyWebpackPlugin([
       { from: 'images', to: 'images' },
       { from: 'src_jq', to: 'src_jq' },
